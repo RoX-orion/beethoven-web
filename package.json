@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
@@ -19,9 +19,13 @@
     "@types/node": "^20.16.11",
     "@vitejs/plugin-vue": "^5.1.4",
     "@vue/tsconfig": "^0.5.1",
+    "fast-glob": "^3.3.2",
     "npm-run-all2": "^6.2.3",
+    "sass": "^1.78.0",
+    "sass-loader": "^16.0.1",
     "typescript": "~5.5.4",
     "vite": "^5.4.8",
+    "vite-plugin-svg-icons": "^2.0.1",
     "vue-tsc": "^2.1.6"
   }
 }
