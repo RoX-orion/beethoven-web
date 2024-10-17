@@ -1,11 +1,18 @@
 <template>
   <Header/>
+  <div class="flex-row">
+    <Left/>
+    <Right/>
+  </div>
+
   <Player class="player" />
 </template>
 
 <script setup lang="ts">
-import Header from "./Header.vue";
-import Player from './Player/Player.vue';
+import Header from './header/Header.vue';
+import Left from './left/Left.vue';
+import Right from './right/Right.vue'
+import Player from './player/Player.vue';
 </script>
 
 <style lang="scss" scoped>

@@ -1,17 +1,16 @@
 <template>
-  <div class="left-container">
-    <PlayList v-for="() in 5"/>
+  <div class="right-container">
+    <PlayListInfo/>
   </div>
 </template>
 
 <script setup lang="ts">
-import PlayList from './PlayList.vue';
-
+import PlayListInfo from './PlayListInfo.vue';
 </script>
 
-<style lang="scss" scoped>
-.left-container {
-  width: var(--left-width);
+<style scoped>
+.right-container {
+  width: 100%;
   margin: 0 1rem;
   padding: var(--base-padding);
   border-radius: .25rem;

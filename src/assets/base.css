@@ -19,6 +19,30 @@
   --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
   --vt-c-text-dark-1: var(--vt-c-white);
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+
+  --info-font-size: 15px;
+
+  --base-padding: .5rem;
+
+  @media (max-width: 1920px) {
+    --left-width: 25vw;
+    --search-width: 30vw;
+  }
+
+  @media (max-width: 1200px) {
+    --left-width: 30vw;
+    --search-width: 40vw;
+  }
+
+  @media (max-width: 800px) {
+    --left-width: 10vw;
+    --search-width: 80vw;
+  }
+
+  @media (max-width: 500px) {
+    --left-width: 0;
+    --search-width: 100vw;
+  }
 }
 
 /* semantic color variables for this project */
@@ -65,7 +89,6 @@ body {
   transition:
     color 0.5s,
     background-color 0.5s;
-  line-height: 1.6;
   font-family:
     Inter,
     -apple-system,
@@ -79,7 +102,6 @@ body {
     'Droid Sans',
     'Helvetica Neue',
     sans-serif;
-  font-size: 16px;
   /*text-rendering: optimizeLegibility;*/
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

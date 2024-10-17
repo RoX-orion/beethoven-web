@@ -44,7 +44,6 @@ const resetSearch = () => {
 
   border-radius: 1.375rem;
   padding: 5px 10px;
-  margin: 10px 10px 10px 0;
   outline: none;
   border: rgba(0, 0, 0, .05) solid 2px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, .04), 0 0 6px rgba(0, 0, 0, .04);

@@ -41,7 +41,7 @@ import Panel from "./Panel.vue";
     }
 
     .singer {
-      font-size: 14px;
+      font-size: var(--info-font-size);
       color: gray;
     }
   }
