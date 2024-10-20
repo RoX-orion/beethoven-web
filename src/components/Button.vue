@@ -1,5 +1,5 @@
 <template>
-  <button class="button-container"></button>
+  <button class="button-wrapper"></button>
 </template>
 
 <script setup lang="ts">
@@ -7,12 +7,12 @@
 </script>
 
 <style lang="scss" scoped>
-.button-container {
+.button-wrapper {
   outline: none !important;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  width: 3.5rem;
   height: 3.5rem;
   border: 0;
   border-radius: 0.75rem;

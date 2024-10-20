@@ -4,7 +4,7 @@
 
     </div>
     <div class="play-list-detail">
-      <span>{{playList.title}}</span>
+      <span class="title">{{playList.title}}</span>
       <div>
         <span v-for="singer in playList.singers">{{singer}}</span>
         <span>·{{playList.musicCount}}首歌曲</span>
@@ -21,7 +21,6 @@ import type { PlayList } from '@/types/global';
 const props = defineProps<{
   playList: PlayList
 }>();
-console.log(props);
 const backgroundImg = ref({
   background: `url(${props.playList.cover})`
 });
@@ -39,9 +38,16 @@ const backgroundImg = ref({
   }
 
   .play-list-detail {
-    //span {
-    //  display: block;
-    //}
+    padding: .5rem 0;
+    .title {
+      display: block;
+    }
+    div {
+      span {
+        color: grey;
+        font-size: var(--info-font-size);
+      }
+    }
   }
 }
 </style>

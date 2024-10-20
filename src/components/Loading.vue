@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed} from "vue";
+import { computed } from 'vue';
 
 interface Spinner {
   color?: 'blue' | 'white' | 'black' | 'green' | 'gray' | 'yellow';

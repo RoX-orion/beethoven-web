@@ -24,9 +24,10 @@
   --header-item-size: 3.56rem;
 
   --base-padding: .5rem;
+  --base-margin: .5rem;
 
   @media (max-width: 1920px) {
-    --left-width: 25vw;
+    --left-width: 26vw;
     --search-width: 30vw;
   }
 

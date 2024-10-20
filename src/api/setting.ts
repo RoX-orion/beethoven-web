@@ -1,8 +1,8 @@
 import request from "@/util/request";
 
-export function getAppConfig() {
+export function getAppSetting() {
 	return request({
-		url: '/config/getConfig',
+		url: '/setting/getSetting',
 		method: 'get'
 	});
 }

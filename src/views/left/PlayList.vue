@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-row play-list-container">
+  <div class="flex-row play-list-wrapper">
     <img class="playlist-cover" :src='playlist.cover' alt="cover"/>
     <div class="play-list-info">
       <span>喜欢</span>
@@ -19,7 +19,7 @@ const playlist = reactive({
 </script>
 
 <style scoped>
-.play-list-container {
+.play-list-wrapper {
   padding: .5rem;
   border-radius: .25rem;
   cursor: pointer;

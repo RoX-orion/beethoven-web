@@ -1,8 +1,8 @@
 <template>
-  <div class="play-list-info-container" v-for="data in groupPlayList">
+  <div class="play-list-group-wrapper" v-for="data in groupPlayList">
     <span class="play-list-group-title">{{data.groupTitle}}</span>
-    <div class="flex-row play-list-wrapper">
-      <PlayListInfo class="play-list-info-container" v-for="playList in data.playList" :playList="playList"></PlayListInfo>
+    <div class="flex-row play-list-info-wrapper">
+      <PlayListInfo class="play-list-info" v-for="playList in data.playList" :playList="playList"></PlayListInfo>
     </div>
   </div>
 </template>
@@ -62,16 +62,28 @@ const groupPlayList: Array<groupPlayListArray> = reactive([
 </script>
 
 <style scoped lang="scss">
-.play-list-info-container {
-  margin-top: 1rem;
+.play-list-group-wrapper {
+  //margin-top: 1rem;
+  margin-right: var(--base-margin);
 
   .play-list-group-title {
     font-size: 1.375rem;
-    text-shadow: 3px 3px 4px  rgba(0, 0, 0, 0.25);
+    padding: var(--base-padding);
+    margin: .75rem 0;
+    display: inline-block;
+    text-shadow: 3px 3px 4px rgba(0, 0, 0, 0.25);
   }
 
-  .play-list-wrapper {
+  .play-list-info-wrapper {
     flex-wrap: wrap;
+    justify-content: space-between;
+
+    .play-list-info {
+      cursor: pointer;
+      //margin-right: 3vw;
+      //padding: 1rem 1rem 1rem 0;
+      margin: var(--base-padding);
+    }
   }
 }
 </style>

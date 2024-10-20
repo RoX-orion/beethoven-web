@@ -1,5 +1,5 @@
 <template>
-  <div class="right-container">
+  <div class="right-wrapper">
     <TagGroup/>
     <PlayListGroup/>
   </div>
@@ -11,12 +11,10 @@ import PlayListGroup from './PlayListGroup.vue';
 </script>
 
 <style scoped lang="scss">
-.right-container {
+.right-wrapper {
   width: 100%;
-  margin: 0 1rem;
-  padding: var(--base-padding);
   border-radius: .25rem;
+  overflow: hidden;
   //box-shadow: 0 2px 4px rgba(0, 0, 0, .04), 0 0 6px rgba(0, 0, 0, .04);
-  height: calc(100vh - 10rem);
 }
 </style>

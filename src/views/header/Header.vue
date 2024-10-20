@@ -1,19 +1,26 @@
 <template>
-  <div class="flex-row header-container">
+  <div class="flex-row header-wrapper">
     <img class="brand" src="../../assets/brand.png" alt="brand">
     <span class="brand-text">Beethoven Music</span>
-    <Search class="search-container"/>
-    <Account/>
+    <Search class="search-wrapper"/>
+    <div class="flex-row header-right">
+      <div class="button-group">
+        <svg-icon class="button pointer" name="message" size="1.5rem"/>
+        <svg-icon class="button pointer" name="bug" size="1.5rem"/>
+      </div>
+      <Account/>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import Search from "@/components/Search.vue";
 import Account from './Account.vue';
+import SvgIcon from '@/components/SvgIcon.vue';
 </script>
 
 <style lang="scss" scoped>
-.header-container {
+.header-wrapper {
   padding: 10px;
 
   .brand {
@@ -32,9 +39,24 @@ import Account from './Account.vue';
     margin: auto 1rem;
   }
 
-  .search-container {
+  .search-wrapper {
     margin: auto;
     width: var(--search-width);
+  }
+
+  .header-right {
+    justify-items: center;
+
+    .button-group {
+      margin: auto;
+      padding: 0 1rem;
+
+      .button {
+        display: inline-block;
+        margin: 0 .5rem;
+        //color: rgba(128, 128, 128, 1);
+      }
+    }
   }
 }
 </style>

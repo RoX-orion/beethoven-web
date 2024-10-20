@@ -1,6 +1,6 @@
 <template>
   <Header/>
-  <div class="flex-row">
+  <div class="flex-row left-right">
     <Left/>
     <Right/>
   </div>
@@ -16,6 +16,10 @@ import Player from './player/Player.vue';
 </script>
 
 <style lang="scss" scoped>
+.left-right {
+  justify-content: space-between;
+  height: 80vh;
+}
 .player {
   position: fixed;
   bottom: 0;

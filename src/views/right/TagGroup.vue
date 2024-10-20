@@ -1,6 +1,6 @@
 <template>
-  <div class="tag-container">
-    <Tag class="tag" v-for="() in 4"/>
+  <div class="tag-wrapper">
+    <Tag class="tag pointer" v-for="() in 4"/>
   </div>
 </template>
 
@@ -9,7 +9,8 @@ import Tag from './Tag.vue';
 </script>
 
 <style scoped lang="scss">
-.tag-container {
+.tag-wrapper {
+  padding: 0 var(--base-padding);
   .tag {
     display: inline-block;
     margin-right: 1.187rem;
