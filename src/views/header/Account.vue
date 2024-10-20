@@ -10,8 +10,8 @@
 
 <style lang="scss" scoped>
 .avatar {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: var(--header-item-size);
+  height: var(--header-item-size);
   border-radius: 50%;
   cursor: pointer;
 }

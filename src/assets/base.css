@@ -21,6 +21,7 @@
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
 
   --info-font-size: 15px;
+  --header-item-size: 3.56rem;
 
   --base-padding: .5rem;
 
@@ -84,12 +85,12 @@
 
 body {
   min-height: 100vh;
-  /*color: var(--color-text);*/
-  /*background: var(--color-background);*/
+  background: linear-gradient(0deg, rgba(243, 231, 233, 1) 0%, rgba(227, 238, 255, 1) 99%, rgba(227, 238, 255, 1) 100%);
   transition:
     color 0.5s,
     background-color 0.5s;
   font-family:
+    Noto Sans SC,
     Inter,
     -apple-system,
     BlinkMacSystemFont,
@@ -102,6 +103,7 @@ body {
     'Droid Sans',
     'Helvetica Neue',
     sans-serif;
+  font-weight: 100;
   /*text-rendering: optimizeLegibility;*/
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

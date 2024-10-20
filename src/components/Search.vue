@@ -40,9 +40,9 @@ const resetSearch = () => {
   display: flex;
   flex-direction: row;
   align-items: center;
-  height: 3.2rem;
+  height: var(--header-item-size);
 
-  border-radius: 1.375rem;
+  border-radius: 2rem;
   padding: 5px 10px;
   outline: none;
   border: rgba(0, 0, 0, .05) solid 2px;
@@ -59,6 +59,7 @@ const resetSearch = () => {
   border: none;
   font-size: 18px;
   padding: 0 10px;
+  background-color: inherit;
   //box-shadow: 0 0 .625rem 0 var(--color-default-shadow);
 }
 
