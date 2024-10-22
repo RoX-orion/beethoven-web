@@ -1,9 +1,9 @@
 <template>
-  <div class="play-list-info">
+  <div class="playlist-card">
     <div class="cover" :style="backgroundImg">
 
     </div>
-    <div class="play-list-detail">
+    <div class="playlist-detail">
       <span class="title">{{playList.title}}</span>
       <div>
         <span v-for="singer in playList.singers">{{singer}}</span>
@@ -27,7 +27,7 @@ const backgroundImg = ref({
 </script>
 
 <style scoped lang="scss">
-.play-list-info {
+.playlist-card {
 
   .cover {
     background-size: cover;
@@ -37,7 +37,7 @@ const backgroundImg = ref({
     border-radius: 10px;
   }
 
-  .play-list-detail {
+  .playlist-detail {
     padding: .5rem 0;
     .title {
       display: block;

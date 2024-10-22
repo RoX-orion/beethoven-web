@@ -1,15 +1,15 @@
 <template>
-  <div class="play-list-group-wrapper" v-for="data in groupPlayList">
-    <span class="play-list-group-title">{{data.groupTitle}}</span>
-    <div class="flex-row play-list-info-wrapper">
-      <PlayListInfo class="play-list-info" v-for="playList in data.playList" :playList="playList"></PlayListInfo>
+  <div class="playlist-group-wrapper" v-for="data in groupPlayList">
+    <span class="playlist-group-title">{{data.groupTitle}}</span>
+    <div class="flex-row playlist-info-wrapper">
+      <PlayListCard class="playlist-card" v-for="playList in data.playList" :playList="playList"></PlayListCard>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { reactive } from 'vue';
-import PlayListInfo from '@/views/right/PlayListInfo.vue';
+import PlayListCard from '@/views/right/PlayListCard.vue';
 import type { PlayList } from '@/types/global';
 
 interface groupPlayListArray {
@@ -62,11 +62,11 @@ const groupPlayList: Array<groupPlayListArray> = reactive([
 </script>
 
 <style scoped lang="scss">
-.play-list-group-wrapper {
+.playlist-group-wrapper {
   //margin-top: 1rem;
   margin-right: var(--base-margin);
 
-  .play-list-group-title {
+  .playlist-group-title {
     font-size: 1.375rem;
     padding: var(--base-padding);
     margin: .75rem 0;
@@ -74,15 +74,21 @@ const groupPlayList: Array<groupPlayListArray> = reactive([
     text-shadow: 3px 3px 4px rgba(0, 0, 0, 0.25);
   }
 
-  .play-list-info-wrapper {
+  .playlist-info-wrapper {
     flex-wrap: wrap;
     justify-content: space-between;
+    gap: 1rem;
 
-    .play-list-info {
+    .playlist-card {
+      flex: 0 1 20%;
       cursor: pointer;
       //margin-right: 3vw;
       //padding: 1rem 1rem 1rem 0;
       margin: var(--base-padding);
+    }
+
+    .playlist-card:nth-last-child(-n + 5) {
+      align-self: flex-start;
     }
   }
 }

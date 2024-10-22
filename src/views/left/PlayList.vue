@@ -1,7 +1,7 @@
 <template>
-  <div class="flex-row play-list-wrapper">
+  <div class="flex-row playlist-wrapper">
     <img class="playlist-cover" :src='playlist.cover' alt="cover"/>
-    <div class="play-list-info">
+    <div class="playlist-card">
       <span>喜欢</span>
       <span class="info">{{playlist.author}} · {{playlist.musicCount}}首歌曲</span>
     </div>
@@ -19,7 +19,7 @@ const playlist = reactive({
 </script>
 
 <style scoped>
-.play-list-wrapper {
+.playlist-wrapper {
   padding: .5rem;
   border-radius: .25rem;
   cursor: pointer;
@@ -37,7 +37,7 @@ const playlist = reactive({
   border-radius: .2rem;
 }
 
-.play-list-info {
+.playlist-card {
   padding: 0 .5rem;
 
   span {

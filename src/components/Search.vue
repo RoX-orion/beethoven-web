@@ -2,7 +2,7 @@
   <div class="search-wrapper">
     <div>
       <Loading v-if="searching"/>
-      <svg-icon v-else style="margin: auto; display: block; width: 2rem" size="1.5rem" name="search"/>
+      <svg-icon v-else style="margin: auto; display: block;" size="2rem" name="search"/>
     </div>
     <input
       class="search"
@@ -10,8 +10,8 @@
       v-model="search"
       @click="$emit('activeCallback')"
       @input="searchChange"/>
-    <div class="close" v-show="search.trim().length > 0">
-      <svg-icon size="100%" name="close"  @click="resetSearch"/>
+    <div class="close" v-show="search.trim().length >= 0">
+      <svg-icon size="1.25rem" name="close" @click="resetSearch"/>
     </div>
   </div>
 </template>
@@ -19,15 +19,19 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import Loading from "./Loading.vue";
+import SvgIcon from '@/components/SvgIcon.vue';
 
-const search = ref<string>("");
+let search = ref<string>("");
 const searching = ref(false);
 
 const searchChange = () => {
-  searching.value = true;
-  setTimeout(() => {
-    searching.value = false;
-  }, 1000);
+  search.value = search.value.trim();
+  if (!searching.value) {
+    searching.value = search.value.length > 0;
+    setTimeout(() => {
+      searching.value = false;
+    }, 2000);
+  }
 }
 
 const resetSearch = () => {
@@ -41,7 +45,7 @@ const resetSearch = () => {
   flex-direction: row;
   align-items: center;
   height: var(--header-item-size);
-
+  justify-content: space-between;
   border-radius: 2rem;
   padding: 5px 10px;
   outline: none;
@@ -64,13 +68,10 @@ const resetSearch = () => {
 }
 
 .close {
-  width: 1.5rem;
-  height: 1.5rem;
-  font-size: 16px;
+  width: 2rem;
   cursor: pointer;
-  align-items: center;
-  padding: 7px 10px;
   border-radius: 50%;
+  padding: .25rem;
 
   &:hover {
     background-color: rgba(0, 0, 0, .07);
