@@ -5,10 +5,20 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: () => import('@/views/Home.vue')
+      name: 'Home',
+      component: () => import('@/views/Home.vue'),
+    },
+    {
+      path: '/music-manage',
+      name: 'MusicManage',
+      component: () => import('@/views/manage/MusicManage.vue'),
+    },
+    {
+      path: '/bug-report',
+      name: 'BugReport',
+      component: () => import('@/views/bugReport/BugReport.vue')
     }
-  ]
+  ],
 })
 
-export default router
+export default router;

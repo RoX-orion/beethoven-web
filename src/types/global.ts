@@ -5,8 +5,23 @@ export interface PlayList {
 	musicCount: number;
 }
 
-export interface TypeProgress {
+export interface ProgressType {
 	width: string;
 	height: string;
 	radius: string;
+}
+
+export interface BugItemType {
+	img: string;
+	title: string;
+	summary: string;
+	date: Date;
+	platform?: string;
+	type: 'Bug' | 'Tip';
+	state: string;
+}
+
+export interface InputTextType {
+	placeholder?: string;
+	text: string
 }
