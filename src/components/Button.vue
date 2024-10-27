@@ -1,6 +1,5 @@
 <template>
   <button class="button-wrapper">
-
     <slot></slot>
   </button>
 </template>

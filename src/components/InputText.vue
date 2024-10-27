@@ -3,16 +3,19 @@
     <input
       class="input"
       :placeholder="props.placeholder"
-      @input="updateText"
-      />
+      @input="updateText"/>
+
 <!--    <label>11111</label>-->
   </div>
 </template>
 
 <script setup lang="ts">
-import type { InputTextType } from '@/types/global'
 
-const props: InputTextType = defineProps();
+const props = defineProps({
+  placeholder: {
+    type: String,
+  },
+});
 // props.text = '12121212';
 const emits = defineEmits(['change']);
 // emits('change', props.text)
@@ -22,8 +25,32 @@ const updateText = (event: any) => {
 </script>
 
 <style scoped lang="scss">
-.input {
-  outline: none;
-  height: 2rem;
+.input-text {
+  position: relative;
+
+  .input {
+    width: 100%;
+    outline: none;
+    height: 3rem;
+    padding: .25rem .5rem;
+    border: solid .1rem rgba(0, 0, 0, .1);
+    border-radius: .3rem;
+    background-color: inherit;
+  }
+
+  &::after {
+    --icon-size: .75rem;
+
+    content: '';
+    background-image: url('../assets/img/close.png');
+    background-size: var(--icon-size) var(--icon-size);
+    width: var(--icon-size);
+    height: var(--icon-size);
+    position: absolute;
+    top: 50%;
+    right: 5%;
+    cursor: pointer;
+    transform: translateY(-50%);
+  }
 }
 </style>

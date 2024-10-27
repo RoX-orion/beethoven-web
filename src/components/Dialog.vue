@@ -1,30 +1,52 @@
 <template>
-  <div class="dialog-wrapper" :style="{width: width}">
-    <div class="flex-row content-space-between">
-      <p style="font-weight: bold; font-size: 1.2rem">新建歌单</p>
+  <div class="dialog-wrapper" v-if="visible" @click="visible = false">
+    <div class="dialog" :style="{width: dialog.width}">
+      <div class="flex-row content-space-between">
+        <div style="font-weight: bold; font-size: 1.2rem; margin: auto 0">新建歌单</div>
 
-      <IconButton
-        icon-name="close"
-        icon-color="rgba(0, 0, 0, .5)"
-        size="1.2rem"/>
+        <IconButton
+          icon-name="close"
+          icon-color="rgba(0, 0, 0, .5)"
+          size="1.2rem"/>
+      </div>
+      <slot></slot>
     </div>
-    <slot></slot>
   </div>
 </template>
 
 <script setup lang="ts">
 import IconButton from '@/components/IconButton.vue';
+import { ref } from 'vue';
+
+let visible = ref(false);
 
 const dialog = defineProps({
   width: {
     type: String,
   },
+  // visible: {
+  //   type: Boolean,
+  //   required: true,
+  // },
+
 });
 </script>
 
 <style scoped lang="scss">
 .dialog-wrapper {
-  z-index: 5;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1024;
+  //width: 100vw;
+  //height: 100vh;
+  background-color: rgba(0, 0, 0, .5);
+}
+
+.dialog {
+  z-index: 1024;
   margin: auto;
   position: absolute;
   top: 20%;
@@ -32,7 +54,6 @@ const dialog = defineProps({
   transform: translateX(-50%);
   padding: 1rem;
   //width: 50vw;
-  //background-color: white;
   background: rgba(227, 238, 255, 1);
   border-radius: .5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, .04), 0 0 6px rgba(0, 0, 0, .04);
