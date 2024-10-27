@@ -4,9 +4,13 @@
     <span class="brand-text">Beethoven Music</span>
     <Search class="search-wrapper"/>
     <div class="flex-row header-right">
-      <div class="button-group">
-        <svg-icon class="button pointer" name="message" size="1.5rem"/>
-        <svg-icon class="button pointer" name="bug" size="1.5rem"/>
+      <div class="button-group flex-row">
+        <router-link to="/">
+          <svg-icon class="button pointer" name="message" size="1.5rem" color="rgba(0, 0, 0, .5)"/>
+        </router-link>
+        <router-link to="/bug-report">
+          <svg-icon class="button pointer" name="bug" size="1.5rem"/>
+        </router-link>
       </div>
       <Account/>
     </div>
@@ -54,7 +58,6 @@ import SvgIcon from '@/components/SvgIcon.vue';
       .button {
         display: inline-block;
         margin: 0 .5rem;
-        //color: rgba(128, 128, 128, 1);
       }
     }
   }

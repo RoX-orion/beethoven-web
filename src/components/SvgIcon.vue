@@ -1,5 +1,5 @@
 <template>
-  <svg aria-hidden="true" class="svg-icon" :width="size" :height="size">
+  <svg aria-hidden="true" style="display: block" :width="size" :height="size">
     <use :xlink:href="symbolId" :fill="color"/>
   </svg>
 </template>
@@ -21,7 +21,7 @@ const props = defineProps({
   },
   size: {
     type: String,
-    // default: '1rem',
+    default: '1.2rem',
   },
 });
 

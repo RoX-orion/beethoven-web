@@ -11,10 +11,10 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import type { TypeProgress } from '@/types/global';
+import type { ProgressType } from '@/types/global';
 
 const props = defineProps<{
-  data: TypeProgress;
+  data: ProgressType;
 }>();
 const progressCanvas = ref<HTMLCanvasElement | null>(null);
 

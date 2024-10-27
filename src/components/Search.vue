@@ -2,7 +2,7 @@
   <div class="search-wrapper">
     <div>
       <Loading v-if="searching"/>
-      <svg-icon v-else style="margin: auto; display: block;" size="2rem" name="search"/>
+      <svg-icon v-else size="1.5rem" name="search" color="rgba(0, 0, 0, .5)"/>
     </div>
     <input
       class="search"
@@ -10,9 +10,10 @@
       v-model="search"
       @click="$emit('activeCallback')"
       @input="searchChange"/>
-    <div class="close" v-show="search.trim().length >= 0">
-      <svg-icon size="1.25rem" name="close" @click="resetSearch"/>
-    </div>
+    <IconButton
+      icon-name="close"
+      v-show="search.trim().length > 0"
+      @click="resetSearch"/>
   </div>
 </template>
 
@@ -20,6 +21,7 @@
 import { ref } from "vue";
 import Loading from "./Loading.vue";
 import SvgIcon from '@/components/SvgIcon.vue';
+import IconButton from '@/components/IconButton.vue';
 
 let search = ref<string>("");
 const searching = ref(false);
@@ -65,16 +67,5 @@ const resetSearch = () => {
   padding: 0 10px;
   background-color: inherit;
   //box-shadow: 0 0 .625rem 0 var(--color-default-shadow);
-}
-
-.close {
-  width: 2rem;
-  cursor: pointer;
-  border-radius: 50%;
-  padding: .25rem;
-
-  &:hover {
-    background-color: rgba(0, 0, 0, .07);
-  }
 }
 </style>

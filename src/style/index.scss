@@ -8,6 +8,42 @@
   flex-direction: column;
 }
 
+.content-center {
+  justify-content: center;
+}
+
+.content-space-between {
+  justify-content: space-between;
+}
+
 .pointer {
   cursor: pointer;
+}
+
+.custom-scroll,
+.custom-scroll-x {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.3s ease;
+
+  -webkit-overflow-scrolling: touch;
+  // Fix scroll lock on iOS
+  pointer-events: auto;
+
+  &::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 0.375rem;
+    // `box-shadow` prevents repaint on macOS when hovering out of scrollable container
+    box-shadow: 0 0 1px rgba(255, 255, 255, 0.01);
+  }
+
+  &:hover,
+  &:focus,
+  &:focus-within {
+    scrollbar-color: var(--color-scrollbar) transparent;
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--color-scrollbar);
+    }
+  }
 }

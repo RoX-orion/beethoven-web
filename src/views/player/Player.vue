@@ -10,7 +10,7 @@
     </div>
     <PlayerControls class="player-controls"/>
     <Panel/>
-    <audio ref="audioPlayer" controls></audio>
+    <audio class="player" ref="audioPlayer" controls></audio>
   </div>
 <!--  <audio autoplay>-->
 <!--    <source src="http://sl3btfsle.hb-bkt.clouddn.com/rain.mp3">-->
@@ -109,6 +109,10 @@ onMounted(() => {
 
   .player-controls {
     max-width: 50vw;
+  }
+
+  .player {
+    display: none;
   }
 }
 </style>

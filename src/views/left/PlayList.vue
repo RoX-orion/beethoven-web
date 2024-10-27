@@ -12,7 +12,7 @@
 import { reactive } from 'vue';
 
 const playlist = reactive({
-  cover: 'http://sl3btfsle.hb-bkt.clouddn.com/cover/cover.png',
+  cover: '../../src/assets/img/like.png',
   author: 'Andre Lina',
   musicCount: 10
 })

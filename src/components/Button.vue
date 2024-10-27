@@ -1,5 +1,8 @@
 <template>
-  <button class="button-wrapper"></button>
+  <button class="button-wrapper">
+
+    <slot></slot>
+  </button>
 </template>
 
 <script setup lang="ts">
@@ -16,7 +19,7 @@
   height: 3.5rem;
   border: 0;
   border-radius: 0.75rem;
-  //background-color: transparent;
+  background-color: transparent;
   background-size: cover;
   padding: 0.625rem;
   color: white;

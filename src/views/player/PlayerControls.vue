@@ -17,14 +17,14 @@
 import SvgIcon from '@/components/SvgIcon.vue';
 import Progress from '@/components/Progress.vue';
 import { reactive, ref } from 'vue';
-import type { TypeProgress } from '@/types/global';
+import type { ProgressType } from '@/types/global';
 
 const ddd = ref();
 // setInterval(() => {
 //   console.log(ddd.value);
 // }, 100);
 
-const progressData: TypeProgress = reactive({
+const progressData: ProgressType = reactive({
   width: '100%',
   height: '5px',
   radius: '0.156rem'

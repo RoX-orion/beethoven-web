@@ -13,15 +13,14 @@
 </template>
 
 <script setup lang="ts">
-import Button from "@/components/Button.vue";
 import SvgIcon from '@/components/SvgIcon.vue';
 import Progress from '@/components/Progress.vue';
 import { useSettingStore } from '@/store/global';
 import { storeToRefs } from 'pinia';
-import type { TypeProgress } from '@/types/global';
+import type { ProgressType } from '@/types/global';
 import { reactive } from 'vue';
 
-const progressData: TypeProgress = reactive({
+const progressData: ProgressType = reactive({
   width: '10rem',
   height: '5px',
   radius: '0.156rem'
