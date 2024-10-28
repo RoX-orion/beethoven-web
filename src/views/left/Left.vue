@@ -6,7 +6,7 @@
       </div>
       <IconButton icon-name="add" icon-color="rgba(0, 0, 0, .5)" @click="addPlaylistDialogVisible = !addPlaylistDialogVisible"/>
     </div>
-    <PlayList v-for="() in 15"/>
+    <PlayList v-for="(playlist) in playlistList" :playlist="playlist"/>
   </div>
 
   <Dialog v-model="addPlaylistDialogVisible" width="30rem">
@@ -15,25 +15,52 @@
         <img src="../../assets/img/playlistCover.png" alt="cover"/>
       </div>
       <div class="playlist-info">
-        <InputText placeholder="歌单名"/>
-        <InputText placeholder="简介(可选)"/>
+        <InputText class="input-text" placeholder="歌单名" v-model="playlistInfo.title"/>
+        <InputText class="input-text" placeholder="简介(可选)" v-model="playlistInfo.introduction"/>
       </div>
-
     </div>
-    <Button/>
+    <Button @click="addPlaylistFun">
+      FINISH
+    </Button>
   </Dialog>
 </template>
 
 <script setup lang="ts">
 import PlayList from './PlayList.vue';
 import Dialog from '@/components/Dialog.vue';
-import { ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import IconButton from '@/components/IconButton.vue';
 import InputText from '@/components/InputText.vue';
 import Button from '@/components/Button.vue';
+import type { PlaylistInfo } from '@/types/global';
+import { addPlaylist, getPlaylist } from '@/api/playlist';
+import { Page } from '@/api/params/query';
 
 let addPlaylistDialogVisible = ref(false);
+let playlistList = ref([]);
+const playlistInfo: PlaylistInfo = reactive({title: ''});
 
+onMounted(async () => {
+  let page = new Page(1, 10);
+  await getPlaylist(page).then(response => {
+    const {data} = response;
+    playlistList = data;
+  });
+});
+
+const addPlaylistFun = async () => {
+  await addPlaylist(playlistInfo).then(() => {
+    addPlaylistDialogVisible.value = false;
+    Object.assign(playlistInfo, {title: ''});
+  });
+}
+// let visible = ref(true);
+// watch(
+//   addPlaylistDialogVisible,
+//   async () => {
+//     console.log(addPlaylistDialogVisible);
+//   }
+// )
 </script>
 
 <style lang="scss" scoped>
@@ -54,23 +81,28 @@ let addPlaylistDialogVisible = ref(false);
 }
 
 .playlist-dialog {
-  --padding: 1rem;
+  --gap: 1rem;
 
   margin: auto;
 
   .cover {
-    padding: var(--padding);
+    padding: var(--gap);
     border-radius: .25rem;
 
     img {
-      width: 4rem;
-      height: 4rem;
+      width: 5rem;
+      height: 5rem;
+      //margin: auto;
     }
   }
 
   .playlist-info {
     flex-grow: 1;
-    padding: var(--padding);
+    padding: var(--gap);
+
+    .input-text {
+      margin: .75rem 0;
+    }
   }
 }
 </style>

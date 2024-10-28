@@ -9,13 +9,22 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue';
 
-const playlist = reactive({
-  cover: '../../src/assets/img/like.png',
-  author: 'Andre Lina',
-  musicCount: 10
-})
+const playlist = defineProps({
+  cover: {
+    type: String,
+    default: '../../src/assets/img/like.png',
+  },
+  author: {
+    type: String,
+    require: true,
+  },
+  musicCount: {
+    type: Number,
+    require: true,
+  },
+});
+console.log(playlist);
 </script>
 
 <style scoped>

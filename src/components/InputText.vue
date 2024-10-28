@@ -2,14 +2,16 @@
   <div class="input-text">
     <input
       class="input"
+      v-model="text"
       :placeholder="props.placeholder"
       @input="updateText"/>
-
 <!--    <label>11111</label>-->
   </div>
 </template>
 
 <script setup lang="ts">
+
+const text = defineModel({});
 
 const props = defineProps({
   placeholder: {

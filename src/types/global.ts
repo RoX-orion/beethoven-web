@@ -25,3 +25,8 @@ export interface InputTextType {
 	placeholder?: string;
 	text: string
 }
+
+export interface PlaylistInfo {
+	title: string,
+	introduction?: string
+}

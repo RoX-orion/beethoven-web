@@ -18,10 +18,11 @@
   height: 3.5rem;
   border: 0;
   border-radius: 0.75rem;
-  background-color: transparent;
+  //background-color: transparent;
+  background-color: #409eff;
   background-size: cover;
   padding: 0.625rem;
-  color: white;
+  color: blue;
   line-height: 1.2;
   cursor: pointer;
   flex-shrink: 0;

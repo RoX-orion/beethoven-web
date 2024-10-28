@@ -12,9 +12,9 @@
 <!--    </div>-->
 
     <div class="music-info">
-      <InputText :placeholder="111" :text="data.a" @change="change"/>
-      <InputText/>
-      <InputText/>
+      <InputText placeholder="请输入歌曲名" :text="data.a"/>
+      <InputText placeholder="请输入歌手名"/>
+      <InputText placeholder="请输入专辑名(可选)"/>
     </div>
   </div>
 </template>
@@ -25,10 +25,6 @@ import SvgIcon from '@/components/SvgIcon.vue';
 import { reactive } from 'vue';
 
 const data = reactive({a:'777777777'});
-
-const change = () => {
-  console.log(data.a);
-}
 </script>
 
 <style scoped lang="scss">

@@ -1,5 +1,5 @@
 <template>
-  <div class="dialog-wrapper" v-if="visible" @click="visible = false">
+  <div class="dialog-wrapper" v-if="visible" @click.self="visible = false">
     <div class="dialog" :style="{width: dialog.width}">
       <div class="flex-row content-space-between">
         <div style="font-weight: bold; font-size: 1.2rem; margin: auto 0">新建歌单</div>
@@ -7,7 +7,7 @@
         <IconButton
           icon-name="close"
           icon-color="rgba(0, 0, 0, .5)"
-          size="1.2rem"/>
+          size="1.2rem" @click="visible = false"/>
       </div>
       <slot></slot>
     </div>
@@ -16,19 +16,15 @@
 
 <script setup lang="ts">
 import IconButton from '@/components/IconButton.vue';
-import { ref } from 'vue';
-
-let visible = ref(false);
 
 const dialog = defineProps({
   width: {
     type: String,
   },
-  // visible: {
-  //   type: Boolean,
-  //   required: true,
-  // },
+});
 
+let visible = defineModel({
+  required: true,
 });
 </script>
 
@@ -40,8 +36,6 @@ const dialog = defineProps({
   left: 0;
   right: 0;
   z-index: 1024;
-  //width: 100vw;
-  //height: 100vh;
   background-color: rgba(0, 0, 0, .5);
 }
 
