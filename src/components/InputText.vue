@@ -11,7 +11,10 @@
 
 <script setup lang="ts">
 
-const text = defineModel({});
+const text = defineModel({
+  type: String,
+  required: true
+});
 
 const props = defineProps({
   placeholder: {

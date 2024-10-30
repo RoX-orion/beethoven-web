@@ -2,7 +2,7 @@
   <div class="flex-col controls-wrapper">
     <div class="button-group flex-row">
       <svg-icon class="button" name="prev" size="1.5rem"/>
-      <svg-icon class="button" name="play" size="1.5rem"/>
+      <svg-icon class="button" name="play" size="1.5rem" @click="playOrPause"/>
       <svg-icon class="button" name="next" size="1.35rem"/>
     </div>
     <div class="flex-row progress">
@@ -19,10 +19,15 @@ import Progress from '@/components/Progress.vue';
 import { reactive, ref } from 'vue';
 import type { ProgressType } from '@/types/global';
 
-const ddd = ref();
-// setInterval(() => {
-//   console.log(ddd.value);
-// }, 100);
+const play = ref(false);
+// const props = defineProps<{
+//   buttons: ControlButton;
+// }>();
+let emits = defineEmits(['update']);
+const playOrPause = () => {
+  play.value = !play.value;
+  emits('update', 'play', !play.value);
+}
 
 const progressData: ProgressType = reactive({
   width: '100%',

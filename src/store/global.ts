@@ -29,3 +29,17 @@ export const useSettingStore = defineStore('setting', () => {
 		updatePlayer
 	}
 });
+
+interface ComponentState {
+	searchResult: boolean;
+}
+
+export const useComponentStateStore = defineStore('componentState', () => {
+	const componentState = reactive<ComponentState>({
+		searchResult: false,
+	});
+
+	return {
+		componentState,
+	}
+});

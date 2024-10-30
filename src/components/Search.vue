@@ -7,9 +7,7 @@
     <input
       class="search"
       placeholder="Search"
-      v-model="search"
-      @click="$emit('activeCallback')"
-      @input="searchChange"/>
+      v-model="search"/>
     <IconButton
       icon-name="close"
       v-show="search.trim().length > 0"
@@ -18,23 +16,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import Loading from "./Loading.vue";
 import SvgIcon from '@/components/SvgIcon.vue';
 import IconButton from '@/components/IconButton.vue';
 
-let search = ref<string>("");
-const searching = ref(false);
+let search = defineModel({
+  type: String,
+  required: true
+});
 
-const searchChange = () => {
-  search.value = search.value.trim();
-  if (!searching.value) {
-    searching.value = search.value.length > 0;
-    setTimeout(() => {
-      searching.value = false;
-    }, 2000);
-  }
-}
+const searching = defineModel('searching', {
+  required: true,
+  default: false
+});
+
+
+// const searchChange = () => {
+//   search.value = search.value.trim();
+//   if (!searching.value) {
+//     searching.value = search.value.length > 0;
+//     console.log(search.value);
+//     // setTimeout(() => {
+//     //   searching.value = false;
+//     // }, 2000);
+//   }
+// }
 
 const resetSearch = () => {
   search.value = '';

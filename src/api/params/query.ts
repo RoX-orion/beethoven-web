@@ -7,3 +7,12 @@ export class Page {
 		this.size = size;
 	}
 }
+
+export class SearchMusicParam extends Page {
+	key: string;
+
+	constructor(page: Number, size: Number, key: string) {
+		super(page, size);
+		this.key = key;
+	}
+}

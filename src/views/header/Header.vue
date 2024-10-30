@@ -2,7 +2,7 @@
   <div class="flex-row header-wrapper">
     <img class="brand" src="../../assets/brand.png" alt="brand">
     <span class="brand-text">Beethoven Music</span>
-    <Search class="search-wrapper"/>
+    <Search class="search-wrapper" v-model:searching="searching" v-model="key"/>
     <div class="flex-row header-right">
       <div class="button-group flex-row">
         <router-link to="/">
@@ -21,6 +21,39 @@
 import Search from "@/components/Search.vue";
 import Account from './Account.vue';
 import SvgIcon from '@/components/SvgIcon.vue';
+import { ref, watch } from 'vue';
+import { searchMusic } from '@/api/music';
+import { SearchMusicParam } from '@/api/params/query';
+import eventBus from '@/util/eventBus';
+import { useComponentStateStore } from '@/store/global';
+import { storeToRefs } from 'pinia';
+
+const key = ref('');
+const searching = ref(false);
+const searchMusicFun = async () => {
+  console.log(11111);
+};
+
+const componentStateStore = useComponentStateStore();
+const { componentState } = storeToRefs(componentStateStore);
+function pause(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+watch(key,  async (newValue, oldValue) => {
+  if (newValue.trim().length > 0 && oldValue.trim() !== newValue.trim()) {
+    searching.value = true;
+    let param = new SearchMusicParam(1, 10, newValue);
+    await searchMusic(param).then(async response => {
+      componentState.value.searchResult = true;
+      await pause(50);
+      eventBus.emit('getSearchMusicResult', response.data);
+    }).finally(() => {
+      searching.value = false;
+    });
+  } else if (newValue.trim().length === 0) {
+    componentState.value.searchResult = false;
+  }
+});
 </script>
 
 <style lang="scss" scoped>

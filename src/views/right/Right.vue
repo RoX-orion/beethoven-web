@@ -1,13 +1,21 @@
 <template>
   <div class="right-wrapper custom-scroll">
     <TagGroup/>
-    <PlayListGroup/>
+    <SearchResult v-if="componentState.searchResult"/>
+    <PlayListGroup v-else/>
   </div>
 </template>
 
 <script setup lang="ts">
 import TagGroup from './TagGroup.vue';
 import PlayListGroup from './PlayListGroup.vue';
+import { useComponentStateStore } from '@/store/global';
+import { storeToRefs } from 'pinia';
+import SearchResult from './SearchResult.vue';
+
+const componentStateStore = useComponentStateStore();
+const { componentState } = storeToRefs(componentStateStore);
+
 </script>
 
 <style scoped lang="scss">
