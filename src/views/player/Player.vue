@@ -5,7 +5,7 @@
       <img class="cover" src="http://sl3btfsle.hb-bkt.clouddn.com/cover/cover.png" alt="cover" />
       <div class="music-info">
         <span>天空之城</span>
-        <span class="singer">李志</span>
+        <span class="info-font">李志</span>
       </div>
     </div>
     <PlayerControls class="player-controls" @update="updateState" />
@@ -106,11 +106,6 @@ onMounted( async () => {
     span {
       display: block;
       line-height: 1.5rem;
-    }
-
-    .singer {
-      font-size: var(--info-font-size);
-      color: gray;
     }
   }
 

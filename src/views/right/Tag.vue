@@ -10,8 +10,8 @@
 
 <style scoped lang="scss">
 .tag {
-  width: 4.187rem;
-  height: 2.625rem;
+  width: 4rem;
+  height: 2.3rem;
   border-radius: .5rem;
   background: white;
   position: relative;

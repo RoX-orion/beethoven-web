@@ -31,13 +31,6 @@ export interface PlaylistInfo {
 	introduction?: string
 }
 
-export interface MusicItemType {
-	cover?: string;
-	name: string;
-	singer?: string;
-	duration: number;
-}
-
 export interface ControlButton {
 	button?: string;
 }

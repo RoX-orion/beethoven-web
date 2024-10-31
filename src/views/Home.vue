@@ -19,6 +19,7 @@ import Player from './player/Player.vue';
 .left-right {
   justify-content: space-between;
   height: 80vh;
+  margin: 0 1rem;
 }
 .player {
   position: fixed;

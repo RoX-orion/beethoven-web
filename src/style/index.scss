@@ -20,6 +20,15 @@
   cursor: pointer;
 }
 
+.grey {
+  color: grey;
+}
+
+.info-font {
+  color: grey;
+  font-size: var(--info-font-size);
+}
+
 .custom-scroll,
 .custom-scroll-x {
   scrollbar-width: thin;

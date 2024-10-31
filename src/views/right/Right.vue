@@ -1,6 +1,7 @@
 <template>
   <div class="right-wrapper custom-scroll">
     <TagGroup/>
+    <RouterView/>
     <SearchResult v-if="componentState.searchResult"/>
     <PlayListGroup v-else/>
   </div>
@@ -24,6 +25,7 @@ const { componentState } = storeToRefs(componentStateStore);
   border-radius: .25rem;
   overflow: hidden;
   overflow-y: scroll;
-  //box-shadow: 0 2px 4px rgba(0, 0, 0, .04), 0 0 6px rgba(0, 0, 0, .04);
+  padding: var(--base-padding);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .04), 0 0 6px rgba(0, 0, 0, .04);
 }
 </style>

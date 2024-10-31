@@ -66,7 +66,7 @@ const addPlaylistFun = async () => {
 <style lang="scss" scoped>
 .left-wrapper {
   width: var(--left-width);
-  margin: 0 1rem;
+  margin-right: 1rem;
   padding: var(--base-padding);
   border-radius: .25rem;
   overflow: hidden;

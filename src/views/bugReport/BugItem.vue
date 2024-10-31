@@ -5,7 +5,7 @@
       <span class="title-wrapper" v-cloak>{{data.title}}</span>
       <div class="summary-wrapper" v-cloak>{{data.summary}}</div>
       <div class="info">
-        <span>{{formatTime(data.date, '{y}-{m}-{d}')}}</span>
+        <!--        <span>{{formatTime(data.date, '{y}-{m}-{d}')}}</span>-->
 <!--        <el-divider direction="vertical" />-->
         <span>{{data.type}}</span>
 <!--        <el-divider direction="vertical" />-->
@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { formatTime } from "@/util/time";
+// import { formatTime } from "@/util/time";
 import type { BugItemType } from '@/types/global';
 
 const props = defineProps<{
