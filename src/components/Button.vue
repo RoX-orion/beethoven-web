@@ -14,7 +14,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 3.5rem;
+  width: 100%;
   height: 3.5rem;
   border: 0;
   border-radius: 0.75rem;
@@ -22,7 +22,7 @@
   background-color: #409eff;
   background-size: cover;
   padding: 0.625rem;
-  color: blue;
+  color: white;
   line-height: 1.2;
   cursor: pointer;
   flex-shrink: 0;

@@ -1,20 +1,23 @@
 <template>
   <div class="manage-wrapper">
-    <div class="upload-wrapper">
-      <svg-icon class="upload-btn" name="annex" size="2rem" onclick="document.getElementById('fileUpload').click()"/>
-      <input class="upload" style="display: none" type="file" id="fileUpload"/>
+    <div class="flex-row content-center">
+      <div class="upload-wrapper">
+        <svg-icon class="pointer" name="annex" size="2rem" onclick="document.getElementById('fileUpload').click()"/>
+        <input class="upload" style="display: none" type="file" id="fileUpload" accept="audio/mpeg"/>
+      </div>
+      <div class="upload-wrapper">
+        <svg-icon class="pointer" name="annex" size="2rem" onclick="document.getElementById('fileUpload').click()"/>
+        <input class="upload" style="display: none" type="file" id="fileUpload"/>
+      </div>
     </div>
-
-<!--    <div class="file-upload-wrapper">-->
-<!--      <button class="file-upload-btn" onclick="document.getElementById('fileUpload').click()">选择文件</button>-->
-<!--      <input type="file" id="fileUpload" class="file-upload-input" onchange="updateFileName(this)">-->
-<!--      <p id="file-upload-filename" class="file-upload-text">未选择任何文件</p>-->
-<!--    </div>-->
-
     <div class="music-info">
-      <InputText placeholder="请输入歌曲名" :text="data.a"/>
-      <InputText placeholder="请输入歌手名"/>
-      <InputText placeholder="请输入专辑名(可选)"/>
+      <InputText class="input-text" placeholder="请输入歌曲名" v-model="data.name"/>
+      <InputText class="input-text" placeholder="请输入歌手名" v-model="data.singer"/>
+      <InputText class="input-text" placeholder="请输入专辑名(可选)" v-model="data.album"/>
+      <Button @click="uploadMusicFun">
+        <Loading color="white" v-if="uploading"/>
+        <label v-else>FINISH</label>
+      </Button>
     </div>
   </div>
 </template>
@@ -22,22 +25,34 @@
 <script setup lang="ts">
 import InputText from '@/components/InputText.vue';
 import SvgIcon from '@/components/SvgIcon.vue';
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
+import Button from '@/components/Button.vue';
+import Loading from '@/components/Loading.vue';
 
-const data = reactive({a:'777777777'});
+const data = reactive({
+  name: '',
+  singer: '',
+  album: undefined,
+});
+
+let uploading = ref(false);
+
+const uploadMusicFun = () => {
+  uploading.value = !uploading.value;
+}
 </script>
 
 <style scoped lang="scss">
 .manage-wrapper {
   max-width: 30rem;
-  margin: 1rem auto;
+  margin: 5rem auto;
   padding: 1rem;
   border-radius: .3rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, .04), 0 0 6px rgba(0, 0, 0, .04);
 
   .music-info {
-    * {
-      margin: .75rem 0;
+    .input-text {
+      margin: 1.25rem 0;
       width: 100%;
       height: 3rem;
     }
@@ -48,10 +63,6 @@ const data = reactive({a:'777777777'});
     align-items: center;
     justify-content: center;
     flex-direction: column;
-
-    .upload-btn {
-      cursor: pointer;
-    }
 
     .upload {
       display: none;

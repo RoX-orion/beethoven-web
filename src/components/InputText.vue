@@ -1,61 +1,80 @@
 <template>
-  <div class="input-text">
+  <div ref="inputText" class="input-text">
     <input
       class="input"
       v-model="text"
       :placeholder="props.placeholder"
       @input="updateText"/>
-<!--    <label>11111</label>-->
+    <!--    <label class="label info-font">{{props.placeholder}}</label>-->
+    <IconButton class="clear" icon-name="close" size=".65rem" @click="text = ''"/>
   </div>
 </template>
-
 <script setup lang="ts">
+import IconButton from '@/components/IconButton.vue';
+import { ref } from 'vue';
 
-const text = defineModel({
-  type: String,
-  required: true
-});
+const text = defineModel<string | undefined>();
+const inputText = ref<HTMLElement>();
 
 const props = defineProps({
   placeholder: {
     type: String,
   },
 });
-// props.text = '12121212';
+
 const emits = defineEmits(['change']);
 // emits('change', props.text)
 const updateText = (event: any) => {
   emits('change', event.target.value);
-}
+};
+// const focus = (event: any) => {
+//   inputText.value?.classList.add('touched');
+//   console.log(inputText.value?.classList);
+// }
 </script>
 
 <style scoped lang="scss">
+.touched {
+  label {
+    transform: scale(0.75) translate(-0.5rem, -2.25rem);
+    //color: var(--color-error) !important;
+    color: #e53935 !important;
+  }
+}
 .input-text {
   position: relative;
 
   .input {
     width: 100%;
     outline: none;
-    height: 3rem;
+    height: 3.2rem;
     padding: .25rem .5rem;
     border: solid .1rem rgba(0, 0, 0, .1);
     border-radius: .3rem;
     background-color: inherit;
   }
 
-  &::after {
-    --icon-size: .75rem;
+  .label {
+    position: absolute;
+    left: .75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: block;
+    color: var(--color-placeholders);
+    transition: transform .15s ease-out, color .15s ease-out;
+    pointer-events: none;
+    transform-origin: left center;
+    white-space: nowrap;
+  }
 
-    content: '';
-    background-image: url('../assets/img/close.png');
-    background-size: var(--icon-size) var(--icon-size);
-    width: var(--icon-size);
-    height: var(--icon-size);
+  .clear {
     position: absolute;
     top: 50%;
-    right: 5%;
+    right: 1%;
     cursor: pointer;
     transform: translateY(-50%);
   }
 }
+
+
 </style>

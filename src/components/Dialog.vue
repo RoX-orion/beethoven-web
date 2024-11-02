@@ -1,6 +1,6 @@
 <template>
   <div class="dialog-wrapper" v-if="visible" @click.self="visible = false">
-    <div class="dialog" :style="{width: dialog.width}">
+    <div class="dialog" :style="{width: width}">
       <div class="flex-row content-space-between">
         <div style="font-weight: bold; font-size: 1.2rem; margin: auto 0">新建歌单</div>
 

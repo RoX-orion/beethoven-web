@@ -19,9 +19,12 @@
         <InputText class="input-text" placeholder="简介(可选)" v-model="playlistInfo.introduction"/>
       </div>
     </div>
-    <Button @click="addPlaylistFun">
-      FINISH
-    </Button>
+    <div style="padding: 1rem">
+      <Button @click="addPlaylistFun">
+        FINISH
+      </Button>
+    </div>
+
   </Dialog>
 </template>
 
