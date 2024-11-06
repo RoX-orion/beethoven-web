@@ -5,8 +5,9 @@
       <svg-icon class="button pointer" name="queue" size="1.5rem"/>
     </div>
     <div class="flex-row sound-wrapper">
-      <svg-icon class="sound-button pointer" v-if="setting.player.isMute" name="mute" size="1.5rem" @click="changeMute"/>
-      <svg-icon class="sound-button pointer" v-else name="sound" size="1.5rem" @click="changeMute"/>
+      <svg-icon class="sound-button pointer" v-if="setting.player.isMute" name="volume-off" size="1.5rem"
+                @click="changeMute"/>
+      <svg-icon class="sound-button pointer" v-else name="volume-on" size="1.5rem" @click="changeMute"/>
       <Progress class="progress" :data="progressData"/>
     </div>
   </div>

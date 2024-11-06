@@ -17,7 +17,7 @@ const props = defineProps({
   },
   size: {
     type: String,
-    default: '1rem',
+    default: '1.5rem',
   },
 });
 </script>

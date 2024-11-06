@@ -4,7 +4,7 @@
       "ESNext",
       "DOM",
       "webworker",
-      "ES2019"
+      "ES2021"
     ],
     "target": "ESNext",
     "useDefineForClassFields": true,

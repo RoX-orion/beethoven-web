@@ -4,7 +4,8 @@
       <div style="font-size: 1.2rem; padding: .5rem; margin: auto 0">
         歌单
       </div>
-      <IconButton icon-name="add" icon-color="rgba(0, 0, 0, .5)" @click="addPlaylistDialogVisible = !addPlaylistDialogVisible"/>
+      <IconButton icon-name="add" icon-color="rgba(0, 0, 0, .5)" size="1.5rem"
+                  @click="addPlaylistDialogVisible = !addPlaylistDialogVisible"/>
     </div>
     <PlayList v-for="(playlist) in playlistList" :playlist="playlist"/>
   </div>

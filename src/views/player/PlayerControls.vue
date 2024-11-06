@@ -1,9 +1,12 @@
 <template>
   <div class="flex-col controls-wrapper">
     <div class="button-group flex-row">
-      <svg-icon class="button" name="prev" size="1.5rem"/>
-      <svg-icon class="button" name="play" size="1.5rem" @click="playOrPause"/>
-      <svg-icon class="button" name="next" size="1.35rem"/>
+      <IconButton icon-name="prev"/>
+      <IconButton icon-name="pause"/>
+      <IconButton icon-name="next"/>
+      <!--      <svg-icon class="button" name="prev" size="1.5rem"/>-->
+      <!--      <svg-icon class="button" name="play" size="1.5rem" @click="playOrPause"/>-->
+      <!--      <svg-icon class="button" name="next" size="1.35rem"/>-->
     </div>
     <div class="flex-row progress">
       <div class="time">2:17</div>
@@ -14,10 +17,10 @@
 </template>
 
 <script setup lang="ts">
-import SvgIcon from '@/components/SvgIcon.vue';
 import Progress from '@/components/Progress.vue';
 import { reactive, ref } from 'vue';
 import type { ProgressType } from '@/types/global';
+import IconButton from '@/components/IconButton.vue';
 
 const play = ref(false);
 // const props = defineProps<{
