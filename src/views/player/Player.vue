@@ -35,15 +35,15 @@ const updateState = (option: string, state: any) => {
   }
 };
 onMounted( async () => {
-  const response = await fetch('http://127.0.0.1:1313/test/file', {
-    method: 'post',
-    headers: {
-      'Range': `bytes=${0}-${1024 * 512}`
-    }
-  });
-  console.log(response.arrayBuffer());
-  // 在组件挂载后可以访问 audio 元素
-  console.log(audioPlayer.value); // 相当于 document.getElementById('audio-player')
+  // const response = await fetch('http://127.0.0.1:1313/test/file', {
+  //   method: 'post',
+  //   headers: {
+  //     'Range': `bytes=${0}-${1024 * 512}`
+  //   }
+  // });
+  // console.log('buffer', response.arrayBuffer().then(response => {
+  //   console.log(response);
+  // }));
 
   // 你可以直接操作这个 DOM 元素
   audioPlayer.value.src = URL.createObjectURL(mediaSource);

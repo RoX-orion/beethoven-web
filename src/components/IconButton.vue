@@ -24,7 +24,7 @@ const props = defineProps({
 
 <style scoped lang="scss">
 .svg-wrapper {
-  padding: .65rem;
+  padding: .5rem;
   cursor: pointer;
   border-radius: 50%;
 

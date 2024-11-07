@@ -6,7 +6,7 @@
       :placeholder="props.placeholder"
       @input="updateText"/>
     <!--    <label class="label info-font">{{props.placeholder}}</label>-->
-    <IconButton class="clear" icon-name="close" size=".65rem" @click="text = ''"/>
+    <IconButton class="clear" icon-name="close" size=".85rem" @click="text = ''" icon-color="rgba(0, 0, 0, .5)"/>
   </div>
 </template>
 <script setup lang="ts">

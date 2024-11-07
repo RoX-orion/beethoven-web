@@ -1,8 +1,8 @@
 <template>
   <div class="search-wrapper">
-    <div>
+    <div style="margin: auto; width: 2.5rem">
       <Loading v-if="searching"/>
-      <svg-icon v-else size="1.5rem" name="search" color="rgba(0, 0, 0, .5)"/>
+      <svg-icon v-else size="1.5rem" name="search" color="#1296db"/>
     </div>
     <input
       class="search"
@@ -10,6 +10,7 @@
       v-model="search"/>
     <IconButton
       icon-name="close"
+      icon-color="rgba(0, 0, 0, .5)"
       v-show="search.trim().length > 0"
       @click="resetSearch"/>
   </div>
@@ -29,18 +30,6 @@ const searching = defineModel('searching', {
   required: true,
   default: false
 });
-
-
-// const searchChange = () => {
-//   search.value = search.value.trim();
-//   if (!searching.value) {
-//     searching.value = search.value.length > 0;
-//     console.log(search.value);
-//     // setTimeout(() => {
-//     //   searching.value = false;
-//     // }, 2000);
-//   }
-// }
 
 const resetSearch = () => {
   search.value = '';
@@ -70,7 +59,6 @@ const resetSearch = () => {
   outline: none;
   border: none;
   font-size: 18px;
-  padding: 0 10px;
   background-color: inherit;
   //box-shadow: 0 0 .625rem 0 var(--color-default-shadow);
 }

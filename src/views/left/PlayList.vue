@@ -24,7 +24,6 @@ const playlist = defineProps({
     require: true,
   },
 });
-console.log(playlist);
 </script>
 
 <style scoped>
