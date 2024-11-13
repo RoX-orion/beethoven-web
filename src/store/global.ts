@@ -3,6 +3,7 @@ import { reactive } from 'vue';
 
 interface PlayerSetting {
 	isMute: boolean;
+	volume: number;
 	defaultSound: number;
 	defaultPlayMode: 'loop' | 'random';
 }
@@ -11,10 +12,21 @@ interface Setting {
 	player: PlayerSetting
 }
 
+interface ComponentState {
+	searchResult: boolean;
+}
+
+interface Account {
+	userId?: number;
+	username?: string;
+	avatar?: string;
+}
+
 export const useSettingStore = defineStore('setting', () => {
 	const setting = reactive<Setting>({
 		player: {
 			isMute: false,
+			volume: 10,
 			defaultSound: 10,
 			defaultPlayMode: 'loop',
 		}
@@ -30,9 +42,6 @@ export const useSettingStore = defineStore('setting', () => {
 	}
 });
 
-interface ComponentState {
-	searchResult: boolean;
-}
 
 export const useComponentStateStore = defineStore('componentState', () => {
 	const componentState = reactive<ComponentState>({
@@ -41,5 +50,16 @@ export const useComponentStateStore = defineStore('componentState', () => {
 
 	return {
 		componentState,
+	}
+});
+
+
+export const useAccountStore = defineStore('account', () => {
+	const account = reactive<Account>({
+		userId: 1,
+	});
+
+	return {
+		account,
 	}
 });

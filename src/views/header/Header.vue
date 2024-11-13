@@ -30,22 +30,16 @@ import { storeToRefs } from 'pinia';
 
 const key = ref('');
 const searching = ref(false);
-const searchMusicFun = async () => {
-  console.log(11111);
-};
 
 const componentStateStore = useComponentStateStore();
 const { componentState } = storeToRefs(componentStateStore);
-function pause(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+
 watch(key,  async (newValue, oldValue) => {
   if (newValue.trim().length > 0 && oldValue.trim() !== newValue.trim()) {
     searching.value = true;
     let param = new SearchMusicParam(1, 10, newValue);
     await searchMusic(param).then(async response => {
       componentState.value.searchResult = true;
-      await pause(50);
       eventBus.emit('getSearchMusicResult', response.data);
     }).finally(() => {
       searching.value = false;

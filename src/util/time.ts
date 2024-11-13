@@ -54,3 +54,7 @@ export function durationFormater(duration: number) {
 
   return hour + ":" + minute.toString().padStart(2, '0') + ":" + second.toString().padStart(2, '0');
 }
+
+export function pause(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
