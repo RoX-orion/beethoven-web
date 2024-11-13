@@ -2,7 +2,8 @@
   <div class="flex-col controls-wrapper">
     <div class="button-group flex-row">
       <IconButton icon-name="prev"/>
-      <IconButton icon-name="pause"/>
+      <IconButton v-if="play" icon-name="play" @click="playOrPause"/>
+      <IconButton v-else icon-name="pause" @click="playOrPause"/>
       <IconButton icon-name="next"/>
       <!--      <svg-icon class="button" name="prev" size="1.5rem"/>-->
       <!--      <svg-icon class="button" name="play" size="1.5rem" @click="playOrPause"/>-->
@@ -10,7 +11,7 @@
     </div>
     <div class="flex-row progress">
       <div class="time">2:17</div>
-      <Progress style="margin-top: 1rem" ref="ddd" :data="progressData"/>
+      <Progress style="margin-top: 1rem" :data="progressData"/>
       <div class="time">5:45</div>
     </div>
   </div>
@@ -29,7 +30,7 @@ const play = ref(false);
 let emits = defineEmits(['update']);
 const playOrPause = () => {
   play.value = !play.value;
-  emits('update', 'play', !play.value);
+  emits('update', 'play', play.value);
 }
 
 const progressData: ProgressType = reactive({

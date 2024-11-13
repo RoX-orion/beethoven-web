@@ -8,8 +8,10 @@
         <span class="info-font">李志</span>
       </div>
     </div>
-    <PlayerControls class="player-controls" @update="updateState" />
-    <Panel/>
+    <PlayerControls
+      class="player-controls"
+      @update="updateState"/>
+    <Panel @update="updateState"/>
     <audio class="player" ref="audioPlayer" controls></audio>
   </div>
 <!--  <audio autoplay>-->
@@ -27,11 +29,13 @@ import type { ControlButton } from '@/types/global';
 const audioPlayer = ref();
 const mediaSource = new MediaSource();
 const controlButton: ControlButton = reactive({});
-const updateState = (option: string, state: any) => {
-  if (option === 'play' && state) {
+const updateState = (eventName: string, state: any) => {
+  if (eventName === 'play' && state) {
     audioPlayer.value.play();
-  } else if (option === 'play' && !state) {
+  } else if (eventName === 'play' && !state) {
     audioPlayer.value.pause();
+  } else if (eventName === 'changeVolume') {
+    audioPlayer.value.volume = state;
   }
 };
 onMounted( async () => {
@@ -56,8 +60,8 @@ onMounted( async () => {
 
     // 模拟从服务器获取音频块数据
     const audioChunks = [
-      'http://sl3btfsle.hb-bkt.clouddn.com/music/dingxi.mp3',
-      // 'http://sl3btfsle.hb-bkt.clouddn.com/rain.mp3'
+      // 'http://sl3btfsle.hb-bkt.clouddn.com/music/dingxi.mp3',
+      'http://127.0.0.1:45678/test/file',
       // ...可以有更多的音频块
     ];
 
@@ -66,9 +70,9 @@ onMounted( async () => {
       const response = await fetch(chunkUrl, {
         method: 'get',
 
-        headers: {
-          'Range': `bytes=${0}-${1024 * 100}`
-        }
+        // headers: {
+        //   'Range': `bytes=${0}-${1024 * 100}`
+        // }
       });
       const chunkData = await response.arrayBuffer();
 
@@ -85,6 +89,10 @@ onMounted( async () => {
     mediaSource.endOfStream();
   });
 });
+
+const play = () => {
+  audioPlayer.value.play();
+}
 // 将 MediaSource 对象的 URL 绑定到 audio 元素
 
 </script>
