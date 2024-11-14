@@ -1,7 +1,7 @@
 <template>
   <canvas
     ref="progressCanvas"
-    class="progress"
+    class="progress pointer"
     style="display: block; margin: auto"
     :style="{
     width: data.width,
@@ -37,7 +37,6 @@ watch(percentage, (newVal) => {
   drawProgressBar(newVal);
 });
 onMounted(() => {
-  console.log('percentage', percentage);
   drawProgressBar(percentage.value);
 });
 

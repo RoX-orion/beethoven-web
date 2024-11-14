@@ -9,7 +9,7 @@
       <svg-icon class="sound-button pointer" v-else name="volume-on" size="1.5rem" @click="changeMute"/>
 
       <div style="position: relative;">
-        <div class="seek-line pointer" :style="{left: calcVolume}"></div>
+        <div class="seek-line pointer" :style="{left: volume + '%'}" @mousedown="saveVolume"></div>
         <div style="display: block; margin: auto">
           <Progress v-model="volume" :data="progressData" @mousedown="changeVolume"/>
         </div>
@@ -24,7 +24,8 @@ import Progress from '@/components/Progress.vue';
 import { useSettingStore } from '@/store/global';
 import { storeToRefs } from 'pinia';
 import type { ProgressType } from '@/types/global';
-import { computed, reactive, ref, watch } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
+import { initPlayerSetting } from '@/global/init';
 
 const progressData: ProgressType = reactive({
   width: '10rem',
@@ -33,17 +34,22 @@ const progressData: ProgressType = reactive({
 });
 
 let volume = ref(10);
-const calcVolume = computed(() => {
-  return volume.value + '%';
-});
 
 let emits = defineEmits(['update']);
 
 const settingStore = useSettingStore();
 const { setting } = storeToRefs(settingStore);
+
+onMounted(() => {
+  console.log('setting', setting);
+  if (!setting) {
+    initPlayerSetting();
+  } else {
+    volume.value = setting.value.player.volume;
+  }
+});
 // settingStore.updatePlayer
 const changeMute = () => {
-  console.log(volume.value > 0, setting.value.player.volume);
   if (volume.value === 0) {
     volume.value = setting.value.player.volume;
   } else {
@@ -55,17 +61,19 @@ const changeMute = () => {
   // console.log(setting.value.player.isMute);
 }
 
+const saveVolume = () => {
+  // volume
+}
+
 const changeVolume = (e: any) => {
-  const width1 = e.offsetX;
-  const width2 = e.target.getBoundingClientRect().width;
-  const vol = width1 / width2;
-  volume.value = Math.floor(vol * 100);
+  const offset = e.offsetX;
+  const total = e.target.getBoundingClientRect().width;
+  volume.value = Math.floor(offset / total * 100);
   setting.value.player.volume = volume.value;
-  console.log(volume.value);
 }
 
 watch(volume, (newVolume) => {
-  emits('update', 'changeVolume', newVolume);
+  emits('update', 'changeVolume', newVolume / 100);
 });
 </script>
 
@@ -84,15 +92,5 @@ watch(volume, (newVolume) => {
 .sound-wrapper {
   align-items: center;
   position: relative;
-
-  .seek-line {
-    width: .7rem;
-    height: .7rem;
-    background-color: rgba(51, 144, 236, 1);
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-  }
 }
 </style>

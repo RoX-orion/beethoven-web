@@ -56,3 +56,13 @@
     }
   }
 }
+
+.seek-line {
+  width: .7rem;
+  height: .7rem;
+  background-color: rgba(51, 144, 236, 1);
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}

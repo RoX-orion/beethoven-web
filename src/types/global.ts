@@ -37,3 +37,9 @@ export interface ControlButton {
 
 export type AnyToVoidFunction = (...args: any[]) => void;
 export type NoneToVoidFunction = () => void;
+
+export interface PlayerSetting {
+	isMute: boolean;
+	volume: number;
+	playMode: 'loop' | 'random';
+}

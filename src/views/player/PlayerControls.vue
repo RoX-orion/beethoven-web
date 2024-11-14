@@ -11,7 +11,10 @@
     </div>
     <div class="flex-row progress">
       <div class="time">2:17</div>
-      <Progress style="margin-top: 1rem" :data="progressData"/>
+      <div style="position: relative; width: 100%">
+        <div class="seek-line pointer" style="margin: auto"></div>
+        <Progress :data="progressData"/>
+      </div>
       <div class="time">5:45</div>
     </div>
   </div>
@@ -58,6 +61,8 @@ const progressData: ProgressType = reactive({
 }
 
 .progress {
+  position: relative;
+
   .time {
     line-height: 2rem;
     padding: 0 .5rem;
