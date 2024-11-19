@@ -10,9 +10,9 @@
       <!--      <svg-icon class="button" name="next" size="1.35rem"/>-->
     </div>
     <div class="flex-row progress">
-      <div class="time">2:17</div>
-      <div style="position: relative; width: 100%">
-        <div class="seek-line pointer" style="margin: auto"></div>
+      <div class="time">0:00</div>
+      <div style="width: 100%; position: relative; margin: auto">
+        <div class="seek-line pointer" style=""></div>
         <Progress :data="progressData"/>
       </div>
       <div class="time">5:45</div>

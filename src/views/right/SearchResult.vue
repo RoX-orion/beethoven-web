@@ -2,7 +2,7 @@
   <div>
     <div class="flex-row pointer music-wrapper" v-for="music in musicList" :key="music.cover">
       <img class="cover" :src="music.cover" alt="cover">
-      <div class="flex-row content-space-between" style="width: 100%; align-items: center">
+      <div class="flex-row content-space-between" style="width: 100%; align-items: center" @click="playMusic">
         <div>
           <p>{{ music.name }}</p>
           <p>{{ music.singer }}</p>
@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import eventBus from '@/util/eventBus';
-import { onBeforeUnmount, reactive, ref } from 'vue';
+import { onBeforeUnmount, ref } from 'vue';
 import { durationFormater } from '@/util/time';
 
 interface MusicItemType {
@@ -33,6 +33,10 @@ const getSearchMusicResult = (result: Array<MusicItemType>) => {
   result.forEach(e => e.cover = e.cover ? e.cover : defaultCover);
   musicList.value = result;
 };
+
+const playMusic = () => {
+
+}
 eventBus.on('getSearchMusicResult', getSearchMusicResult);
 
 onBeforeUnmount(() => {

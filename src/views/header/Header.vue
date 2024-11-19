@@ -27,6 +27,7 @@ import { SearchMusicParam } from '@/api/params/query';
 import eventBus from '@/util/eventBus';
 import { useComponentStateStore } from '@/store/global';
 import { storeToRefs } from 'pinia';
+import { pause } from '@/util/schedulers';
 
 const key = ref('');
 const searching = ref(false);
@@ -40,6 +41,7 @@ watch(key,  async (newValue, oldValue) => {
     let param = new SearchMusicParam(1, 10, newValue);
     await searchMusic(param).then(async response => {
       componentState.value.searchResult = true;
+      await pause(50);
       eventBus.emit('getSearchMusicResult', response.data);
     }).finally(() => {
       searching.value = false;

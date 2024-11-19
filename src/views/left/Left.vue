@@ -12,6 +12,7 @@
     </div>
     <PlayList
       v-for="(playlist) in playlistList"
+      :title="playlist.title"
       :musicCount="playlist.musicCount"
       :author="playlist.author"
       :key="playlist.id"/>
@@ -52,18 +53,22 @@ const playlistList = ref([]);
 const playlistInfo: PlaylistInfo = reactive({title: ''});
 
 onMounted(async () => {
-  let page = new Page(1, 10);
+  await getPlayListFun(1);
+});
+
+const getPlayListFun = async (pageNum: number) => {
+  let page = new Page(pageNum, 10);
   await getPlaylist(page).then(response => {
     const {data} = response;
     playlistList.value = data;
-    console.log(playlistList.value);
   });
-});
+}
 
 const addPlaylistFun = async () => {
   await addPlaylist(playlistInfo).then(() => {
     addPlaylistDialogVisible.value = false;
     Object.assign(playlistInfo, {title: ''});
+    getPlayListFun(1);
   });
 }
 </script>

@@ -2,7 +2,7 @@
   <div class="flex-row playlist-wrapper">
     <img class="playlist-cover" :src='playlist.cover' alt="cover"/>
     <div class="playlist-card">
-      <span>喜欢</span>
+      <span>{{ playlist.title }}</span>
       <span class="info">{{playlist.author}} · {{playlist.musicCount}}首歌曲</span>
     </div>
   </div>
@@ -11,6 +11,10 @@
 <script setup lang="ts">
 
 const playlist = defineProps({
+  title: {
+    type: String,
+    required: true,
+  },
   cover: {
     type: String,
     default: '../../src/assets/img/like.png',
