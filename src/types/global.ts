@@ -43,3 +43,10 @@ export interface PlayerSetting {
 	volume: number;
 	playMode: 'loop' | 'random';
 }
+
+export interface MusicItemType {
+	cover?: string;
+	name: string;
+	singer?: string;
+	duration: number;
+}

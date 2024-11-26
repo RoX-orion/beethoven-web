@@ -2,13 +2,14 @@
 <!--  <img src="" alt="cover">-->
   <div class="player-wrapper flex-row">
     <div class="flex-row pointer">
-      <img class="cover" src="http://sl3btfsle.hb-bkt.clouddn.com/cover/cover.png" alt="cover" />
+      <img class="cover" :src="music?.cover" alt="cover"/>
       <div class="music-info">
-        <span>天空之城</span>
-        <span class="info-font">李志</span>
+        <span>{{ music?.name }}</span>
+        <span class="info-font">{{ music?.singer }}</span>
       </div>
     </div>
     <PlayerControls
+      :duration="music?.duration"
       class="player-controls"
       @update="updateState"/>
     <Panel @update="updateState"/>
@@ -23,10 +24,12 @@
 import Panel from "./Panel.vue";
 import PlayerControls from '@/views/player/PlayerControls.vue';
 import { onMounted, reactive, ref } from 'vue';
-import type { ControlButton } from '@/types/global';
+import type { ControlButton, MusicItemType } from '@/types/global';
+import eventBus from '@/util/eventBus';
 
 // Step 1: 创建 MediaSource 并将其绑定到 audio 元素
 const audioPlayer = ref();
+const music = ref<MusicItemType>();
 const mediaSource = new MediaSource();
 const controlButton: ControlButton = reactive({});
 const updateState = (eventName: string, state: any) => {
@@ -59,9 +62,9 @@ onMounted( async () => {
     const sourceBuffer = mediaSource.addSourceBuffer(mimeType);
 
     // 模拟从服务器获取音频块数据
-    const audioChunks = [
+    const audioChunks: any = [
       // 'http://sl3btfsle.hb-bkt.clouddn.com/music/dingxi.mp3',
-      'http://127.0.0.1:45678/test/file',
+      // 'http://127.0.0.1:45678/test/file',
       // ...可以有更多的音频块
     ];
 
@@ -93,7 +96,11 @@ onMounted( async () => {
 const play = () => {
   audioPlayer.value.play();
 }
-// 将 MediaSource 对象的 URL 绑定到 audio 元素
+
+const playMusic = (musicInfo: MusicItemType) => {
+  music.value = musicInfo;
+}
+eventBus.on('playMusic', playMusic);
 
 </script>
 

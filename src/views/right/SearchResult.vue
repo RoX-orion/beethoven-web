@@ -1,15 +1,13 @@
 <template>
-  <div>
-    <div class="flex-row pointer music-wrapper" v-for="music in musicList" :key="music.cover">
-      <img class="cover" :src="music.cover" alt="cover">
-      <div class="flex-row content-space-between" style="width: 100%; align-items: center" @click="playMusic">
-        <div>
-          <p>{{ music.name }}</p>
-          <p>{{ music.singer }}</p>
-        </div>
-        <div>
-          <div class="info-font">{{ durationFormater(music.duration) }}</div>
-        </div>
+  <div class="flex-row pointer music-wrapper" v-for="music in musicList" :key="music.cover">
+    <img class="cover" :src="music.cover" alt="cover">
+    <div class="flex-row content-space-between" style="width: 100%; align-items: center" @click="playMusic(music)">
+      <div>
+        <p>{{ music.name }}</p>
+        <p>{{ music.singer }}</p>
+      </div>
+      <div>
+        <div class="info-font">{{ durationFormater(music.duration) }}</div>
       </div>
     </div>
   </div>
@@ -17,15 +15,9 @@
 
 <script setup lang="ts">
 import eventBus from '@/util/eventBus';
-import { onBeforeUnmount, ref } from 'vue';
+import { ref } from 'vue';
 import { durationFormater } from '@/util/time';
-
-interface MusicItemType {
-  cover?: string;
-  name: string;
-  singer?: string;
-  duration: number;
-}
+import type { MusicItemType } from '@/types/global';
 
 const musicList = ref<Array<MusicItemType>>([]);
 const defaultCover = '../../src/assets/img/playlistCover.png';
@@ -34,14 +26,14 @@ const getSearchMusicResult = (result: Array<MusicItemType>) => {
   musicList.value = result;
 };
 
-const playMusic = () => {
-
+const playMusic = (music: MusicItemType) => {
+  eventBus.emit('playMusic', music);
 }
 eventBus.on('getSearchMusicResult', getSearchMusicResult);
 
-onBeforeUnmount(() => {
-  eventBus.off('getSearchMusicResult', getSearchMusicResult);
-});
+// onBeforeUnmount(() => {
+//   eventBus.off('getSearchMusicResult', getSearchMusicResult);
+// });
 </script>
 
 <style scoped lang="scss">

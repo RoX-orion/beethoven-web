@@ -15,7 +15,7 @@
         <div class="seek-line pointer" style=""></div>
         <Progress :data="progressData"/>
       </div>
-      <div class="time">5:45</div>
+      <div class="time">{{ durationFormater(props.duration) }}</div>
     </div>
   </div>
 </template>
@@ -25,11 +25,14 @@ import Progress from '@/components/Progress.vue';
 import { reactive, ref } from 'vue';
 import type { ProgressType } from '@/types/global';
 import IconButton from '@/components/IconButton.vue';
+import { durationFormater } from '@/util/time';
 
 const play = ref(false);
-// const props = defineProps<{
-//   buttons: ControlButton;
-// }>();
+const props = defineProps({
+  duration: {
+    type: Number,
+  },
+});
 let emits = defineEmits(['update']);
 const playOrPause = () => {
   play.value = !play.value;
@@ -62,6 +65,7 @@ const progressData: ProgressType = reactive({
 
 .progress {
   position: relative;
+  //align-items: center;
 
   .time {
     line-height: 2rem;
