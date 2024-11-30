@@ -1,6 +1,6 @@
 <template>
   <div class="flex-row header-wrapper">
-    <img class="brand" src="../../assets/brand.png" alt="brand">
+    <img class="brand" src="../../assets/brand.png" alt="">
     <span class="brand-text">Beethoven Music</span>
     <Search class="search-wrapper" v-model:searching="searching" v-model="key"/>
     <div class="flex-row header-right">

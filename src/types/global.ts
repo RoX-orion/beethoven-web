@@ -45,8 +45,11 @@ export interface PlayerSetting {
 }
 
 export interface MusicItemType {
+	id: string;
+	link: string;
 	cover?: string;
 	name: string;
 	singer?: string;
 	duration: number;
+	mime: string;
 }

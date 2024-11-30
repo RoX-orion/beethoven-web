@@ -1,11 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import type { RouteRecordRaw } from 'vue-router';
-import Sidebar from '@/views/manage/Sidebar.vue';
+import Sidebar from '@/views/manage/Sidebar/Sidebar.vue';
 
 const routes: RouteRecordRaw[] = [
   {
-    path: '/',
+    path: '/:type?/:id?',
     name: 'Home',
+    props: true,
     component: () => import('@/views/Home.vue'),
   },
   {
@@ -34,7 +35,7 @@ export const manageRoutes: RouteRecordRaw[] = [
       },
       {
         path: 'storage',
-        component: () => import('@/views/manage/MusicManage.vue'),
+        component: () => import('@/views/manage/Storage.vue'),
         meta: { title: '存储管理' },
       },
     ],

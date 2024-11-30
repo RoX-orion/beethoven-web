@@ -2,7 +2,7 @@
   <div class="flex-row pointer music-wrapper" v-for="music in musicList" :key="music.cover">
     <img class="cover" :src="music.cover" alt="cover">
     <div class="flex-row content-space-between" style="width: 100%; align-items: center" @click="playMusic(music)">
-      <div>
+      <div class="music-info">
         <p>{{ music.name }}</p>
         <p>{{ music.singer }}</p>
       </div>
@@ -18,6 +18,7 @@ import eventBus from '@/util/eventBus';
 import { ref } from 'vue';
 import { durationFormater } from '@/util/time';
 import type { MusicItemType } from '@/types/global';
+import router from '@/router';
 
 const musicList = ref<Array<MusicItemType>>([]);
 const defaultCover = '../../src/assets/img/playlistCover.png';
@@ -27,13 +28,10 @@ const getSearchMusicResult = (result: Array<MusicItemType>) => {
 };
 
 const playMusic = (music: MusicItemType) => {
+  router.push({ path: '/music/' + music.id })
   eventBus.emit('playMusic', music);
 }
 eventBus.on('getSearchMusicResult', getSearchMusicResult);
-
-// onBeforeUnmount(() => {
-//   eventBus.off('getSearchMusicResult', getSearchMusicResult);
-// });
 </script>
 
 <style scoped lang="scss">
@@ -48,6 +46,11 @@ eventBus.on('getSearchMusicResult', getSearchMusicResult);
   .cover {
     width: 4rem;
     height: 4rem;
+    border-radius: .25rem;
+  }
+
+  .music-info {
+    margin: 0 .5rem;
   }
 }
 </style>

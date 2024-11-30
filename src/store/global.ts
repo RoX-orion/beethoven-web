@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 
 interface PlayerSetting {
 	isMute: boolean;
@@ -61,5 +61,15 @@ export const useAccountStore = defineStore('account', () => {
 
 	return {
 		account,
+	}
+});
+
+export const useRouteStore = defineStore('route', () => {
+	let type = ref<string | undefined>();
+	let id = ref<string | undefined>();
+
+	return {
+		type,
+		id,
 	}
 });

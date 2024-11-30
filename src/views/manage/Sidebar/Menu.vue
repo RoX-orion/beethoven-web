@@ -14,7 +14,8 @@ defineProps<{
 
 <style scoped lang="scss">
 .menu-item {
-  padding: 1rem;
+  padding: .75rem 1rem;
+  border-radius: .5rem;
 
   .title {
     color: white;

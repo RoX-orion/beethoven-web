@@ -6,7 +6,7 @@ import router from './router'
 
 import SvgIcon from "@/components/SvgIcon.vue"
 import 'virtual:svg-icons-register';
-import { initApp } from '@/global/init';
+import { initApp } from '@/lib/init';
 import pinia from '@/store/store';
 
 init();

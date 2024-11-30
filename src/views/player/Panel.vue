@@ -25,7 +25,7 @@ import { useSettingStore } from '@/store/global';
 import { storeToRefs } from 'pinia';
 import type { ProgressType } from '@/types/global';
 import { onMounted, reactive, ref, watch } from 'vue';
-import { initPlayerSetting } from '@/global/init';
+import { initPlayerSetting } from '@/lib/init';
 
 const progressData: ProgressType = reactive({
   width: '10rem',

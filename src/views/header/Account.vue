@@ -1,6 +1,6 @@
 <template>
   <div>
-    <img class="avatar" :src="account.avatar" alt="avatar" @click="changeTheme">
+    <img class="avatar" :src="account.avatar" @click="changeTheme" alt="">
   </div>
 </template>
 
@@ -18,7 +18,7 @@ let accountStore = useAccountStore();
 let {account} = storeToRefs(accountStore);
 const userId = accountStore.account.userId;
 onMounted(() => {
-  getAccountInfo(userId).then(response => {
+  getAccountInfo(userId as number).then(response => {
     Object.assign(account.value, response.data);
   });
 });

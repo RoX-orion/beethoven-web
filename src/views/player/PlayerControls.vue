@@ -15,7 +15,7 @@
         <div class="seek-line pointer" style=""></div>
         <Progress :data="progressData"/>
       </div>
-      <div class="time">{{ durationFormater(props.duration) }}</div>
+      <div class="time" v-if="props.duration">{{ durationFormater(props.duration) }}</div>
     </div>
   </div>
 </template>

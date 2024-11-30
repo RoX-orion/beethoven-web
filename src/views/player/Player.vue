@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import Panel from "./Panel.vue";
 import PlayerControls from '@/views/player/PlayerControls.vue';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import type { ControlButton, MusicItemType } from '@/types/global';
 import eventBus from '@/util/eventBus';
 
@@ -41,6 +41,41 @@ const updateState = (eventName: string, state: any) => {
     audioPlayer.value.volume = state;
   }
 };
+watch(music, (newValue) => {
+  fetchMusic(newValue as MusicItemType);
+}, {
+  deep: true,
+});
+
+const fetchMusic = (music: MusicItemType) => {
+  console.log(music);
+  audioPlayer.value.src = URL.createObjectURL(mediaSource);
+
+  mediaSource.addEventListener('sourceopen', async () => {
+    console.log(music.mime);
+    const sourceBuffer = mediaSource.addSourceBuffer(music.mime);
+
+    const audioChunks: string[] = [
+      music.link,
+    ];
+
+    for (const chunkUrl of audioChunks) {
+      const response = await fetch(chunkUrl, {
+        method: 'get',
+        // headers: {
+        //   'Range': `bytes=${0}-${1024 * 100}`
+        // }
+      });
+      const chunkData = await response.arrayBuffer();
+      sourceBuffer.appendBuffer(chunkData);
+      // 等待 sourceBuffer 处理完之前的片段后再加载下一个片段
+      await new Promise((resolve) => {
+        sourceBuffer.addEventListener('updateend', resolve, { once: true });
+      });
+    }
+    mediaSource.endOfStream();
+  });
+}
 onMounted( async () => {
   // const response = await fetch('http://127.0.0.1:1313/test/file', {
   //   method: 'post',
@@ -51,46 +86,6 @@ onMounted( async () => {
   // console.log('buffer', response.arrayBuffer().then(response => {
   //   console.log(response);
   // }));
-
-  // 你可以直接操作这个 DOM 元素
-  audioPlayer.value.src = URL.createObjectURL(mediaSource);
-
-  // Step 2: 当 MediaSource 准备好时，添加 SourceBuffer
-  mediaSource.addEventListener('sourceopen', async () => {
-    // Step 3: 创建 SourceBuffer 并设置 MIME 类型（例如音频的类型）
-    const mimeType = 'audio/mpeg'; // AAC 编码的 MP4 音频
-    const sourceBuffer = mediaSource.addSourceBuffer(mimeType);
-
-    // 模拟从服务器获取音频块数据
-    const audioChunks: any = [
-      // 'http://sl3btfsle.hb-bkt.clouddn.com/music/dingxi.mp3',
-      // 'http://127.0.0.1:45678/test/file',
-      // ...可以有更多的音频块
-    ];
-
-    for (const chunkUrl of audioChunks) {
-      // 使用 fetch 请求获取每个音频片段的数据
-      const response = await fetch(chunkUrl, {
-        method: 'get',
-
-        // headers: {
-        //   'Range': `bytes=${0}-${1024 * 100}`
-        // }
-      });
-      const chunkData = await response.arrayBuffer();
-
-      // Step 4: 向 SourceBuffer 中追加数据
-      sourceBuffer.appendBuffer(chunkData);
-
-      // 等待 sourceBuffer 处理完之前的片段后再加载下一个片段
-      await new Promise((resolve) => {
-        sourceBuffer.addEventListener('updateend', resolve, {once: true});
-      });
-    }
-
-    // Step 5: 所有片段加载完毕后关闭 MediaSource
-    mediaSource.endOfStream();
-  });
 });
 
 const play = () => {

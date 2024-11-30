@@ -13,6 +13,18 @@ import Header from './header/Header.vue';
 import Left from './left/Left.vue';
 import Right from './right/Right.vue'
 import Player from './player/Player.vue';
+import { onMounted } from 'vue';
+import { useRouteStore } from '@/store/global';
+
+const props = defineProps({
+  type: String,
+  id: String,
+});
+const routeStore = useRouteStore();
+onMounted(() => {
+  routeStore.id = props.id;
+  routeStore.type = props.type;
+})
 </script>
 
 <style lang="scss" scoped>
