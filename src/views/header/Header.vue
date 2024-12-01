@@ -27,7 +27,7 @@ import { SearchMusicParam } from '@/api/params/query';
 import eventBus from '@/util/eventBus';
 import { useComponentStateStore } from '@/store/global';
 import { storeToRefs } from 'pinia';
-import { pause } from '@/util/schedulers';
+import { debounce, pause } from '@/util/schedulers';
 
 const key = ref('');
 const searching = ref(false);
@@ -35,7 +35,7 @@ const searching = ref(false);
 const componentStateStore = useComponentStateStore();
 const { componentState } = storeToRefs(componentStateStore);
 
-watch(key,  async (newValue, oldValue) => {
+watch(key, debounce(async (newValue, oldValue) => {
   if (newValue.trim().length > 0 && oldValue.trim() !== newValue.trim()) {
     searching.value = true;
     let param = new SearchMusicParam(1, 10, newValue);
@@ -49,7 +49,7 @@ watch(key,  async (newValue, oldValue) => {
   } else if (newValue.trim().length === 0) {
     componentState.value.searchResult = false;
   }
-});
+}, 300, false));
 </script>
 
 <style lang="scss" scoped>
