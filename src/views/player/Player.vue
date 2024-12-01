@@ -1,5 +1,4 @@
 <template>
-<!--  <img src="" alt="cover">-->
   <div class="player-wrapper flex-row">
     <div class="flex-row pointer">
       <img class="cover" :src="music?.cover" alt="cover"/>
@@ -15,23 +14,20 @@
     <Panel @update="updateState"/>
     <audio class="player" ref="audioPlayer" controls></audio>
   </div>
-<!--  <audio autoplay>-->
-<!--    <source src="http://sl3btfsle.hb-bkt.clouddn.com/rain.mp3">-->
-<!--  </audio>-->
 </template>
 
 <script setup lang="ts">
 import Panel from "./Panel.vue";
 import PlayerControls from '@/views/player/PlayerControls.vue';
-import { onMounted, reactive, ref, watch } from 'vue';
-import type { ControlButton, MusicItemType } from '@/types/global';
+import { onMounted, ref } from 'vue';
+import type { MusicItemType } from '@/types/global';
 import eventBus from '@/util/eventBus';
+import { getMusicInfo } from '@/api/music';
+import { useRouteStore } from '@/store/global';
 
-// Step 1: 创建 MediaSource 并将其绑定到 audio 元素
 const audioPlayer = ref();
-const music = ref<MusicItemType>();
-const mediaSource = new MediaSource();
-const controlButton: ControlButton = reactive({});
+let music: MusicItemType;
+
 const updateState = (eventName: string, state: any) => {
   if (eventName === 'play' && state) {
     audioPlayer.value.play();
@@ -41,20 +37,17 @@ const updateState = (eventName: string, state: any) => {
     audioPlayer.value.volume = state;
   }
 };
-watch(music, (newValue) => {
-  fetchMusic(newValue as MusicItemType);
-}, {
-  deep: true,
-});
 
-const fetchMusic = (music: MusicItemType) => {
-  console.log(music);
+const playMusic = (musicInfo: MusicItemType) => {
+  if (music && musicInfo.id === music.id) {
+    return;
+  }
+  music = musicInfo;
+  let mediaSource = new MediaSource();
   audioPlayer.value.src = URL.createObjectURL(mediaSource);
 
   mediaSource.addEventListener('sourceopen', async () => {
-    console.log(music.mime);
     const sourceBuffer = mediaSource.addSourceBuffer(music.mime);
-
     const audioChunks: string[] = [
       music.link,
     ];
@@ -76,27 +69,17 @@ const fetchMusic = (music: MusicItemType) => {
     mediaSource.endOfStream();
   });
 }
-onMounted( async () => {
-  // const response = await fetch('http://127.0.0.1:1313/test/file', {
-  //   method: 'post',
-  //   headers: {
-  //     'Range': `bytes=${0}-${1024 * 512}`
-  //   }
-  // });
-  // console.log('buffer', response.arrayBuffer().then(response => {
-  //   console.log(response);
-  // }));
-});
-
-const play = () => {
-  audioPlayer.value.play();
-}
-
-const playMusic = (musicInfo: MusicItemType) => {
-  music.value = musicInfo;
-}
 eventBus.on('playMusic', playMusic);
-
+let routeStore = useRouteStore();
+onMounted(() => {
+  if (routeStore.type === 'music' && routeStore.id) {
+    getMusicInfo(routeStore.id).then(response => {
+      if (response.data) {
+        music = response.data;
+      }
+    });
+  }
+})
 </script>
 
 <style lang="scss" scoped>

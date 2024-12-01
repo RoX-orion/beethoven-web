@@ -4,7 +4,7 @@ import { SearchMusicParam } from '@/api/params/query';
 export function uploadMusic(data: FormData) {
 	return request({
 		method: 'post',
-		url: 'music/uploadMusic',
+		url: '/music/uploadMusic',
 		data,
 	})
 }
@@ -18,8 +18,15 @@ export function fetchMusic(url: string) {
 
 export async function searchMusic(param: SearchMusicParam) : Promise<any> {
 	return request({
-		url: 'music/searchMusic',
+		url: '/music/searchMusic',
 		method: 'get',
 		params: param,
 	});
+}
+
+export function getMusicInfo(id: string) {
+	return request({
+		url: `/music/info/${id}`,
+		method: 'get',
+	})
 }

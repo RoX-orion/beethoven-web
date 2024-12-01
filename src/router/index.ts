@@ -38,6 +38,11 @@ export const manageRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/manage/Storage.vue'),
         meta: { title: '存储管理' },
       },
+      {
+        path: 'system',
+        component: () => import('@/views/manage/System.vue'),
+        meta: { title: '系统设置' },
+      },
     ],
   },
   // {
