@@ -23,10 +23,11 @@ import { onMounted, ref } from 'vue';
 import type { MusicItemType } from '@/types/global';
 import eventBus from '@/util/eventBus';
 import { getMusicInfo } from '@/api/music';
-import { useRouteStore } from '@/store/global';
+import { useRoute } from 'vue-router';
 
 const audioPlayer = ref();
-let music: MusicItemType;
+const music = ref<MusicItemType>({});
+let firstPlay = true;
 
 const updateState = (eventName: string, state: any) => {
   if (eventName === 'play' && state) {
@@ -39,17 +40,17 @@ const updateState = (eventName: string, state: any) => {
 };
 
 const playMusic = (musicInfo: MusicItemType) => {
-  if (music && musicInfo.id === music.id) {
+  if (!musicInfo || (!firstPlay && music && musicInfo.id === music.value.id)) {
     return;
   }
-  music = musicInfo;
+  Object.assign(music.value, musicInfo);
   let mediaSource = new MediaSource();
   audioPlayer.value.src = URL.createObjectURL(mediaSource);
 
   mediaSource.addEventListener('sourceopen', async () => {
-    const sourceBuffer = mediaSource.addSourceBuffer(music.mime);
+    const sourceBuffer = mediaSource.addSourceBuffer(music.value.mime);
     const audioChunks: string[] = [
-      music.link,
+      music.value.link,
     ];
 
     for (const chunkUrl of audioChunks) {
@@ -70,16 +71,18 @@ const playMusic = (musicInfo: MusicItemType) => {
   });
 }
 eventBus.on('playMusic', playMusic);
-let routeStore = useRouteStore();
 onMounted(() => {
-  if (routeStore.type === 'music' && routeStore.id) {
-    getMusicInfo(routeStore.id).then(response => {
+  let route = useRoute();
+  const { id, type } = route.params;
+  if (type === 'music' && id) {
+    getMusicInfo(id).then(async response => {
       if (response.data) {
-        music = response.data;
+        playMusic(response.data);
+        firstPlay = false;
       }
     });
   }
-})
+});
 </script>
 
 <style lang="scss" scoped>
