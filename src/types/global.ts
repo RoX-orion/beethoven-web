@@ -9,6 +9,7 @@ export interface ProgressType {
 	width: string;
 	height: string;
 	radius: string;
+	percentage: number;
 }
 
 export interface BugItemType {

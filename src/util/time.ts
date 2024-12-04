@@ -41,8 +41,11 @@
 // }
 
 export function durationFormater(duration: number) {
+  if (duration === 0) {
+    return '0:00'
+  }
   if (duration < 60) {
-    return duration.toString();
+    return '0:' + duration.toString().padStart(2, '0');
   }
   let minute = Math.floor(duration / 60);
   let second = duration % 60;

@@ -1,14 +1,15 @@
 <template>
   <div class="player-wrapper flex-row">
     <div class="flex-row pointer">
-      <img class="cover" :src="music?.cover" alt="cover"/>
+      <img class="cover" :src="music.cover" alt="cover"/>
       <div class="music-info">
-        <span>{{ music?.name }}</span>
-        <span class="info-font">{{ music?.singer }}</span>
+        <span>{{ music.name }}</span>
+        <span class="info-font">{{ music.singer }}</span>
       </div>
     </div>
     <PlayerControls
-      :duration="music?.duration"
+      :duration="music.duration"
+      :current-time="currentTime"
       class="player-controls"
       @update="updateState"/>
     <Panel @update="updateState"/>
@@ -24,6 +25,8 @@ import type { MusicItemType } from '@/types/global';
 import eventBus from '@/util/eventBus';
 import { getMusicInfo } from '@/api/music';
 import { useRoute } from 'vue-router';
+import { throttle } from '@/util/schedulers';
+import { useSettingStore } from '@/store/global';
 
 const audioPlayer = ref();
 const music = ref<MusicItemType>({});
@@ -31,11 +34,15 @@ let firstPlay = true;
 
 const updateState = (eventName: string, state: any) => {
   if (eventName === 'play' && state) {
+    audioPlayer.value.currentTime = currentTime.value;
     audioPlayer.value.play();
   } else if (eventName === 'play' && !state) {
     audioPlayer.value.pause();
   } else if (eventName === 'changeVolume') {
     audioPlayer.value.volume = state;
+  } else if (eventName === 'changeCurrentTime') {
+    console.log('state', state);
+    audioPlayer.value.currentTime = state;
   }
 };
 
@@ -62,7 +69,6 @@ const playMusic = (musicInfo: MusicItemType) => {
       });
       const chunkData = await response.arrayBuffer();
       sourceBuffer.appendBuffer(chunkData);
-      // 等待 sourceBuffer 处理完之前的片段后再加载下一个片段
       await new Promise((resolve) => {
         sourceBuffer.addEventListener('updateend', resolve, { once: true });
       });
@@ -71,17 +77,26 @@ const playMusic = (musicInfo: MusicItemType) => {
   });
 }
 eventBus.on('playMusic', playMusic);
+
+let currentTime = ref<number>(0);
+const onTimeUpdate = throttle(() => {
+  currentTime.value = audioPlayer.value.currentTime;
+}, 200, false);
+
+const settingStore = useSettingStore();
 onMounted(() => {
+  audioPlayer.value.volume = settingStore.setting.player.volume / 100;
   let route = useRoute();
   const { id, type } = route.params;
   if (type === 'music' && id) {
-    getMusicInfo(id).then(async response => {
+    getMusicInfo(id as string).then(async response => {
       if (response.data) {
         playMusic(response.data);
         firstPlay = false;
       }
     });
   }
+  audioPlayer.value.addEventListener('timeupdate', onTimeUpdate);
 });
 </script>
 

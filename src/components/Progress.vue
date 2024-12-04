@@ -18,26 +18,26 @@ const props = defineProps<{
   data: ProgressType;
 }>();
 const progressCanvas = ref<HTMLCanvasElement | null>(null);
-let percentage = defineModel<number>({default: 10});
-// 绘制进度条的函数
+
 const drawProgressBar = (percentage: number) => {
   const canvas = progressCanvas.value;
   if (canvas) {
     const ctx = canvas.getContext('2d');
     if (ctx) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#e0e0e0'; // 背景色
+      ctx.fillStyle = '#e0e0e0';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(51, 144, 236, 1)'; // 进度条颜色
+      ctx.fillStyle = 'rgba(51, 144, 236, 1)';
       ctx.fillRect(0, 0, canvas.width * (percentage / 100), canvas.height);
     }
   }
 };
-watch(percentage, (newVal) => {
+watch(() => props.data.percentage, (newVal) => {
   drawProgressBar(newVal);
 });
 onMounted(() => {
-  drawProgressBar(percentage.value);
+  console.log('init', props.data.percentage);
+  drawProgressBar(props.data.percentage);
 });
 
 defineExpose({
@@ -46,7 +46,5 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
-.progress {
-  //line-height: 1rem;
-}
+
 </style>

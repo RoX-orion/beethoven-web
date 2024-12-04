@@ -5,15 +5,12 @@
       <IconButton v-if="play" icon-name="play" @click="playOrPause"/>
       <IconButton v-else icon-name="pause" @click="playOrPause"/>
       <IconButton icon-name="next"/>
-      <!--      <svg-icon class="button" name="prev" size="1.5rem"/>-->
-      <!--      <svg-icon class="button" name="play" size="1.5rem" @click="playOrPause"/>-->
-      <!--      <svg-icon class="button" name="next" size="1.35rem"/>-->
     </div>
     <div class="flex-row progress">
-      <div class="time">0:00</div>
+      <div class="time">{{ durationFormater(Math.floor(currentTime)) }}</div>
       <div style="width: 100%; position: relative; margin: auto">
-        <div class="seek-line pointer" style=""></div>
-        <Progress :data="progressData"/>
+        <Progress :data="progressData" @mousedown="changeCurrentTime"/>
+        <div class="seek-line pointer" :style="{left: calculateProgress + '%'}"></div>
       </div>
       <div class="time" v-if="props.duration">{{ durationFormater(props.duration) }}</div>
     </div>
@@ -22,7 +19,7 @@
 
 <script setup lang="ts">
 import Progress from '@/components/Progress.vue';
-import { reactive, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import type { ProgressType } from '@/types/global';
 import IconButton from '@/components/IconButton.vue';
 import { durationFormater } from '@/util/time';
@@ -31,8 +28,16 @@ const play = ref(false);
 const props = defineProps({
   duration: {
     type: Number,
+    required: true,
+    default: 0,
+  },
+  currentTime: {
+    type: Number,
+    required: true,
+    default: 0,
   },
 });
+
 let emits = defineEmits(['update']);
 const playOrPause = () => {
   play.value = !play.value;
@@ -42,8 +47,21 @@ const playOrPause = () => {
 const progressData: ProgressType = reactive({
   width: '100%',
   height: '5px',
-  radius: '0.156rem'
+  radius: '0.156rem',
+  percentage: 0,
 });
+
+const calculateProgress = computed(() => {
+  let current = Math.floor(props.currentTime / props.duration * 100);
+  progressData.percentage = current;
+  return current;
+});
+
+const changeCurrentTime = (e: any) => {
+  const offset = e.offsetX;
+  const total = e.target.getBoundingClientRect().width;
+  emits('update', 'changeCurrentTime', offset / total * props.duration);
+}
 </script>
 
 <style scoped lang="scss">
@@ -65,7 +83,6 @@ const progressData: ProgressType = reactive({
 
 .progress {
   position: relative;
-  //align-items: center;
 
   .time {
     line-height: 2rem;

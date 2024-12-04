@@ -9,10 +9,10 @@
       <svg-icon class="sound-button pointer" v-else name="volume-on" size="1.5rem" @click="changeMute"/>
 
       <div style="position: relative;">
-        <div class="seek-line pointer" :style="{left: volume + '%'}" @mousedown="saveVolume"></div>
         <div style="display: block; margin: auto">
           <Progress v-model="volume" :data="progressData" @mousedown="changeVolume"/>
         </div>
+        <div class="seek-line pointer" :style="{left: volume + '%'}" @mousedown="saveVolume"></div>
       </div>
     </div>
   </div>
@@ -31,6 +31,7 @@ const progressData: ProgressType = reactive({
   width: '10rem',
   height: '5px',
   radius: '0.556rem',
+  percentage: 10,
 });
 
 let volume = ref(10);
@@ -48,17 +49,14 @@ onMounted(() => {
     volume.value = setting.value.player.volume;
   }
 });
-// settingStore.updatePlayer
+
 const changeMute = () => {
   if (volume.value === 0) {
     volume.value = setting.value.player.volume;
   } else {
     setting.value.player.volume = volume.value;
-    console.log(setting.value.player.volume);
     volume.value = 0;
   }
-  // setting.value.player.isMute = !setting.value.player.isMute;
-  // console.log(setting.value.player.isMute);
 }
 
 const saveVolume = () => {
@@ -70,6 +68,7 @@ const changeVolume = (e: any) => {
   const total = e.target.getBoundingClientRect().width;
   volume.value = Math.floor(offset / total * 100);
   setting.value.player.volume = volume.value;
+  progressData.percentage = volume.value;
 }
 
 watch(volume, (newVolume) => {
