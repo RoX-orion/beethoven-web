@@ -13,5 +13,6 @@ import Sidebar from './Sidebar/Sidebar.vue';
 .right-container {
   margin-left: var(--sidebar-width);
   padding: .5rem;
+  overflow: hidden;
 }
 </style>

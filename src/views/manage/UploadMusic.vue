@@ -65,10 +65,9 @@ const uploadMusicFun = () => {
 <style scoped lang="scss">
 .manage-wrapper {
   max-width: 30rem;
-  margin: 5rem auto;
+  margin: 1rem auto;
   padding: 1rem;
   border-radius: .3rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, .04), 0 0 6px rgba(0, 0, 0, .04);
 
   .music-info {
     .input-text {

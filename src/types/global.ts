@@ -54,3 +54,8 @@ export interface MusicItemType {
 	duration: number;
 	mime: string;
 }
+
+export type DialogType = {
+	width?: string;
+	title: string;
+}
