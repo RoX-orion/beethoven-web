@@ -5,7 +5,9 @@ import vue from '@vitejs/plugin-vue'
 import {resolve} from "path";
 
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
-import vueDevTools from 'vite-plugin-vue-devtools'
+import vueDevTools from 'vite-plugin-vue-devtools';
+import Components from 'unplugin-vue-components/vite';
+import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -18,6 +20,13 @@ export default defineConfig({
       symbolId: 'icon-[name]',
     }),
     vueDevTools(),
+    Components({
+      resolvers: [
+        AntDesignVueResolver({
+          importStyle: false,
+        }),
+      ],
+    }),
   ],
   server: {
     host: '0.0.0.0',

@@ -30,3 +30,11 @@ export function getMusicInfo(id: string) {
 		method: 'get',
 	})
 }
+
+export function getManageMusicList(param: SearchMusicParam) {
+	return request({
+		url: '/music/manage/getManageMusicList',
+		method: 'get',
+		params: param,
+	});
+}

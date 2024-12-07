@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import type { RouteRecordRaw } from 'vue-router';
-import Sidebar from '@/views/manage/Sidebar/Sidebar.vue';
+import Layout from '@/views/manage/index.vue';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -20,7 +20,7 @@ export const manageRoutes: RouteRecordRaw[] = [
   {
     path: '/manage',
     name: 'Manage',
-    component: Sidebar,
+    component: Layout,
     redirect: '/manage/dashboard',
     children: [
       {

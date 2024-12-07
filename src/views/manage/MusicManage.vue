@@ -1,81 +1,72 @@
 <template>
-  <div class="manage-wrapper">
-    <div class="flex-row content-center">
-      <Upload v-model="musicList"/>
-      <Upload v-model="coverList"/>
-    </div>
-    <div class="music-info">
-      <InputText class="input-text" placeholder="请输入歌曲名" v-model="data.name"/>
-      <InputText class="input-text" placeholder="请输入歌手名" v-model="data.singer"/>
-      <InputText class="input-text" placeholder="请输入专辑名(可选)" v-model="data.album"/>
-      <Button @click="uploadMusicFun">
-        <Loading color="white" v-if="uploading"/>
-        <label v-else>FINISH</label>
-      </Button>
-    </div>
-  </div>
+  <!--  <div class="flex-row">-->
+  <!--    <div >-->
+
+  <!--    </div>-->
+  <!--  </div>-->
+  <a-tabs v-model:activeKey="activeKey">
+    <a-tab-pane key="musicList" tab="歌曲">
+      <div class="flex-row music content-space-between" v-for="music in musicList" :key="music.id">
+        <img :src="music.cover" alt="" class="cover"/>
+        <div>{{ music.name }}</div>
+        <div>{{ music.singer }}</div>
+        <div>{{ durationFormater(music.duration) }}</div>
+        <div>{{ sizeFormater(music.size) }}</div>
+        <div>{{ music.mime }}</div>
+        <div>{{ music.createTime }}</div>
+        <div>{{ music.updateTime }}</div>
+
+        <div class="flex-row">
+          <Button class="btn">编辑</Button>
+          <Button class="btn" style="background-color: #e53935">删除</Button>
+        </div>
+      </div>
+    </a-tab-pane>
+    <a-tab-pane key="uploadMusic" tab="歌单">Content of Tab Pane 2</a-tab-pane>
+    <a-tab-pane key="3" tab="Tab 3">Content of Tab Pane 3</a-tab-pane>
+  </a-tabs>
+
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
-import InputText from '@/components/InputText.vue';
+import { getManageMusicList } from '@/api/music';
+import { onMounted, ref } from 'vue';
+import { SearchMusicParam } from '@/api/params/query';
+import { durationFormater } from '@/util/time';
+import { sizeFormater } from '@/util/file';
 import Button from '@/components/Button.vue';
-import Loading from '@/components/Loading.vue';
-import Upload from '@/components/Upload.vue';
-import { uploadMusic } from '@/api/music';
 
-const data = reactive({
-  name: '',
-  singer: '',
-  album: '',
+onMounted(() => {
+  getManageMusicListFun();
 });
 
-const musicList = ref([]);
-const coverList = ref([]);
+const musicList = ref<any[]>();
+const activeKey = ref("musicList");
 
-let uploading = ref(false);
-
-const uploadMusicFun = () => {
-  console.log(musicList.value);
-  console.log(coverList.value);
-  if (musicList.value.length === 0) {
-    alert('Please select music!');
-    return;
-  }
-  if (coverList.value.length === 0) {
-    alert('Please select cover!');
-    return;
-  }
-  uploading.value = true;
-  const musicData = new FormData();
-  musicData.append('music', musicList.value[0]);
-  musicData.append('cover', coverList.value[0]);
-  musicData.append('name', data.name.trim());
-  musicData.append('singer', data.singer.trim());
-  musicData.append('album', data.album.trim());
-
-  uploadMusic(musicData).then(() => {
-
-  }).finally(() => {
-    uploading.value = false;
+const getManageMusicListFun = () => {
+  let param = new SearchMusicParam(1, 10, '');
+  getManageMusicList(param).then(response => {
+    musicList.value = response.data;
   });
-}
+};
 </script>
 
 <style scoped lang="scss">
-.manage-wrapper {
-  max-width: 30rem;
-  margin: 5rem auto;
-  padding: 1rem;
-  border-radius: .3rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, .04), 0 0 6px rgba(0, 0, 0, .04);
+.music {
+  div {
+    margin: auto 0;
+  }
 
-  .music-info {
-    .input-text {
-      margin: 1.25rem 0;
-      width: 100%;
-      height: 3rem;
-    }
+  .cover {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: .25rem;
+  }
+
+  .btn {
+    width: 4rem;
+    height: 1.5rem;
   }
 }
+
 </style>
