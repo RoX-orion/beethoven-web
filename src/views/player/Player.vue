@@ -1,7 +1,7 @@
 <template>
   <div class="player-wrapper flex-row">
     <div class="flex-row pointer">
-      <img class="cover" :src="music.cover" alt="cover"/>
+      <img class="cover" :src="getCover" alt="cover"/>
       <div class="music-info">
         <span>{{ music.name }}</span>
         <span class="info-font">{{ music.singer }}</span>
@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import Panel from "./Panel.vue";
 import PlayerControls from '@/views/player/PlayerControls.vue';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import type { MusicItemType } from '@/types/global';
 import eventBus from '@/util/eventBus';
 import { getMusicInfo } from '@/api/music';
@@ -84,6 +84,9 @@ const onTimeUpdate = throttle(() => {
 }, 200, false);
 
 const settingStore = useSettingStore();
+const getCover = computed(() => {
+  return music.value.cover ? music.value.cover : settingStore.setting.player.defaultMusicCover;
+});
 onMounted(() => {
   audioPlayer.value.volume = settingStore.setting.player.volume / 100;
   let route = useRoute();

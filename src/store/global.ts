@@ -6,6 +6,7 @@ interface PlayerSetting {
 	volume: number;
 	defaultSound: number;
 	defaultPlayMode: 'loop' | 'random';
+	defaultMusicCover?: string
 }
 
 interface Setting {
@@ -29,11 +30,13 @@ export const useSettingStore = defineStore('setting', () => {
 			volume: 10,
 			defaultSound: 10,
 			defaultPlayMode: 'loop',
+			defaultMusicCover: undefined,
 		}
 	});
 
 	function updatePlayer(playerSetting: PlayerSetting) {
 		setting.player.isMute = playerSetting.isMute;
+		setting.player.defaultMusicCover = playerSetting.defaultMusicCover;
 	}
 
 	return {

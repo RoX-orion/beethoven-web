@@ -1,11 +1,18 @@
 <template>
   <button class="button-wrapper">
+    <Loading color="white" v-if="loading"/>
+    <label v-else>{{ label }}</label>
     <slot></slot>
   </button>
 </template>
 
 <script setup lang="ts">
+import Loading from '@/components/Loading.vue';
 
+defineProps<{
+  loading?: boolean;
+  label?: string;
+}>();
 </script>
 
 <style lang="scss" scoped>

@@ -1,17 +1,14 @@
 <template>
   <div class="manage-wrapper">
     <div class="flex-row content-center">
-      <Upload v-model="musicList"/>
-      <Upload v-model="coverList"/>
+      <Upload v-model="musicList" type="image"/>
+      <Upload v-model="coverList" type="file"/>
     </div>
     <div class="music-info">
       <InputText class="input-text" placeholder="请输入歌曲名" v-model="data.name"/>
       <InputText class="input-text" placeholder="请输入歌手名" v-model="data.singer"/>
       <InputText class="input-text" placeholder="请输入专辑名(可选)" v-model="data.album"/>
-      <Button @click="uploadMusicFun">
-        <Loading color="white" v-if="uploading"/>
-        <label v-else>FINISH</label>
-      </Button>
+      <Button @click="uploadMusicFun" label="FINISH" :loading="uploading"/>
     </div>
   </div>
 </template>
@@ -20,9 +17,9 @@
 import { reactive, ref } from 'vue';
 import InputText from '@/components/InputText.vue';
 import Button from '@/components/Button.vue';
-import Loading from '@/components/Loading.vue';
 import Upload from '@/components/Upload.vue';
 import { uploadMusic } from '@/api/music';
+import type { FileListType } from '@/types/global';
 
 const data = reactive({
   name: '',
@@ -30,14 +27,12 @@ const data = reactive({
   album: '',
 });
 
-const musicList = ref([]);
-const coverList = ref([]);
+const musicList = ref<FileListType[]>([]);
+const coverList = ref<FileListType[]>([]);
 
 let uploading = ref(false);
 
 const uploadMusicFun = () => {
-  console.log(musicList.value);
-  console.log(coverList.value);
   if (musicList.value.length === 0) {
     alert('Please select music!');
     return;
@@ -48,8 +43,8 @@ const uploadMusicFun = () => {
   }
   uploading.value = true;
   const musicData = new FormData();
-  musicData.append('music', musicList.value[0]);
-  musicData.append('cover', coverList.value[0]);
+  musicData.append('music', musicList.value[0].data);
+  musicData.append('cover', coverList.value[0].data);
   musicData.append('name', data.name.trim());
   musicData.append('singer', data.singer.trim());
   musicData.append('album', data.album.trim());

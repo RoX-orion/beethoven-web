@@ -1,3 +1,7 @@
+export type AnyToVoidFunction = (...args: any[]) => void;
+export type NoneToVoidFunction = () => void;
+
+export type UploadType = 'image' | 'file';
 export interface PlayList {
 	cover: string;
 	title: string;
@@ -36,9 +40,6 @@ export interface ControlButton {
 	button?: string;
 }
 
-export type AnyToVoidFunction = (...args: any[]) => void;
-export type NoneToVoidFunction = () => void;
-
 export interface PlayerSetting {
 	isMute: boolean;
 	volume: number;
@@ -55,7 +56,17 @@ export interface MusicItemType {
 	mime: string;
 }
 
+export interface MusicConfigType {
+	defaultMusicCover?: string;
+	shardingSize?: any;
+}
+
 export type DialogType = {
 	width?: string;
 	title: string;
+}
+
+export interface FileListType {
+	url?: string;
+	file?: File;
 }

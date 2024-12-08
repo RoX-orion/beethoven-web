@@ -5,7 +5,6 @@
       v-model="text"
       :placeholder="props.placeholder"
       @input="updateText"/>
-    <!--    <label class="label info-font">{{props.placeholder}}</label>-->
     <IconButton class="clear" icon-name="close" size=".85rem" @click="text = ''" icon-color="rgba(0, 0, 0, .5)"/>
   </div>
 </template>
@@ -13,7 +12,7 @@
 import IconButton from '@/components/IconButton.vue';
 import { ref } from 'vue';
 
-const text = defineModel<string | undefined>();
+const text = defineModel<string | number | undefined>();
 const inputText = ref<HTMLElement>();
 
 const props = defineProps({

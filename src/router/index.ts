@@ -31,7 +31,7 @@ export const manageRoutes: RouteRecordRaw[] = [
       {
         path: 'music',
         component: () => import('@/views/manage/MusicManage.vue'),
-        meta: { title: '歌曲管理' },
+        meta: { title: '音乐管理' },
       },
       {
         path: 'storage',
