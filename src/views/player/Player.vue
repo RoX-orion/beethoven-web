@@ -41,10 +41,33 @@ import { useSettingStore } from '@/store/global';
 import { durationFormater } from '@/util/time';
 import IconButton from '@/components/IconButton.vue';
 import Progress from '@/components/Progress.vue';
+import { SHARDING_SIZE } from '@/config';
+import { getData } from '@/util/localStorage';
 
 const audioPlayer = ref();
 const music = ref<MusicItemType>({});
 let firstPlay = true;
+let shardingSize: number;
+
+onMounted(() => {
+  shardingSize = parseInt(getData(SHARDING_SIZE) as string);
+  audioPlayer.value.volume = settingStore.setting.player.volume / 100;
+  let route = useRoute();
+  const { id, type } = route.params;
+  if (type === 'music' && id) {
+    getMusicInfo(id as string).then(async response => {
+      if (response.data) {
+        await playMusic(response.data);
+        firstPlay = false;
+      }
+    });
+  }
+
+  audioPlayer.value.addEventListener('timeupdate', onTimeUpdate);
+  audioPlayer.value.addEventListener('waiting', () => {
+    console.log('waiting');
+  });
+});
 
 const handleEvent = (eventName: string, state: any) => {
   if (eventName === 'play' && state) {
@@ -60,36 +83,33 @@ const handleEvent = (eventName: string, state: any) => {
   }
 };
 
-const playMusic = (musicInfo: MusicItemType) => {
+let mediaSource: MediaSource;
+const playMusic = async (musicInfo: MusicItemType) => {
   if (!musicInfo || (!firstPlay && music && musicInfo.id === music.value.id)) {
     return;
   }
   Object.assign(music.value, musicInfo);
-  let mediaSource = new MediaSource();
+  mediaSource = new MediaSource();
   audioPlayer.value.src = URL.createObjectURL(mediaSource);
-
   mediaSource.addEventListener('sourceopen', async () => {
-    const sourceBuffer = mediaSource.addSourceBuffer(music.value.mime);
-    const audioChunks: string[] = [
-      music.value.link,
-    ];
-
-    for (const chunkUrl of audioChunks) {
-      const response = await fetch(chunkUrl, {
-        method: 'get',
-        // headers: {
-        //   'Range': `bytes=${0}-${1024 * 100}`
-        // }
-      });
-      const chunkData = await response.arrayBuffer();
-      sourceBuffer.appendBuffer(chunkData);
-      await new Promise((resolve) => {
-        sourceBuffer.addEventListener('updateend', resolve, { once: true });
-      });
-    }
-    mediaSource.endOfStream();
+    await fetchMusic(musicInfo.link, 0, shardingSize);
   });
 }
+const fetchMusic = async (fileName: string, start: number, end: number) => {
+  const sourceBuffer = mediaSource.addSourceBuffer(music.value.mime);
+  fetch(`http://localhost:45678/music/fetchMusic?fileName=${fileName}`, {
+    method: 'get',
+    headers: {
+      'Range': `bytes=${start}-${end}`,
+    }
+  }).then(response => response.arrayBuffer())
+    .then(buffer => {
+      sourceBuffer.appendBuffer(buffer);
+    }).catch(e => {
+    console.log(e);
+  });
+}
+
 eventBus.on('playMusic', playMusic);
 
 let currentTime = ref<number>(0);
@@ -100,20 +120,6 @@ const onTimeUpdate = () => {
 const settingStore = useSettingStore();
 const getCover = computed(() => {
   return music.value.cover ? music.value.cover : settingStore.setting.player.defaultMusicCover;
-});
-onMounted(() => {
-  audioPlayer.value.volume = settingStore.setting.player.volume / 100;
-  let route = useRoute();
-  const { id, type } = route.params;
-  if (type === 'music' && id) {
-    getMusicInfo(id as string).then(async response => {
-      if (response.data) {
-        playMusic(response.data);
-        firstPlay = false;
-      }
-    });
-  }
-  audioPlayer.value.addEventListener('timeupdate', onTimeUpdate);
 });
 
 const play = ref(false);

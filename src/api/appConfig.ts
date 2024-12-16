@@ -14,3 +14,10 @@ export function updateMusicConfig(musicConfigData: FormData) {
 		data: musicConfigData,
 	});
 }
+
+export function getAppConfig() {
+	return request({
+		url: '/app/appConfig',
+		method: 'get',
+	});
+}

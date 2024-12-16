@@ -1,7 +1,7 @@
 <template>
   <div class="flex-row pointer music-wrapper" v-for="music in musicList" :key="music.cover">
     <img class="cover" :src="music.cover" alt="cover">
-    <div class="flex-row content-space-between" style="width: 100%; align-items: center" @click="playMusic(music)">
+    <div class="flex-row content-space-between" style="width: 100%; align-items: center" @click="playMusicFun(music)">
       <div class="music-info">
         <p>{{ music.name }}</p>
         <p>{{ music.singer }}</p>
@@ -27,8 +27,8 @@ const getSearchMusicResult = (result: Array<MusicItemType>) => {
   musicList.value = result;
 };
 
-const playMusic = (music: MusicItemType) => {
-  router.push({ path: '/music/' + music.id })
+const playMusicFun = (music: MusicItemType) => {
+  router.push({ path: '/music/' + music.id });
   eventBus.emit('playMusic', music);
 }
 eventBus.on('getSearchMusicResult', getSearchMusicResult);

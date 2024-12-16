@@ -68,7 +68,6 @@ watch(key, debounce(async (newValue, oldValue) => {
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25);
     font-weight: 700;
     line-height: 2.17rem;
-    //padding: 0.5rem 1rem;
     margin: auto 1rem;
   }
 
@@ -82,12 +81,7 @@ watch(key, debounce(async (newValue, oldValue) => {
 
     .button-group {
       margin: auto;
-      padding: 0 1rem;
-
-      .button {
-        display: inline-block;
-        margin: 0 .5rem;
-      }
+      gap: 1rem;
     }
   }
 }
