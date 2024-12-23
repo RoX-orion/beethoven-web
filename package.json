@@ -1,6 +1,6 @@
 {
   "name": "beethoven-web",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,6 +10,7 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force"
   },
+  "license": "MIT",
   "dependencies": {
     "ant-design-vue": "^4.2.6",
     "mitt": "^3.0.1",
@@ -19,9 +20,7 @@
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",
-    "@types/howler": "^2.2.12",
     "@types/node": "^22.10.2",
-    "@types/serviceworker": "^0.0.107",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/tsconfig": "^0.7.0",
     "axios": "^1.7.9",

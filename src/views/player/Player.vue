@@ -48,6 +48,9 @@ const audioPlayer = ref();
 const music = ref<MusicItemType>({});
 let firstPlay = true;
 let shardingSize: number;
+let shardingCount: number;
+let currentShard = 0;
+let fetchShard = 1;
 
 onMounted(() => {
   shardingSize = parseInt(getData(SHARDING_SIZE) as string);
@@ -57,6 +60,8 @@ onMounted(() => {
   if (type === 'music' && id) {
     getMusicInfo(id as string).then(async response => {
       if (response.data) {
+        shardingCount = Math.ceil(response.data.size / shardingSize);
+        console.log('count', shardingCount);
         await playMusic(response.data);
         firstPlay = false;
       }
@@ -84,6 +89,7 @@ const handleEvent = (eventName: string, state: any) => {
 };
 
 let mediaSource: MediaSource;
+let sourceBuffer: SourceBuffer;
 const playMusic = async (musicInfo: MusicItemType) => {
   if (!musicInfo || (!firstPlay && music && musicInfo.id === music.value.id)) {
     return;
@@ -96,26 +102,37 @@ const playMusic = async (musicInfo: MusicItemType) => {
   });
 }
 const fetchMusic = async (fileName: string, start: number, end: number) => {
-  const sourceBuffer = mediaSource.addSourceBuffer(music.value.mime);
-  fetch(`http://localhost:45678/music/fetchMusic?fileName=${fileName}`, {
+  if (start === 0) {
+    if (sourceBuffer) {
+      mediaSource.removeSourceBuffer(sourceBuffer);
+    }
+    sourceBuffer = mediaSource.addSourceBuffer(music.value.mime);
+  }
+  await fetch(`http://localhost:45678/music/fetchMusic?fileName=${fileName}`, {
     method: 'get',
     headers: {
       'Range': `bytes=${start}-${end}`,
-    }
+    },
   }).then(response => response.arrayBuffer())
     .then(buffer => {
       sourceBuffer.appendBuffer(buffer);
-    }).catch(e => {
-    console.log(e);
-  });
+      currentShard++;
+      fetchShard++;
+    });
+  console.log(fetchShard, currentShard);
 }
-
-eventBus.on('playMusic', playMusic);
 
 let currentTime = ref<number>(0);
 const onTimeUpdate = () => {
+  const buffered = audioPlayer.value.buffered;
   currentTime.value = audioPlayer.value.currentTime;
+  const bufferedEnd = buffered.length ? buffered.end(buffered.length - 1) : 0;
+  if (bufferedEnd - currentTime.value <= 30 && fetchShard < shardingCount && fetchShard > currentShard) {
+    fetchMusic(music.value.link, currentShard * shardingSize, (currentShard + 1) * shardingSize);
+  }
 };
+
+eventBus.on('playMusic', playMusic);
 
 const settingStore = useSettingStore();
 const getCover = computed(() => {

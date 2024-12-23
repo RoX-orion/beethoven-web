@@ -8,6 +8,7 @@ import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
 import vueDevTools from 'vite-plugin-vue-devtools';
 import Components from 'unplugin-vue-components/vite';
 import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers';
+import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -26,6 +27,12 @@ export default defineConfig({
           importStyle: false,
         }),
       ],
+    }),
+    VitePWA({
+      registerType: 'autoUpdate',
+      devOptions: {
+        enabled: true,
+      },
     }),
   ],
   server: {
