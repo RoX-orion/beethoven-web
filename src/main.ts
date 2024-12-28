@@ -7,8 +7,10 @@ import router from './router'
 import SvgIcon from "@/components/SvgIcon.vue"
 import 'virtual:svg-icons-register';
 import { initApp } from '@/lib/init';
-import './util/setupServiceWorker';
+// import './util/setupServiceWorker';
 import pinia from '@/store/store';
+import { PiniaVuePlugin } from 'pinia';
+import './router/RouteGuard';
 
 init();
 async function init() {
@@ -18,6 +20,7 @@ async function init() {
 const app = createApp(App)
 
 app.use(router)
+	.use(PiniaVuePlugin)
 	.use(pinia)
 	.component("SvgIcon", SvgIcon)
 

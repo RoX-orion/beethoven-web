@@ -1,4 +1,5 @@
 <template>
+  <TagGroup/>
   <div class="playlist-group-wrapper" v-for="data in groupPlayList">
     <span class="playlist-group-title">{{data.groupTitle}}</span>
     <div class="flex-row playlist-info-wrapper">
@@ -11,6 +12,7 @@
 import { reactive } from 'vue';
 import PlayListCard from '@/views/right/PlayListCard.vue';
 import type { PlayList } from '@/types/global';
+import TagGroup from '@/views/right/TagGroup.vue';
 
 interface groupPlayListArray {
   groupTitle: string,

@@ -1,7 +1,9 @@
 <template>
   <div class="flex-row header-wrapper">
-    <img class="brand" src="../../assets/brand.png" alt="">
-    <span class="brand-text">Beethoven Music</span>
+    <div class="flex-row pointer" style="justify-items: center" @click="goToHome">
+      <img class="brand" src="../../assets/brand.png" alt="">
+      <span class="brand-text">Beethoven Music</span>
+    </div>
     <Search class="search-wrapper" v-model:searching="searching" v-model="key"/>
     <div class="flex-row header-right">
       <div class="button-group flex-row">
@@ -23,31 +25,36 @@ import Account from './Account.vue';
 import SvgIcon from '@/components/SvgIcon.vue';
 import { ref, watch } from 'vue';
 import { searchMusic } from '@/api/music';
-import { SearchMusicParam } from '@/api/params/query';
 import eventBus from '@/util/eventBus';
-import { useComponentStateStore } from '@/store/global';
-import { storeToRefs } from 'pinia';
+import { useGlobalStore } from '@/store/global';
 import { debounce, pause } from '@/util/schedulers';
+import { ComponentType } from '@/types/global';
+import { componentState } from '@/store/componentState';
+import router from '@/router';
 
 const key = ref('');
 const searching = ref(false);
 
-const componentStateStore = useComponentStateStore();
-const { componentState } = storeToRefs(componentStateStore);
-
+const globalStore = useGlobalStore();
+const goToHome = () => {
+  router.push('/');
+}
 watch(key, debounce(async (newValue, oldValue) => {
   if (newValue.trim().length > 0 && oldValue.trim() !== newValue.trim()) {
+    await router.replace(`/music/${newValue}`);
+    globalStore.global.searchMusicKey = newValue;
+
     searching.value = true;
-    let param = new SearchMusicParam(1, 10, newValue);
-    await searchMusic(param).then(async response => {
-      componentState.value.searchResult = true;
+    await searchMusic({ page: 1, size: 10, key: newValue }).then(async response => {
+      componentState.currentRightComponent = ComponentType.SEARCH_RESULT;
       await pause(50);
       eventBus.emit('getSearchMusicResult', response.data);
     }).finally(() => {
       searching.value = false;
     });
   } else if (newValue.trim().length === 0) {
-    componentState.value.searchResult = false;
+    // await router.replace({ path: '/' });
+    // componentState.value.currentRightComponent = ComponentType.DEFAULT;
   }
 }, 300, false));
 </script>

@@ -31,5 +31,7 @@ async function initAppGlobal() {
 	getAppConfig().then(response => response.data)
 		.then(data => {
 			saveData(SHARDING_SIZE, data.shardingSize ? data.shardingSize : 1024 * 512);
-		})
+			const settingStore = useSettingStore(pinia);
+			settingStore.setting.defaultMusicCover = data.defaultMusicCover;
+		});
 }

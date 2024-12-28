@@ -15,7 +15,8 @@
       :title="playlist.title"
       :musicCount="playlist.musicCount"
       :author="playlist.author"
-      :key="playlist.id"/>
+      :key="playlist.id"
+      @click="gotoPlayListInfo(playlist.id)"/>
   </div>
 
   <Dialog v-model="addPlaylistDialogVisible" width="30rem" title="新建歌单">
@@ -44,32 +45,36 @@ import { onMounted, reactive, ref } from 'vue';
 import IconButton from '@/components/IconButton.vue';
 import InputText from '@/components/InputText.vue';
 import Button from '@/components/Button.vue';
-import type { PlaylistInfo } from '@/types/global';
 import { addPlaylist, getPlaylist } from '@/api/playlist';
-import { Page } from '@/api/params/query';
+import type { PlaylistInfoType } from '@/types/global';
+import type { PlaylistType } from '@/types/playlist';
+import router from '@/router';
 
 let addPlaylistDialogVisible = ref(false);
-const playlistList = ref([]);
-const playlistInfo: PlaylistInfo = reactive({title: ''});
+const playlistList = ref<PlaylistType[]>([]);
+const playlistInfo: PlaylistInfoType = reactive({ title: '' });
 
-onMounted(async () => {
-  await getPlayListFun(1);
+onMounted(() => {
+  getPlayListFun(1);
 });
 
-const getPlayListFun = async (pageNum: number) => {
-  let page = new Page(pageNum, 10);
-  await getPlaylist(page).then(response => {
+const getPlayListFun = (page: number) => {
+  getPlaylist({ page, size: 10 }).then(response => {
     const {data} = response;
     playlistList.value = data;
   });
 }
 
-const addPlaylistFun = async () => {
-  await addPlaylist(playlistInfo).then(() => {
+const addPlaylistFun = () => {
+  addPlaylist(playlistInfo).then(() => {
     addPlaylistDialogVisible.value = false;
     Object.assign(playlistInfo, {title: ''});
     getPlayListFun(1);
   });
+}
+
+const gotoPlayListInfo = (playlistId: string) => {
+  router.push({ path: '/playlist/' + playlistId });
 }
 </script>
 

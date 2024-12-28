@@ -31,7 +31,7 @@ export interface InputTextType {
 	text: string
 }
 
-export interface PlaylistInfo {
+export interface PlaylistInfoType {
 	title: string,
 	introduction?: string
 }
@@ -69,4 +69,15 @@ export type DialogType = {
 export interface FileListType {
 	url?: string;
 	file?: File;
+}
+
+export interface OAuth2LoginType {
+	code: string;
+	type: string;
+}
+
+export enum ComponentType {
+	DEFAULT,
+	SEARCH_RESULT,
+	PLAYLIST,
 }

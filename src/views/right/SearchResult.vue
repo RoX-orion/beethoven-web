@@ -1,4 +1,5 @@
 <template>
+  <TagGroup/>
   <div class="flex-row pointer music-wrapper" v-for="music in musicList" :key="music.cover">
     <img class="cover" :src="music.cover" alt="cover">
     <div class="flex-row content-space-between" style="width: 100%; align-items: center" @click="playMusicFun(music)">
@@ -6,19 +7,40 @@
         <p>{{ music.name }}</p>
         <p>{{ music.singer }}</p>
       </div>
-      <div>
-        <div class="info-font">{{ durationFormater(music.duration) }}</div>
+      <div class="flex-row">
+        <IconButton icon-name="add-circle" size="1rem" icon-color="rgba(0, 0, 0, .5)"
+                    @click="openAddMusicToPlaylistDialog"/>
+        <div style="margin: auto 0; line-height: 1rem">{{ durationFormater(music.duration) }}</div>
       </div>
     </div>
   </div>
+
+  <Dialog title="添加到歌单" v-model="addMusicToPlaylistDialogVisible" width="30rem">
+    <!--    <Search model-value="" searching=""/>-->
+    <div>
+      <div v-for="playlist in playlistList">
+        <img class="playlist-cover" :src='playlist.cover' alt="cover"/>
+      </div>
+    </div>
+    <Button>
+      Finish
+    </Button>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
 import eventBus from '@/util/eventBus';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { durationFormater } from '@/util/time';
-import type { MusicItemType } from '@/types/global';
 import router from '@/router';
+import IconButton from '@/components/IconButton.vue';
+import Dialog from '@/components/Dialog.vue';
+import { getPlaylist } from '@/api/playlist';
+import type { PlaylistType } from '@/types/playlist';
+import type { MusicItemType } from '@/types/global';
+import Button from '@/components/Button.vue';
+import TagGroup from '@/views/right/TagGroup.vue';
+import { useRoute } from 'vue-router';
 
 const musicList = ref<Array<MusicItemType>>([]);
 const defaultCover = '../../src/assets/img/playlistCover.png';
@@ -32,6 +54,21 @@ const playMusicFun = (music: MusicItemType) => {
   eventBus.emit('playMusic', music);
 }
 eventBus.on('getSearchMusicResult', getSearchMusicResult);
+
+let addMusicToPlaylistDialogVisible = ref(false);
+const playlistList = ref<PlaylistType[]>([]);
+const openAddMusicToPlaylistDialog = () => {
+  getPlaylist({ page: 1, size: 10 }).then(response => {
+    const { data } = response;
+    playlistList.value = data;
+    addMusicToPlaylistDialogVisible.value = true;
+  });
+}
+
+const route = useRoute();
+onMounted(() => {
+  // console.log('search init', route);
+})
 </script>
 
 <style scoped lang="scss">
@@ -41,12 +78,6 @@ eventBus.on('getSearchMusicResult', getSearchMusicResult);
 
   &:hover {
     background-color: var(--base-shadow);
-  }
-
-  .cover {
-    width: 4rem;
-    height: 4rem;
-    border-radius: .25rem;
   }
 
   .music-info {

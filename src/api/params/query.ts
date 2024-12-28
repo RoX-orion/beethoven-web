@@ -1,18 +1,8 @@
-export class Page {
-	page: Number;
-	size: Number;
-
-	constructor(page: Number, size: Number) {
-		this.page = page;
-		this.size = size;
-	}
+export interface Page {
+	page: number;
+	size: number;
 }
 
-export class SearchMusicParam extends Page {
+export interface SearchMusicParam extends Page {
 	key: string;
-
-	constructor(page: Number, size: Number, key: string) {
-		super(page, size);
-		this.key = key;
-	}
 }

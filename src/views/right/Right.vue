@@ -1,21 +1,18 @@
 <template>
   <div class="right-wrapper custom-scroll">
-    <TagGroup/>
     <RouterView/>
-    <SearchResult v-if="componentState.searchResult"/>
-    <PlayListGroup v-else/>
+    <PlayListGroup v-if="componentState.currentRightComponent === ComponentType.DEFAULT"/>
+    <SearchResult v-else-if="componentState.currentRightComponent === ComponentType.SEARCH_RESULT"/>
+    <PlayListInfo v-else-if="componentState.currentRightComponent === ComponentType.PLAYLIST"/>
   </div>
 </template>
 
 <script setup lang="ts">
-import TagGroup from './TagGroup.vue';
 import PlayListGroup from './PlayListGroup.vue';
-import { useComponentStateStore } from '@/store/global';
-import { storeToRefs } from 'pinia';
 import SearchResult from './SearchResult.vue';
-
-const componentStateStore = useComponentStateStore();
-const { componentState } = storeToRefs(componentStateStore);
+import { ComponentType } from '@/types/global';
+import PlayListInfo from '@/views/right/PlayListInfo.vue';
+import { componentState } from '@/store/componentState';
 
 </script>
 

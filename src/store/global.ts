@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { reactive, ref } from 'vue';
+import { ComponentType } from '@/types/global';
 
 interface PlayerSetting {
 	isMute: boolean;
@@ -10,11 +11,13 @@ interface PlayerSetting {
 }
 
 interface Setting {
-	player: PlayerSetting
+	player: PlayerSetting;
+	defaultMusicCover: string | undefined;
+	defaultPlaylistCover: string | undefined;
 }
 
 interface ComponentState {
-	searchResult: boolean;
+	currentRightComponent: ComponentType;
 }
 
 interface Account {
@@ -30,8 +33,9 @@ export const useSettingStore = defineStore('setting', () => {
 			volume: 10,
 			defaultSound: 10,
 			defaultPlayMode: 'loop',
-			defaultMusicCover: undefined,
-		}
+		},
+		defaultMusicCover: undefined,
+		defaultPlaylistCover: undefined,
 	});
 
 	function updatePlayer(playerSetting: PlayerSetting) {
@@ -48,7 +52,7 @@ export const useSettingStore = defineStore('setting', () => {
 
 export const useComponentStateStore = defineStore('componentState', () => {
 	const componentState = reactive<ComponentState>({
-		searchResult: false,
+		currentRightComponent: ComponentType.DEFAULT,
 	});
 
 	return {
@@ -59,7 +63,7 @@ export const useComponentStateStore = defineStore('componentState', () => {
 
 export const useAccountStore = defineStore('account', () => {
 	const account = reactive<Account>({
-		userId: 1,
+		userId: undefined,
 	});
 
 	return {
@@ -74,5 +78,15 @@ export const useRouteStore = defineStore('route', () => {
 	return {
 		type,
 		id,
+	}
+});
+
+export const useGlobalStore = defineStore('global', () => {
+	const global = reactive<any>({
+		searchMusicKey: '',
+	});
+
+	return {
+		global,
 	}
 });

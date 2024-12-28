@@ -8,6 +8,22 @@ const routes: RouteRecordRaw[] = [
     name: 'Home',
     props: true,
     component: () => import('@/views/Home.vue'),
+    // children: [
+    //   {
+    //     path: '/',
+    //     component: () => import('@/views/right/PlayListGroup.vue'),
+    //   },
+    //   {
+    //     path: 'music/:key',
+    //     name: 'Music',
+    //     component: () => import('@/views/right/SearchResult.vue'),
+    //   },
+    //   {
+    //     path: 'playlist/:id',
+    //     name: 'Playlist',
+    //     component: () => import('@/views/right/PlayListInfo.vue'),
+    //   }
+    // ],
   },
   {
     path: '/bug-report',
@@ -45,35 +61,9 @@ export const manageRoutes: RouteRecordRaw[] = [
       },
     ],
   },
-  // {
-  //   path: '/music-manage',
-  //   name: 'MusicManage',
-  //   component: Sidebar,
-  //   children: [
-  //     {
-  //       path: 'music',
-  //       component: () => import('@/views/manage/MusicManage.vue'),
-  //       meta: { title: '歌曲管理' }
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: '/storage',
-  //   name: 'Storage',
-  //   component: Sidebar,
-  //   children: [
-  //     {
-  //       path: 'storage',
-  //       component: () => import('@/views/manage/MusicManage.vue'),
-  //       meta: { title: '存储管理' }
-  //     }
-  //   ]
-  // },
 ];
 
 manageRoutes.forEach(e => routes.push(e))
-
-console.log('routes', routes);
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

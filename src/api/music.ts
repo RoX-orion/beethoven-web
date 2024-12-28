@@ -1,5 +1,5 @@
 import request from '@/util/request';
-import { SearchMusicParam } from '@/api/params/query';
+import type { SearchMusicParam } from '@/api/params/query';
 
 export function uploadMusic(data: FormData) {
 	return request({

@@ -136,7 +136,7 @@ eventBus.on('playMusic', playMusic);
 
 const settingStore = useSettingStore();
 const getCover = computed(() => {
-  return music.value.cover ? music.value.cover : settingStore.setting.player.defaultMusicCover;
+  return music.value.cover ? music.value.cover : settingStore.setting.defaultMusicCover;
 });
 
 const play = ref(false);

@@ -36,6 +36,12 @@
   transform: translate(-50%, -50%);
 }
 
+.cover {
+  width: 4rem;
+  height: 4rem;
+  border-radius: .25rem;
+}
+
 .custom-scroll,
 .custom-scroll-x {
   scrollbar-width: thin;

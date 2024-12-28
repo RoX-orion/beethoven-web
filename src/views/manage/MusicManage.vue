@@ -33,7 +33,6 @@
 <script setup lang="ts">
 import { getManageMusicList } from '@/api/music';
 import { onMounted, ref } from 'vue';
-import { SearchMusicParam } from '@/api/params/query';
 import { durationFormater } from '@/util/time';
 import { sizeFormater } from '@/util/file';
 import Button from '@/components/Button.vue';
@@ -51,8 +50,7 @@ let searching = ref(false);
 let name = ref('');
 
 const getManageMusicListFun = () => {
-  let param = new SearchMusicParam(1, 10, '');
-  getManageMusicList(param).then(response => {
+  getManageMusicList({ page: 1, size: 10, key: '' }).then(response => {
     musicList.value = response.data;
   });
 };
