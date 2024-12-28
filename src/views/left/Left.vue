@@ -46,13 +46,12 @@ import IconButton from '@/components/IconButton.vue';
 import InputText from '@/components/InputText.vue';
 import Button from '@/components/Button.vue';
 import { addPlaylist, getPlaylist } from '@/api/playlist';
-import type { PlaylistInfoType } from '@/types/global';
 import type { PlaylistType } from '@/types/playlist';
 import router from '@/router';
 
 let addPlaylistDialogVisible = ref(false);
 const playlistList = ref<PlaylistType[]>([]);
-const playlistInfo: PlaylistInfoType = reactive({ title: '' });
+const playlistInfo: PlaylistType = reactive({ id: '', title: '' });
 
 onMounted(() => {
   getPlayListFun(1);

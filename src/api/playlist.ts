@@ -1,6 +1,7 @@
 import request from '@/util/request';
-import type { PlaylistInfoType } from '@/types/global';
 import type { Page } from '@/api/params/query';
+import type { PlaylistType } from '@/types/playlist';
+import type { ApiResponse } from '@/types/global';
 
 export async function getPlaylist(query: Page) : Promise<any> {
 	return request({
@@ -10,7 +11,7 @@ export async function getPlaylist(query: Page) : Promise<any> {
 	});
 }
 
-export async function addPlaylist(playlistInfo: PlaylistInfoType): Promise<any> {
+export async function addPlaylist(playlistInfo: PlaylistType): Promise<any> {
 	return request({
 		url: '/playlist/addPlaylist',
 		method: 'post',
@@ -35,5 +36,13 @@ export function getPlaylistInfo(playlistId: string) {
 		params: {
 			playlistId,
 		},
+	});
+}
+
+export function updatePlaylist(playlistInfo: PlaylistType): Promise<ApiResponse> {
+	return request({
+		url: '/playlist/updatePlaylist',
+		method: 'put',
+		data: playlistInfo,
 	});
 }

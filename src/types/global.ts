@@ -1,6 +1,12 @@
 export type AnyToVoidFunction = (...args: any[]) => void;
 export type NoneToVoidFunction = () => void;
 
+export interface ApiResponse {
+	code: number;
+	msg: string;
+	data: any;
+}
+
 export type UploadType = 'image' | 'file';
 export interface PlayList {
 	cover: string;
@@ -29,11 +35,6 @@ export interface BugItemType {
 export interface InputTextType {
 	placeholder?: string;
 	text: string
-}
-
-export interface PlaylistInfoType {
-	title: string,
-	introduction?: string
 }
 
 export interface ControlButton {
