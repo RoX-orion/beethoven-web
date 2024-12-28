@@ -54,6 +54,8 @@ export interface MusicItemType {
 	singer?: string;
 	duration: number;
 	mime: string;
+	album?: string;
+	size?: number;
 }
 
 export interface MusicConfigType {

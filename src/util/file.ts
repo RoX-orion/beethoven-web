@@ -1,4 +1,7 @@
-export function sizeFormater(bytes: number) {
+export function sizeFormater(bytes?: number) {
+	if (!bytes) {
+		return '未知';
+	}
 	if (bytes < 1024) {
 		return bytes + 'B';
 	}

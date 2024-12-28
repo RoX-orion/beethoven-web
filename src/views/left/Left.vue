@@ -74,7 +74,7 @@ const addPlaylistFun = () => {
 }
 
 const gotoPlayListInfo = (playlistId: string) => {
-  router.push({ path: '/playlist/' + playlistId });
+  router.push({ path: `/playlist/${playlistId}` });
 }
 </script>
 

@@ -30,7 +30,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 .left-right {
   justify-content: space-between;
-  height: 80vh;
+  height: calc(100vh - 11rem);
   margin: 0 1rem;
 }
 .player {
@@ -38,5 +38,6 @@ onMounted(() => {
   bottom: 0;
   left: 0;
   right: 0;
+  height: 6rem;
 }
 </style>

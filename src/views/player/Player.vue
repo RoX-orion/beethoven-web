@@ -1,7 +1,7 @@
 <template>
   <div class="player-wrapper flex-row">
     <div class="flex-row pointer">
-      <img class="cover" :src="getCover" alt="cover"/>
+      <img class="cover" :src="getCover" alt="cover">
       <div class="music-info">
         <span>{{ music.name }}</span>
         <span class="info-font">{{ music.singer }}</span>
@@ -49,8 +49,6 @@ const music = ref<MusicItemType>({});
 let firstPlay = true;
 let shardingSize: number;
 let shardingCount: number;
-let currentShard = 0;
-let fetchShard = 1;
 
 onMounted(() => {
   shardingSize = parseInt(getData(SHARDING_SIZE) as string);
@@ -90,6 +88,7 @@ const handleEvent = (eventName: string, state: any) => {
 
 let mediaSource: MediaSource;
 let sourceBuffer: SourceBuffer;
+let currentShard = 0;
 const playMusic = async (musicInfo: MusicItemType) => {
   if (!musicInfo || (!firstPlay && music && musicInfo.id === music.value.id)) {
     return;
@@ -117,9 +116,7 @@ const fetchMusic = async (fileName: string, start: number, end: number) => {
     .then(buffer => {
       sourceBuffer.appendBuffer(buffer);
       currentShard++;
-      fetchShard++;
     });
-  console.log(fetchShard, currentShard);
 }
 
 let currentTime = ref<number>(0);
@@ -127,7 +124,7 @@ const onTimeUpdate = () => {
   const buffered = audioPlayer.value.buffered;
   currentTime.value = audioPlayer.value.currentTime;
   const bufferedEnd = buffered.length ? buffered.end(buffered.length - 1) : 0;
-  if (bufferedEnd - currentTime.value <= 30 && fetchShard < shardingCount && fetchShard > currentShard) {
+  if (bufferedEnd - currentTime.value <= 30 && currentShard + 1 < shardingCount) {
     fetchMusic(music.value.link, currentShard * shardingSize, (currentShard + 1) * shardingSize);
   }
 };
@@ -171,13 +168,13 @@ const changeCurrentTime = (e: any) => {
   padding: .75rem 1rem;
 
   .cover {
-    width: 4rem;
-    height: 4rem;
-    border-radius: 4px;
+    border-radius: .25rem;
+    margin: auto;
   }
 
   .music-info {
     padding: 0 10px;
+    margin: auto;
 
     span {
       display: block;

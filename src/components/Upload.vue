@@ -1,7 +1,9 @@
 <template>
   <div class="upload-wrapper">
     <div v-if="type === 'image'">
-      <div class="no-file pointer" v-if="fileList?.length === 0" @click="clickUpload">
+      <div class="no-file pointer"
+           v-if="fileList?.length === 0 || (fileList !== undefined && fileList[0].url === undefined)"
+           @click="clickUpload">
         <svg-icon class="center" name="add" size="1.5rem" color="grey"/>
       </div>
       <div v-else>
@@ -26,11 +28,9 @@ const clickUpload = () => {
   upload.value?.click();
 }
 const fileChange = () => {
-  fileList = [];
   [...upload.value?.files].forEach(e => fileList.value?.push({
     'file': e,
   }));
-  console.log(fileList.value);
 };
 
 defineProps<{

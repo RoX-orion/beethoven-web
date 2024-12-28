@@ -27,3 +27,13 @@ export function getPlaylistMusic(playlistId: string) {
 		},
 	});
 }
+
+export function getPlaylistInfo(playlistId: string) {
+	return request({
+		url: '/playlist/info',
+		method: 'get',
+		params: {
+			playlistId,
+		},
+	});
+}
