@@ -60,18 +60,21 @@ import type { MusicItemType } from '@/types/global';
 import type { PlaylistType } from '@/types/playlist';
 import { sizeFormater } from '@/util/file';
 import { formatTime } from '@/util/time';
-import eventBus from '@/util/eventBus';
 import Dialog from '@/components/Dialog.vue';
 import Button from '@/components/Button.vue';
 import InputText from '@/components/InputText.vue';
+import { useGlobalStore } from '@/store/global';
 
 const route = useRoute();
 const musicList = ref<Array<MusicItemType>>([]);
 
+const globalStore = useGlobalStore();
 const playMusicFun = (music: MusicItemType) => {
   // router.push({ path: '/music/' + music.id });
-  eventBus.emit('playMusic', music);
-}
+  globalStore.global.media.musicId = music.id;
+  globalStore.global.music = music;
+  // eventBus.emit('playMusic', music);
+};
 
 const getPlaylistMusicFun = (playlistId: string) => {
   getPlaylistMusic(playlistId).then(response => {
@@ -106,8 +109,10 @@ const updatePlaylistFun = () => {
 }
 
 onMounted(() => {
-  getPlaylistMusicFun(route.params.id as string);
-  getPlaylistInfoFun(route.params.id as string);
+  if (route.params.id) {
+    getPlaylistMusicFun(route.params.id as string);
+    getPlaylistInfoFun(route.params.id as string);
+  }
 });
 
 watch(() => route.params.id, (playlistId) => {

@@ -47,11 +47,20 @@ export interface PlayerSetting {
 	playMode: 'loop' | 'random';
 }
 
+export interface SettingType {
+	userId?: number;
+	musicId: number;
+	currentTime: number;
+	isMute: boolean;
+	volume: number;
+	playMode: 'loop' | 'random';
+}
+
 export interface MusicItemType {
-	id: string;
+	id: string | null;
 	link: string;
 	cover?: string;
-	name: string;
+	name?: string;
 	singer?: string;
 	duration: number;
 	mime: string;

@@ -32,7 +32,7 @@ let visible = defineModel({
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 1024;
+  z-index: 10;
   background-color: rgba(0, 0, 0, .5);
 }
 

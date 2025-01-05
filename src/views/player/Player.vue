@@ -11,8 +11,8 @@
     <div class="flex-col controls-wrapper">
       <div class="button-group flex-row">
         <IconButton icon-name="prev"/>
-        <IconButton v-if="play" icon-name="play" @click="playOrPause"/>
-        <IconButton v-else icon-name="pause" @click="playOrPause"/>
+        <IconButton v-if="audioPlayer?.paused" icon-name="pause" @click="playOrPause"/>
+        <IconButton v-else icon-name="play" @click="playOrPause"/>
         <IconButton icon-name="next"/>
       </div>
       <div class="flex-row progress">
@@ -32,57 +32,73 @@
 
 <script setup lang="ts">
 import Panel from "./Panel.vue";
-import { computed, onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import type { MusicItemType, ProgressType } from '@/types/global';
 import eventBus from '@/util/eventBus';
 import { getMusicInfo } from '@/api/music';
 import { useRoute } from 'vue-router';
-import { useSettingStore } from '@/store/global';
+import { useGlobalStore } from '@/store/global';
 import { durationFormater } from '@/util/time';
 import IconButton from '@/components/IconButton.vue';
 import Progress from '@/components/Progress.vue';
 import { SHARDING_SIZE } from '@/config';
 import { getData } from '@/util/localStorage';
+import { throttle } from '@/util/schedulers';
 
-const audioPlayer = ref();
-const music = ref<MusicItemType>({});
+const audioPlayer = ref<HTMLAudioElement>();
+const music: MusicItemType = reactive({
+  id: null,
+  duration: 0,
+  mime: '',
+  link: '',
+});
 let firstPlay = true;
 let shardingSize: number;
 let shardingCount: number;
+const globalStore = useGlobalStore();
 
 onMounted(() => {
-  shardingSize = parseInt(getData(SHARDING_SIZE) as string);
-  audioPlayer.value.volume = settingStore.setting.player.volume / 100;
   let route = useRoute();
   const { id, type } = route.params;
   if (type === 'music' && id) {
-    getMusicInfo(id as string).then(async response => {
-      if (response.data) {
-        shardingCount = Math.ceil(response.data.size / shardingSize);
-        console.log('count', shardingCount);
-        await playMusic(response.data);
-        firstPlay = false;
-      }
-    });
+    getMusicInfoFun(id as string);
   }
-
-  audioPlayer.value.addEventListener('timeupdate', onTimeUpdate);
-  audioPlayer.value.addEventListener('waiting', () => {
+  audioPlayer.value!.addEventListener('timeupdate', onTimeUpdate);
+  audioPlayer.value!.addEventListener('waiting', () => {
     console.log('waiting');
   });
 });
 
-const handleEvent = (eventName: string, state: any) => {
-  if (eventName === 'play' && state) {
-    audioPlayer.value.currentTime = currentTime.value;
-    audioPlayer.value.play();
-  } else if (eventName === 'play' && !state) {
-    audioPlayer.value.pause();
+const getMusicInfoFun = (musicId: string) => {
+  shardingSize = parseInt(getData(SHARDING_SIZE) as string);
+  audioPlayer.value!.volume = globalStore.global.player.volume / 100;
+
+  getMusicInfo(musicId as string).then(async response => {
+    if (response.data) {
+      shardingCount = Math.ceil(response.data.size / shardingSize);
+      console.log('count', shardingCount);
+      await playMusic(response.data);
+      firstPlay = false;
+    }
+  });
+}
+
+watch(() => globalStore.global.media.musicId, (musicId) => {
+  console.log('change', musicId);
+
+  getMusicInfoFun(musicId);
+});
+
+const handleEvent = (eventName: string, ...state: any) => {
+  if (eventName === 'play') {
+    audioPlayer.value!.currentTime = currentTime.value;
+    audioPlayer.value!.play();
+  } else if (eventName === 'pause') {
+    audioPlayer.value!.pause();
   } else if (eventName === 'changeVolume') {
-    audioPlayer.value.volume = state;
+    audioPlayer.value!.volume = state;
   } else if (eventName === 'changeCurrentTime') {
-    console.log('state', state);
-    audioPlayer.value.currentTime = state;
+    audioPlayer.value!.currentTime = state;
   }
 };
 
@@ -90,56 +106,67 @@ let mediaSource: MediaSource;
 let sourceBuffer: SourceBuffer;
 let currentShard = 0;
 const playMusic = async (musicInfo: MusicItemType) => {
-  if (!musicInfo || (!firstPlay && music && musicInfo.id === music.value.id)) {
+  if (!musicInfo || (!firstPlay && music && musicInfo.id === music.id)) {
     return;
   }
-  Object.assign(music.value, musicInfo);
-  mediaSource = new MediaSource();
-  audioPlayer.value.src = URL.createObjectURL(mediaSource);
-  mediaSource.addEventListener('sourceopen', async () => {
-    await fetchMusic(musicInfo.link, 0, shardingSize);
-  });
+  Object.assign(music, musicInfo);
+  audioPlayer.value!.src = music.link;
+  // mediaSource = new MediaSource();
+  // audioPlayer.value!.src = URL.createObjectURL(mediaSource);
+  // mediaSource.addEventListener('sourceopen', async () => {
+  //   await fetchMusic(musicInfo?.link!, 0, shardingSize);
+  // });
 }
-const fetchMusic = async (fileName: string, start: number, end: number) => {
-  if (start === 0) {
-    if (sourceBuffer) {
-      mediaSource.removeSourceBuffer(sourceBuffer);
-    }
-    sourceBuffer = mediaSource.addSourceBuffer(music.value.mime);
-  }
-  await fetch(`http://localhost:45678/music/fetchMusic?fileName=${fileName}`, {
-    method: 'get',
-    headers: {
-      'Range': `bytes=${start}-${end}`,
-    },
-  }).then(response => response.arrayBuffer())
-    .then(buffer => {
-      sourceBuffer.appendBuffer(buffer);
-      currentShard++;
-    });
-}
+// const fetchMusic = async (fileName: string, start: number, end: number) => {
+//   if (start === 0) {
+//     if (sourceBuffer) {
+//       mediaSource.removeSourceBuffer(sourceBuffer);
+//     }
+//     sourceBuffer = mediaSource.addSourceBuffer(music.mime);
+//   }
+//   await fetch(`http://localhost:45678/music/fetchMusic?fileName=${fileName}`, {
+//     method: 'get',
+//     headers: {
+//       'Range': `bytes=${start}-${end}`,
+//     },
+//   }).then(response => response.arrayBuffer())
+//     .then(buffer => {
+//       sourceBuffer.appendBuffer(buffer);
+//       currentShard++;
+//     });
+// }
 
 let currentTime = ref<number>(0);
-const onTimeUpdate = () => {
-  const buffered = audioPlayer.value.buffered;
-  currentTime.value = audioPlayer.value.currentTime;
-  const bufferedEnd = buffered.length ? buffered.end(buffered.length - 1) : 0;
-  if (bufferedEnd - currentTime.value <= 30 && currentShard + 1 < shardingCount) {
-    fetchMusic(music.value.link, currentShard * shardingSize, (currentShard + 1) * shardingSize);
-  }
+const updateCurrentTime = throttle((currentTime) => {
+  globalStore.global.media.currentTime = currentTime;
+}, 15 * 1000, false);
+
+const onTimeUpdate = async () => {
+  // const buffered = audioPlayer.value!.buffered;
+  currentTime.value = audioPlayer.value!.currentTime;
+  updateCurrentTime(audioPlayer.value!.currentTime);
+  // const bufferedEnd = buffered.length ? buffered.end(buffered.length - 1) : 0;
+  // if (bufferedEnd - currentTime.value <= 30 && currentShard + 1 < shardingCount) {
+  //   fetchMusic(music.link, currentShard * shardingSize, (currentShard + 1) * shardingSize);
+  // }
 };
 
 eventBus.on('playMusic', playMusic);
 
-const settingStore = useSettingStore();
 const getCover = computed(() => {
-  return music.value.cover ? music.value.cover : settingStore.setting.defaultMusicCover;
+  return music?.cover ? music.cover : globalStore.global.defaultMusicCover;
 });
 
-const play = ref(false);
 const playOrPause = () => {
-  play.value = !play.value;
-  handleEvent('play', play.value);
+  if (music.id === null) {
+    return;
+  }
+  updateCurrentTime(audioPlayer.value!.currentTime);
+  if (audioPlayer.value?.paused) {
+    handleEvent('play');
+  } else {
+    handleEvent('pause');
+  }
 }
 
 const progressData: ProgressType = reactive({
@@ -150,7 +177,7 @@ const progressData: ProgressType = reactive({
 });
 
 const calculateProgress = computed(() => {
-  let current = currentTime.value / music.value.duration * 100;
+  let current = currentTime.value / music.duration * 100;
   progressData.percentage = current;
   return current;
 });
@@ -158,7 +185,7 @@ const calculateProgress = computed(() => {
 const changeCurrentTime = (e: any) => {
   const offset = e.offsetX;
   const total = e.target.getBoundingClientRect().width;
-  handleEvent('changeCurrentTime', offset / total * music.value.duration);
+  handleEvent('changeCurrentTime', offset / total * music.duration);
 }
 </script>
 

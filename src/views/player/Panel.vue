@@ -21,11 +21,11 @@
 <script setup lang="ts">
 import SvgIcon from '@/components/SvgIcon.vue';
 import Progress from '@/components/Progress.vue';
-import { useSettingStore } from '@/store/global';
+import { useGlobalStore } from '@/store/global';
 import { storeToRefs } from 'pinia';
 import type { ProgressType } from '@/types/global';
 import { onMounted, reactive, ref, watch } from 'vue';
-import { initPlayerSetting } from '@/lib/init';
+import { initGlobal } from '@/lib/init';
 
 const progressData: ProgressType = reactive({
   width: '10rem',
@@ -38,22 +38,22 @@ let volume = ref(10);
 
 let emits = defineEmits(['update']);
 
-const settingStore = useSettingStore();
-const { setting } = storeToRefs(settingStore);
+const globalStore = useGlobalStore();
+const { global } = storeToRefs(globalStore);
 
 onMounted(() => {
-  if (!setting) {
-    initPlayerSetting();
+  if (!global) {
+    initGlobal();
   } else {
-    volume.value = setting.value.player.volume;
+    volume.value = global.value.player.volume;
   }
 });
 
 const changeMute = () => {
   if (volume.value === 0) {
-    volume.value = setting.value.player.volume;
+    volume.value = global.value.player.volume;
   } else {
-    setting.value.player.volume = volume.value;
+    global.value.player.volume = volume.value;
     volume.value = 0;
   }
 }
@@ -66,7 +66,7 @@ const changeVolume = (e: any) => {
   const offset = e.offsetX;
   const total = e.target.getBoundingClientRect().width;
   volume.value = Math.floor(offset / total * 100);
-  setting.value.player.volume = volume.value;
+  global.value.player.volume = volume.value;
   progressData.percentage = volume.value;
 }
 

@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import { RouterView } from 'vue-router';
 import { watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { ComponentType } from '@/types/global';
 import { componentState } from '@/store/componentState';
+import { useAccountStore, useGlobalStore } from '@/store/global';
+import { updateSetting } from '@/api/setting';
 
 const route = useRoute();
 
@@ -18,7 +20,20 @@ watch(() => route?.params?.type, type => {
     default:
       componentState.currentRightComponent = ComponentType.DEFAULT;
   }
-})
+});
+
+const globalStore = useGlobalStore();
+const accountStore = useAccountStore();
+watch(() => globalStore.global, global => {
+  updateSetting({
+    userId: accountStore.account.userId,
+    musicId: global.media.musicId,
+    currentTime: global.media.currentTime,
+    isMute: global.player.isMute,
+    volume: global.player.volume,
+    playMode: global.player.playMode,
+  });
+}, { deep: true });
 </script>
 
 <template>

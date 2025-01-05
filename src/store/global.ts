@@ -20,34 +20,6 @@ interface ComponentState {
 	currentRightComponent: ComponentType;
 }
 
-interface Account {
-	userId?: number;
-	username?: string;
-	avatar?: string;
-}
-
-export const useSettingStore = defineStore('setting', () => {
-	const setting = reactive<Setting>({
-		player: {
-			isMute: false,
-			volume: 10,
-			defaultSound: 10,
-			defaultPlayMode: 'loop',
-		},
-		defaultMusicCover: undefined,
-		defaultPlaylistCover: undefined,
-	});
-
-	function updatePlayer(playerSetting: PlayerSetting) {
-		setting.player.isMute = playerSetting.isMute;
-		setting.player.defaultMusicCover = playerSetting.defaultMusicCover;
-	}
-
-	return {
-		setting,
-		updatePlayer
-	}
-});
 
 
 export const useComponentStateStore = defineStore('componentState', () => {
@@ -60,10 +32,15 @@ export const useComponentStateStore = defineStore('componentState', () => {
 	}
 });
 
+interface Account {
+	userId?: number;
+	username?: string;
+	avatar?: string;
+}
 
 export const useAccountStore = defineStore('account', () => {
-	const account = reactive<Account>({
-		userId: undefined,
+	const account: Account = reactive({
+		userId: 1,
 	});
 
 	return {
@@ -83,7 +60,22 @@ export const useRouteStore = defineStore('route', () => {
 
 export const useGlobalStore = defineStore('global', () => {
 	const global = reactive<any>({
+		media: {
+			musicId: undefined,
+			volume: 0,
+			currentTime: 0,
+		},
+		player: {
+			isMute: false,
+			volume: 10,
+			playMode: undefined,
+			defaultSound: 10,
+			defaultPlayMode: 'loop',
+		},
+		music: undefined,
 		searchMusicKey: '',
+		defaultMusicCover: undefined,
+		defaultPlaylistCover: undefined,
 	});
 
 	return {

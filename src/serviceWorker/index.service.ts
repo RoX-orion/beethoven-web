@@ -35,43 +35,44 @@ self.addEventListener('activate', (e) => {
 });
 
 
-self.addEventListener('fetch', (e: FetchEvent) => {
-	console.log('service worker fetch', e);
-	const { url } = e.request;
-	const scope = self.registration.scope;
-	if (!url.startsWith(scope)) {
-		return false;
-	}
-
-	const { pathname, protocol } = new URL(url);
-	const { pathname: scopePathname } = new URL(scope);
-	console.log('fetch', pathname);
-	//
-	// if (pathname.includes('/progressive/')) {
-	// 	e.respondWith(respondForProgressive(e));
-	// 	return true;
-	// }
-
-	if (pathname.includes('/download/')) {
-		// e.respondWith(respondForDownload(e));
-		return true;
-	}
-	//
-	// if (pathname.includes('/share/')) {
-	// 	e.respondWith(respondForShare(e));
-	// }
-	//
-	// if (protocol === 'http:' || protocol === 'https:') {
-	// 	if (pathname === scopePathname || pathname.match(RE_NETWORK_FIRST_ASSETS)) {
-	// 		e.respondWith(respondWithCacheNetworkFirst(e));
-	// 		return true;
-	// 	}
-	//
-	// 	if (pathname.match(RE_CACHE_FIRST_ASSETS)) {
-	// 		e.respondWith(respondWithCache(e));
-	// 		return true;
-	// 	}
-	// }
-
-	return false;
-});
+// self.addEventListener('fetch', (e: FetchEvent) => {
+//
+// 	const { url } = e.request;
+// 	const scope = self.registration.scope;
+//
+// 	if (!url.startsWith(scope)) {
+// 		return false;
+// 	}
+// 	console.log('service worker fetch', e);
+// 	const { pathname, protocol } = new URL(url);
+// 	const { pathname: scopePathname } = new URL(scope);
+// 	console.log('fetch', pathname);
+// 	//
+// 	// if (pathname.includes('/progressive/')) {
+// 	// 	e.respondWith(respondForProgressive(e));
+// 	// 	return true;
+// 	// }
+//
+// 	if (pathname.includes('/download/')) {
+// 		// e.respondWith(respondForDownload(e));
+// 		return true;
+// 	}
+// 	//
+// 	// if (pathname.includes('/share/')) {
+// 	// 	e.respondWith(respondForShare(e));
+// 	// }
+// 	//
+// 	// if (protocol === 'http:' || protocol === 'https:') {
+// 	// 	if (pathname === scopePathname || pathname.match(RE_NETWORK_FIRST_ASSETS)) {
+// 	// 		e.respondWith(respondWithCacheNetworkFirst(e));
+// 	// 		return true;
+// 	// 	}
+// 	//
+// 	// 	if (pathname.match(RE_CACHE_FIRST_ASSETS)) {
+// 	// 		e.respondWith(respondWithCache(e));
+// 	// 		return true;
+// 	// 	}
+// 	// }
+//
+// 	return false;
+// });
