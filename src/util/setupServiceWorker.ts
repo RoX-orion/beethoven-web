@@ -4,15 +4,14 @@
 // import { formatShareText } from './deeplink';
 // import { validateFiles } from './files';
 import { notifyClientReady, playNotifySoundDebounced } from './notifications';
-import { IS_ANDROID, IS_IOS, IS_SERVICE_WORKER_SUPPORTED } from './windowEnvironment';
+import { IS_SERVICE_WORKER_SUPPORTED } from './windowEnvironment';
 import { DEBUG, DEBUG_MORE } from '@/config';
+import ServiceWorkerURL from '../../sw?worker&url';
 
 type WorkerAction = {
 	type: string;
 	payload: Record<string, any>;
 };
-
-const IGNORE_WORKER_PATH = '/k/';
 
 function handleWorkerMessage(e: MessageEvent) {
 	const action: WorkerAction = e.data;
@@ -51,9 +50,8 @@ if (IS_SERVICE_WORKER_SUPPORTED) {
 	window.addEventListener('load', async () => {
 		try {
 			const controller = navigator.serviceWorker.controller;
-			if (!controller || controller.scriptURL.includes(IGNORE_WORKER_PATH)) {
-				const registrations = await navigator.serviceWorker.getRegistrations();
-				const ourRegistrations = registrations.filter((r) => !r.scope.includes(IGNORE_WORKER_PATH));
+			if (!controller) {
+				const ourRegistrations = await navigator.serviceWorker.getRegistrations();
 				if (ourRegistrations.length) {
 					if (DEBUG) {
 						// eslint-disable-next-line no-console
@@ -63,7 +61,7 @@ if (IS_SERVICE_WORKER_SUPPORTED) {
 				}
 			}
 
-			await navigator.serviceWorker.register(new URL('../serviceWorker', import.meta.url), { type: 'module' });
+			await navigator.serviceWorker.register(ServiceWorkerURL, { type: 'module', scope: '/' });
 
 			if (DEBUG) {
 				// eslint-disable-next-line no-console

@@ -8,7 +8,7 @@ import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
 import vueDevTools from 'vite-plugin-vue-devtools';
 import Components from 'unplugin-vue-components/vite';
 import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers';
-import { VitePWA } from 'vite-plugin-pwa'
+// import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -28,16 +28,33 @@ export default defineConfig({
         }),
       ],
     }),
-    VitePWA({
-      registerType: 'autoUpdate',
-      devOptions: {
-        enabled: true,
-      },
-    }),
+    // VitePWA({
+    //   registerType: 'autoUpdate',
+    //   devOptions: {
+    //     enabled: true,
+    //   },
+    //   manifest: {
+    //     name: 'Beethoven Music Web',
+    //     short_name: 'Beethoven Music',
+    //     description: 'Beethoven music for web',
+    //     theme_color: '#ffffff',
+    //   },
+    //   strategies: 'injectManifest',
+    //   srcDir: 'src/serviceWorker',
+    //   filename: 'index.service.ts',
+    //   workbox: {
+    //     globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
+    //     cleanupOutdatedCaches: true,
+    //     clientsClaim: true,
+    //   },
+    // }),
   ],
   server: {
     host: '0.0.0.0',
-    port: 12345
+    port: 12345,
+    headers: {
+      'Service-Worker-Allowed': '/',
+    },
   },
   resolve: {
     alias: {
@@ -45,7 +62,7 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: 'build', // 打包文件的输出目录
-    assetsDir: 'static' // 静态资源的存放目录
+    outDir: 'build',
+    assetsDir: 'static',
   },
 })

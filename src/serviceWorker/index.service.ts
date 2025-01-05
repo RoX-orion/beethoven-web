@@ -5,7 +5,7 @@ const ACTIVATE_TIMEOUT = 3000;
 
 declare const self: ServiceWorkerGlobalScope;
 
-self.addEventListener('install', (e: ExtendableEvent) => {
+self.addEventListener('install', (e) => {
 	if (DEBUG) {
 		// eslint-disable-next-line no-console
 		console.log('ServiceWorker installed');
@@ -36,7 +36,7 @@ self.addEventListener('activate', (e) => {
 
 
 self.addEventListener('fetch', (e: FetchEvent) => {
-	console.log('service worker fetch');
+	console.log('service worker fetch', e);
 	const { url } = e.request;
 	const scope = self.registration.scope;
 	if (!url.startsWith(scope)) {
