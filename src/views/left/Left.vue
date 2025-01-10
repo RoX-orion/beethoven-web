@@ -22,7 +22,7 @@
   <Dialog v-model="addPlaylistDialogVisible" width="30rem" title="新建歌单">
     <div class="flex-row playlist-dialog">
       <div class="cover">
-        <img src="../../assets/img/playlistCover.png" alt="cover"/>
+        <img src="/assets/img/playlistCover.png" alt="cover"/>
       </div>
       <div class="playlist-info">
         <InputText class="input-text" placeholder="歌单名" v-model="playlistInfo.title"/>

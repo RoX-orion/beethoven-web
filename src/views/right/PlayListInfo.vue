@@ -32,7 +32,7 @@
   <Dialog title="编辑歌单" width="30rem" v-model="updatePlaylistDialogVisible">
     <div class="flex-row playlist-dialog">
       <div class="cover">
-        <img src="../../assets/img/playlistCover.png" alt="cover"/>
+        <img src="/assets/img/playlistCover.png" alt="cover"/>
       </div>
       <div class="update-playlist-info">
         <InputText class="input-text" placeholder="歌单名" v-model="updatePlaylistInfo.title"/>

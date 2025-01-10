@@ -17,7 +17,7 @@ const playlist = defineProps({
   },
   cover: {
     type: String,
-    default: '../../src/assets/img/like.png',
+    default: '/assets/img/like.png',
   },
   author: {
     type: String,

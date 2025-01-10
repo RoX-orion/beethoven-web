@@ -1,7 +1,7 @@
 <template>
   <div class="sidebar-wrapper custom-scroll">
     <div class="logo-wrapper flex-row pointer" @click="gotoHome">
-      <img src="../../../assets/brand.png" alt="brand">
+      <img src="/assets/brand.png" alt="brand">
       <span style="color: white; margin: auto; display: inline-block">Beethoven Music Web</span>
     </div>
     <Menu

@@ -1,7 +1,7 @@
 <template>
   <div class="flex-row header-wrapper">
     <div class="flex-row pointer" style="justify-items: center" @click="goToHome">
-      <img class="brand" src="../../assets/brand.png" alt="">
+      <img class="brand" src="/assets/brand.png" alt="">
       <span class="brand-text">Beethoven Music</span>
     </div>
     <Search class="search-wrapper" v-model:searching="searching" v-model="key"/>

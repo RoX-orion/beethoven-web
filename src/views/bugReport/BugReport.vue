@@ -35,7 +35,7 @@ import type { BugItemType } from '@/types/global';
 
 const list = reactive<Array<BugItemType>>([
   {
-    img: '../../src/assets/img/bug.png',
+    img: '/assets/img/bug.png',
     title: '获取消息列表错误',
     summary: '对爱情的渴望，对知识的追求，对人类苦难不可遏制的同情，这三种纯洁但无比强烈的感情支配着我的一生。这三种感情就像飓风一样，在深深的苦海上，肆意地把我吹来吹去，吹到濒临绝望的边缘。',
     date: new Date(),
@@ -44,7 +44,7 @@ const list = reactive<Array<BugItemType>>([
     state: 'Open'
   },
   {
-    img: '../../src/assets/img/tip.png',
+    img: '/assets/img/tip.png',
     title: '获取消息列表错误',
     summary: '对爱情的渴望，对知识的追求，对人类苦难不可遏制的同情，这三种纯洁但无比强烈的感情支配着我的一生。这三种感情就像飓风一样，在深深的苦海上，肆意地把我吹来吹去，吹到濒临绝望的边缘。',
     date: new Date(),
@@ -53,7 +53,7 @@ const list = reactive<Array<BugItemType>>([
     state: 'Open'
   },
   {
-    img: '../../src/assets/img/bug.png',
+    img: '/assets/img/bug.png',
     title: '获取消息列表错误',
     summary: '对爱情的渴望，对知识的追求，对人类苦难不可遏制的同情，这三种纯洁但无比强烈的感情支配着我的一生。这三种感情就像飓风一样，在深深的苦海上，肆意地把我吹来吹去，吹到濒临绝望的边缘。',
     date: new Date(),
@@ -62,7 +62,7 @@ const list = reactive<Array<BugItemType>>([
     state: 'Open'
   },
   {
-    img: '../../src/assets/img/tip.png',
+    img: '/assets/img/tip.png',
     title: '获取消息列表错误',
     summary: '对爱情的渴望，对知识的追求，对人类苦难不可遏制的同情，这三种纯洁但无比强烈的感情支配着我的一生。这三种感情就像飓风一样，在深深的苦海上，肆意地把我吹来吹去，吹到濒临绝望的边缘。',
     date: new Date(),
@@ -71,7 +71,7 @@ const list = reactive<Array<BugItemType>>([
     state: 'Open'
   },
   {
-    img: '../../src/assets/img/bug.png',
+    img: '/assets/img/bug.png',
     title: '获取消息列表错误',
     summary: '对爱情的渴望，对知识的追求，对人类苦难不可遏制的同情，这三种纯洁但无比强烈的感情支配着我的一生。这三种感情就像飓风一样，在深深的苦海上，肆意地把我吹来吹去，吹到濒临绝望的边缘。',
     date: new Date(),
@@ -80,7 +80,7 @@ const list = reactive<Array<BugItemType>>([
     state: 'Open'
   },
   {
-    img: '../../src/assets/img/bug.png',
+    img: '/assets/img/bug.png',
     title: '获取消息列表错误',
     summary: '对爱情的渴望，对知识的追求，对人类苦难不可遏制的同情，这三种纯洁但无比强烈的感情支配着我的一生。这三种感情就像飓风一样，在深深的苦海上，肆意地把我吹来吹去，吹到濒临绝望的边缘。',
     date: new Date(),
@@ -89,7 +89,7 @@ const list = reactive<Array<BugItemType>>([
     state: 'Open'
   },
   {
-    img: '../../src/assets/img/bug.png',
+    img: '/assets/img/bug.png',
     title: '获取消息列表错误',
     summary: '对爱情的渴望，对知识的追求，对人类苦难不可遏制的同情，这三种纯洁但无比强烈的感情支配着我的一生。这三种感情就像飓风一样，在深深的苦海上，肆意地把我吹来吹去，吹到濒临绝望的边缘。',
     date: new Date(),
