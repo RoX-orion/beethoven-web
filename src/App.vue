@@ -26,7 +26,7 @@ const globalStore = useGlobalStore();
 const accountStore = useAccountStore();
 watch(() => globalStore.global, global => {
   updateSetting({
-    userId: accountStore.account.userId,
+    userId: accountStore.account.id,
     musicId: global.media.musicId,
     currentTime: global.media.currentTime,
     isMute: global.player.isMute,

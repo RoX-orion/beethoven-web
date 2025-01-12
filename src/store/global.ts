@@ -10,17 +10,9 @@ interface PlayerSetting {
 	defaultMusicCover?: string
 }
 
-interface Setting {
-	player: PlayerSetting;
-	defaultMusicCover: string | undefined;
-	defaultPlaylistCover: string | undefined;
-}
-
 interface ComponentState {
 	currentRightComponent: ComponentType;
 }
-
-
 
 export const useComponentStateStore = defineStore('componentState', () => {
 	const componentState = reactive<ComponentState>({
@@ -33,15 +25,14 @@ export const useComponentStateStore = defineStore('componentState', () => {
 });
 
 interface Account {
-	userId?: number;
+	id?: string;
 	username?: string;
 	avatar?: string;
+	token?: string;
 }
 
 export const useAccountStore = defineStore('account', () => {
-	const account: Account = reactive({
-		userId: 1,
-	});
+	const account: Account = reactive({});
 
 	return {
 		account,

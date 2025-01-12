@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { deleteData, getData } from '@/util/localStorage';
+import { TOKEN } from '@/config';
 
 // create an axios instance
 const service = axios.create({
@@ -12,9 +14,10 @@ service.interceptors.request.use(
 	config => {
 		// do something before request is sent
 
-		// if (store.getters.token) {
-		// 	config.headers['Token'] = getToken()
-		// }
+		const token = getData(TOKEN);
+		if (token) {
+			config.headers['Authorization'] = token;
+		}
 		return config
 	},
 	error => {
@@ -45,7 +48,10 @@ service.interceptors.response.use(
 			// 		})
 			// 	})
 			// }
-			return Promise.reject(new Error(res.message || 'Error'))
+			if (res.code === 401) {
+				deleteData(TOKEN);
+			}
+			return Promise.reject(new Error(res.message || 'Error'));
 		} else {
 			return res
 		}

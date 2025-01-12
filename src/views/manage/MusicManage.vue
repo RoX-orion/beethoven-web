@@ -14,8 +14,8 @@
         <div>{{ durationFormater(music.duration) }}</div>
         <div>{{ sizeFormater(music.size) }}</div>
         <div>{{ music.mime }}</div>
-        <div>{{ music.createTime }}</div>
-        <div>{{ music.updateTime }}</div>
+        <div>{{ formatTime(music.createTime, '{y}-{m}-{d} {h}:{i}') }}</div>
+        <div>{{ formatTime(music.updateTime, '{y}-{m}-{d} {h}:{i}') }}</div>
         <div class="flex-row">
           <Button class="btn">编辑</Button>
           <Button class="btn" style="background-color: #e53935">删除</Button>
@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { getManageMusicList } from '@/api/music';
 import { onMounted, ref } from 'vue';
-import { durationFormater } from '@/util/time';
+import { durationFormater, formatTime } from '@/util/time';
 import { sizeFormater } from '@/util/file';
 import Button from '@/components/Button.vue';
 import Search from '@/components/Search.vue';

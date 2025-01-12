@@ -4,3 +4,5 @@ export const DEBUG_MORE = true;
 export const PLAYER_SETTING = 'player-setting';
 
 export const SHARDING_SIZE = "shardingSize";
+
+export const TOKEN = "token";
