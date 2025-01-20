@@ -8,7 +8,7 @@
       <svg-icon class="sound-button pointer" v-if="volume === 0" name="volume-off" size="1.5rem" @click="changeMute"/>
       <svg-icon class="sound-button pointer" v-else name="volume-on" size="1.5rem" @click="changeMute"/>
 
-      <div style="position: relative;">
+      <div class="progress" style="position: relative;">
         <div style="display: block; margin: auto">
           <Progress v-model="volume" :data="progressData" @mousedown="changeVolume"/>
         </div>
@@ -77,7 +77,6 @@ watch(volume, (newVolume) => {
 
 <style scoped lang="scss">
 .panel-wrapper {
-  max-width: 30vw;
   margin: auto 0;
 }
 
@@ -90,5 +89,11 @@ watch(volume, (newVolume) => {
 .sound-wrapper {
   align-items: center;
   position: relative;
+}
+
+@media (max-width: 800px) {
+  .progress {
+    display: none;
+  }
 }
 </style>

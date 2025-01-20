@@ -119,4 +119,14 @@ const gotoPlayListInfo = (playlistId: string) => {
     }
   }
 }
+
+@media (max-width: 800px) {
+  .playlist-wrapper {
+    padding: 0;
+  }
+
+  .left-header {
+    display: none;
+  }
+}
 </style>

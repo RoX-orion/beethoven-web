@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-row header-wrapper">
+  <div class="flex-row header-wrapper content-space-between">
     <div class="flex-row pointer" style="justify-items: center" @click="goToHome">
       <img class="brand" src="/assets/brand.png" alt="">
       <span class="brand-text">Beethoven Music</span>
@@ -62,6 +62,7 @@ watch(key, debounce(async (newValue, oldValue) => {
 <style lang="scss" scoped>
 .header-wrapper {
   padding: 10px;
+  width: 100vw;
 
   .brand {
     width: var(--header-item-size);
@@ -76,10 +77,11 @@ watch(key, debounce(async (newValue, oldValue) => {
     font-weight: 700;
     line-height: 2.17rem;
     margin: auto 1rem;
+    width: 12.5rem;
   }
 
   .search-wrapper {
-    margin: auto;
+    margin: auto .5rem;
     width: var(--search-width);
   }
 
@@ -90,6 +92,16 @@ watch(key, debounce(async (newValue, oldValue) => {
       margin: auto;
       gap: 1rem;
     }
+  }
+}
+
+@media (max-width: 800px) {
+  .brand-text {
+    display: none;
+  }
+
+  .button-group {
+    display: none;
   }
 }
 </style>

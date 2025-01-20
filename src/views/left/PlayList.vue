@@ -39,8 +39,6 @@ const playlist = defineProps({
   &:hover {
     background-color: rgba(0, 0, 0, .1);
   }
-
-
 }
 
 .playlist-cover {
@@ -59,6 +57,19 @@ const playlist = defineProps({
   .info {
     font-size: var(--info-font-size);
     color: grey;
+  }
+}
+
+@media (max-width: 800px) {
+  .playlist-wrapper {
+    padding: 0;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .playlist-card {
+    display: none;
   }
 }
 </style>

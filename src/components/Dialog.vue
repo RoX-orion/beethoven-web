@@ -1,6 +1,6 @@
 <template>
   <div class="dialog-wrapper" v-if="visible" @click.self="visible = false">
-    <div class="dialog" :style="{width: props.width}">
+    <div class="dialog" :style="{'max-width': props.width}">
       <div class="flex-row content-space-between">
         <div style="font-weight: bold; font-size: 1.2rem; margin: auto 0">{{ props.title }}</div>
 
@@ -44,7 +44,7 @@ let visible = defineModel({
   left: 50%;
   transform: translateX(-50%);
   padding: 1rem;
-  //width: 50vw;
+  width: 100%;
   background: rgba(227, 238, 255, 1);
   border-radius: .5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, .04), 0 0 6px rgba(0, 0, 0, .04);

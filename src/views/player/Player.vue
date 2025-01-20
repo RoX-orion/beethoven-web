@@ -1,33 +1,47 @@
 <template>
-  <div class="player-wrapper flex-row">
-    <div class="flex-row pointer">
-      <img class="cover" :src="getCover" alt="cover">
-      <div class="music-info">
-        <span>{{ music.name }}</span>
-        <span class="info-font">{{ music.singer }}</span>
+  <div class="player">
+    <div class="progress-mobile">
+      <div style="width: 100%; position: relative; margin: auto">
+        <Progress :data="progressData" @mousedown="changeCurrentTime"/>
+        <div class="seek-line pointer" :style="{left: calculateProgress + '%'}"></div>
+      </div>
+      <div class="flex-row content-space-between" style="width: 100%">
+        <div>{{ durationFormater(Math.floor(currentTime)) }}</div>
+        <div v-if="music.duration">{{ durationFormater(music.duration) }}</div>
       </div>
     </div>
 
-    <div class="flex-col controls-wrapper">
-      <div class="button-group flex-row">
-        <IconButton icon-name="prev"/>
-        <IconButton v-if="audioPlayer?.paused" icon-name="pause" @click="playOrPause"/>
-        <IconButton v-else icon-name="play" @click="playOrPause"/>
-        <IconButton icon-name="next"/>
-      </div>
-      <div class="flex-row progress">
-        <div class="time">{{ durationFormater(Math.floor(currentTime)) }}</div>
-        <div style="width: 100%; position: relative; margin: auto">
-          <Progress :data="progressData" @mousedown="changeCurrentTime"/>
-          <div class="seek-line pointer" :style="{left: calculateProgress + '%'}"></div>
+    <div class="player-wrapper flex-row content-space-between">
+      <div class="flex-row pointer">
+        <img class="cover" :src="getCover" alt="cover">
+        <div class="music-info">
+          <span>{{ music.name }}</span>
+          <span class="info-font">{{ music.singer }}</span>
         </div>
-        <div class="time" v-if="music.duration">{{ durationFormater(music.duration) }}</div>
       </div>
-    </div>
 
-    <Panel @update="handleEvent"/>
-    <audio class="player" ref="audioPlayer" controls></audio>
+      <div class="flex-col controls-wrapper">
+        <div class="button-group flex-row">
+          <IconButton icon-name="prev"/>
+          <IconButton v-if="audioPlayer?.paused" icon-name="pause" @click="playOrPause"/>
+          <IconButton v-else icon-name="play" @click="playOrPause"/>
+          <IconButton icon-name="next"/>
+        </div>
+        <div class="flex-row progress">
+          <div class="time">{{ durationFormater(Math.floor(currentTime)) }}</div>
+          <div style="width: 100%; position: relative; margin: auto">
+            <Progress :data="progressData" @mousedown="changeCurrentTime"/>
+            <div class="seek-line pointer" :style="{left: calculateProgress + '%'}"></div>
+          </div>
+          <div class="time" v-if="music.duration">{{ durationFormater(music.duration) }}</div>
+        </div>
+      </div>
+
+      <Panel @update="handleEvent"/>
+      <audio class="player" ref="audioPlayer" controls></audio>
+    </div>
   </div>
+
 </template>
 
 <script setup lang="ts">
@@ -176,8 +190,9 @@ const progressData: ProgressType = reactive({
   percentage: 0,
 });
 
+let current = 0;
 const calculateProgress = computed(() => {
-  let current = currentTime.value / music.duration * 100;
+  current = Math.min(currentTime.value / music.duration * 100, 100);
   progressData.percentage = current;
   return current;
 });
@@ -190,13 +205,20 @@ const changeCurrentTime = (e: any) => {
 </script>
 
 <style lang="scss" scoped>
+.player {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
 .player-wrapper {
   justify-content: space-between;
-  padding: .75rem 1rem;
+  padding: 1rem;
 
   .cover {
+    width: 4.25rem;
+    height: 100%;
     border-radius: .25rem;
-    margin: auto;
   }
 
   .music-info {
@@ -237,6 +259,31 @@ const changeCurrentTime = (e: any) => {
     line-height: 2rem;
     padding: 0 .5rem;
     color: rgba(56, 56, 56, 1);
+  }
+}
+
+.progress-mobile {
+  margin: 0 .5rem;
+}
+
+@media (max-width: 800px) {
+  .player-wrapper {
+    padding: .5rem;
+
+    .cover {
+      width: 4rem;
+      height: 4rem;
+    }
+  }
+
+  .progress {
+    display: none;
+  }
+}
+
+@media (min-width: 801px) {
+  .progress-mobile {
+    display: none;
   }
 }
 </style>

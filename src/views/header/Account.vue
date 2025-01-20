@@ -1,6 +1,6 @@
 <template>
   <div style="display: flex; margin-left: 1rem">
-    <img class="avatar" v-if="account.avatar" :src="account.avatar" @click="changeTheme" alt="">
+    <img class="avatar" v-if="account.avatar" :src="account.avatar" alt="">
     <svg-icon style="margin: auto" class="pointer" v-else name="account" size="2rem" color="grey" @click="handleAuth"/>
   </div>
 </template>
@@ -12,18 +12,15 @@ import { getAccountInfoByToken } from '@/api/account';
 import { storeToRefs } from 'pinia';
 import SvgIcon from '@/components/SvgIcon.vue';
 import { getOAuth2Info, handleOAuth2Login } from '@/api/auth';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { getData, setData } from '@/util/localStorage';
 import { TOKEN } from '@/config';
-
-const changeTheme = () => {
-  document.body.style.background = 'linear-gradient(0deg, rgba(243, 231, 233, 1) 0%, rgba(227, 238, 255, 1) 99%, rgba(227, 238, 255, 1) 100%)';
-}
 
 let accountStore = useAccountStore();
 let {account} = storeToRefs(accountStore);
 
 const route = useRoute();
+const router = useRouter();
 onMounted(async () => {
   const token = getData(TOKEN);
   if (!token) {
@@ -32,6 +29,7 @@ onMounted(async () => {
       await handleOAuth2Login({ code, type: 'GITHUB' }).then(response => {
         Object.assign(account.value, response.data);
         setData(TOKEN, account.value.token);
+        router.push({ path: '/' });
       });
     }
   } else {

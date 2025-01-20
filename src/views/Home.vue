@@ -5,7 +5,7 @@
     <Right/>
   </div>
 
-  <Player class="player" />
+  <Player/>
 </template>
 
 <script setup lang="ts">
@@ -33,11 +33,10 @@ onMounted(() => {
   height: calc(100vh - 11rem);
   margin: 0 1rem;
 }
-.player {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 6rem;
+
+@media (max-width: 800px) {
+  .left-right {
+    height: calc(100dvh - 12rem);
+  }
 }
 </style>

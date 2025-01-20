@@ -26,24 +26,19 @@
   --base-padding: .5rem;
   --base-margin: .5rem;
 
+  @media (min-width: 1920px) {
+    --left-width: 20vw;
+    --search-width: max(30vw, 40rem);
+  }
+
   @media (max-width: 1920px) {
-    --left-width: 26vw;
-    --search-width: 30vw;
-  }
-
-  @media (max-width: 1200px) {
-    --left-width: 30vw;
-    --search-width: 40vw;
-  }
-
-  @media (max-width: 800px) {
-    --left-width: 10vw;
-    --search-width: 80vw;
+    --left-width: max(30vw, 30rem);
+    --search-width: max(30vw, 40rem);
   }
 
   @media (max-width: 500px) {
-    --left-width: 0;
-    --search-width: 100vw;
+    --left-width: 6rem;
+    --search-width: 100%;
   }
 }
 
@@ -86,8 +81,8 @@
 
 html,
 body {
-  /*min-height: 100vh;*/
-  height: 100vh;
+  height: 100dvh;
+  overflow-y: hidden;
   background: var(--background-color-light);
   transition: color 0.5s,
   background-color 0.5s;
