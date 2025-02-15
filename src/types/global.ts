@@ -57,7 +57,7 @@ export interface SettingType {
 }
 
 export interface MusicItemType {
-	id: string | null;
+	id: string;
 	link: string;
 	cover?: string;
 	name?: string;

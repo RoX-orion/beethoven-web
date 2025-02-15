@@ -1,6 +1,6 @@
 import request from '@/util/request';
 import type { Page } from '@/api/params/query';
-import type { PlaylistType } from '@/types/playlist';
+import type { AddMusicFormType, PlaylistType } from '@/types/playlist';
 import type { ApiResponse } from '@/types/global';
 
 export async function getPlaylist(query: Page) : Promise<any> {
@@ -44,5 +44,13 @@ export function updatePlaylist(playlistInfo: PlaylistType): Promise<ApiResponse>
 		url: '/playlist/updatePlaylist',
 		method: 'put',
 		data: playlistInfo,
+	});
+}
+
+export function addMusicToPlaylist(addMusicForm: AddMusicFormType) {
+	return request({
+		url: '/playlist/addMusic',
+		method: 'post',
+		data: addMusicForm,
 	});
 }

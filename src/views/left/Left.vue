@@ -48,13 +48,18 @@ import Button from '@/components/Button.vue';
 import { addPlaylist, getPlaylist } from '@/api/playlist';
 import type { PlaylistType } from '@/types/playlist';
 import router from '@/router';
+import { TOKEN } from '@/config';
+import { getData } from '@/util/localStorage';
+import eventBus from '@/util/eventBus';
 
 let addPlaylistDialogVisible = ref(false);
 const playlistList = ref<PlaylistType[]>([]);
 const playlistInfo: PlaylistType = reactive({ id: '', title: '' });
 
 onMounted(() => {
-  getPlayListFun(1);
+  if (getData(TOKEN)) {
+    getPlayListFun(1);
+  }
 });
 
 const getPlayListFun = (page: number) => {
@@ -63,6 +68,8 @@ const getPlayListFun = (page: number) => {
     playlistList.value = data;
   });
 }
+
+eventBus.on('getPlayListFun', getPlayListFun);
 
 const addPlaylistFun = () => {
   addPlaylist(playlistInfo).then(() => {

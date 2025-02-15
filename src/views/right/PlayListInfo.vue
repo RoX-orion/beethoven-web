@@ -27,7 +27,26 @@
 
     <div>{{ music.album }}</div>
     <div>{{ sizeFormater(music.size) }}</div>
-    <div>{{ durationFormater(music.duration) }}</div>
+    <div class="flex-row">
+      {{ durationFormater(music.duration) }}
+
+      <a-dropdown :trigger="['click']">
+        <svg-icon name="more" color="black"/>
+        <template #overlay>
+          <a-menu>
+            <a-menu-item key="0">
+              加入歌单
+            </a-menu-item>
+            <a-menu-item key="1">
+              从此歌单中删除
+            </a-menu-item>
+            <a-menu-item key="3">
+              分享
+            </a-menu-item>
+          </a-menu>
+        </template>
+      </a-dropdown>
+    </div>
   </div>
   <Dialog title="编辑歌单" width="30rem" v-model="updatePlaylistDialogVisible">
     <div class="flex-row playlist-dialog">
@@ -44,6 +63,10 @@
         FINISH
       </Button>
     </div>
+  </Dialog>
+
+  <Dialog title="" model-value="">
+
   </Dialog>
 </template>
 
@@ -64,6 +87,7 @@ import Dialog from '@/components/Dialog.vue';
 import Button from '@/components/Button.vue';
 import InputText from '@/components/InputText.vue';
 import { useGlobalStore } from '@/store/global';
+import SvgIcon from '@/components/SvgIcon.vue';
 
 const route = useRoute();
 const musicList = ref<Array<MusicItemType>>([]);

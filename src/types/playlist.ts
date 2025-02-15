@@ -7,3 +7,8 @@ export interface PlaylistType {
 	createTime?: string;
 	introduction?: string;
 }
+
+export interface AddMusicFormType {
+	musicId: string;
+	playlistIds: string[];
+}
