@@ -6,6 +6,7 @@ export interface PlaylistType {
 	cover?: string;
 	createTime?: string;
 	introduction?: string;
+	accessible: boolean;
 }
 
 export interface AddMusicFormType {

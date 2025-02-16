@@ -30,7 +30,17 @@ const routes: RouteRecordRaw[] = [
     name: 'BugReport',
     component: () => import('@/views/bugReport/BugReport.vue'),
   },
-]
+  {
+    path: '/test',
+    name: 'Test',
+    component: () => import('@/views/Test.vue'),
+  },
+  {
+    path: '/auth',
+    name: 'Auth',
+    component: () => import('@/views/auth/Auth.vue'),
+  },
+];
 
 export const manageRoutes: RouteRecordRaw[] = [
   {

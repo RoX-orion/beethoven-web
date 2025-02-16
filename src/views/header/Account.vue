@@ -1,7 +1,7 @@
 <template>
   <div style="display: flex; margin-left: 1rem">
     <img class="avatar" v-if="account.avatar" :src="account.avatar" alt="">
-    <svg-icon style="margin: auto" class="pointer" v-else name="account" size="2rem" color="grey" @click="handleAuth"/>
+    <svg-icon style="margin: auto" class="pointer" v-else name="account" size="2rem" color="grey" @click="goToAuth"/>
   </div>
 </template>
 
@@ -11,7 +11,7 @@ import { onMounted } from 'vue';
 import { getAccountInfoByToken } from '@/api/account';
 import { storeToRefs } from 'pinia';
 import SvgIcon from '@/components/SvgIcon.vue';
-import { getOAuth2Info, handleOAuth2Login } from '@/api/auth';
+import { handleOAuth2Login } from '@/api/auth';
 import { useRoute, useRouter } from 'vue-router';
 import { getData, setData } from '@/util/localStorage';
 import { TOKEN } from '@/config';
@@ -40,11 +40,8 @@ onMounted(async () => {
     }
   }
 });
-const handleAuth = () => {
-  getOAuth2Info('GITHUB').then(response => {
-    const { data } = response;
-    window.location.href = `https://github.com/login/oauth/authorize?client_id=${data.clientId}&redirect_uri=${data.redirectUri}&state=${data.state}`;
-  });
+const goToAuth = () => {
+  router.push({ path: '/auth' });
 }
 </script>
 

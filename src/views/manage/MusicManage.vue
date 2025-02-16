@@ -26,28 +26,27 @@
   </a-tabs>
 
   <!--Upload Music-->
-  <Dialog v-model="uploadMusicDialogVisible" width="30rem" title="上传歌曲">
+  <a-modal v-model:open="uploadMusicDialogVisible" width="30rem" title="上传歌曲">
+    <template #footer>
+    </template>
     <div class="manage-wrapper">
       <div class="flex-row">
-        <span class="grey">封面:</span>
+        <span class="grey" style="width: 3rem">封面:</span>
         <a-upload
           style="margin: auto"
           :max-count="1"
           list-type="picture-card"
           :before-upload="beforeUploadCover"
-          @preview="handlePreview"
-        >
-          <plus-outlined v-if="uploadCoverFile === undefined"/>
+          @preview="handlePreview">
+          <plus-outlined v-if="!uploadCoverFile"/>
         </a-upload>
 
       </div>
       <div class="flex-row">
-        <span class="grey">音频:</span>
+        <span class="grey" style="width: 3rem">音频:</span>
         <a-upload
-          style="margin: auto"
           :max-count="1"
-          :before-upload="beforeUploadMusic"
-        >
+          :before-upload="beforeUploadMusic">
           <a-button>
             <upload-outlined/>
             Upload
@@ -66,7 +65,7 @@
              @cancel="handleCancel">
       <img alt="" style="width: 100%;" :src="previewImage"/>
     </a-modal>
-  </Dialog>
+  </a-modal>
 </template>
 
 <script setup lang="ts">
@@ -76,7 +75,6 @@ import { durationFormater, formatTime } from '@/util/time';
 import { sizeFormater } from '@/util/file';
 import Button from '@/components/Button.vue';
 import Search from '@/components/Search.vue';
-import Dialog from '@/components/Dialog.vue';
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import InputText from '@/components/InputText.vue';
 import { uploadMusic } from '@/api/music';
@@ -92,7 +90,7 @@ const activeKey = ref("musicList");
 let searching = ref(false);
 let name = ref('');
 
-const getManageMusicListFun = () => {
+const getManageMusicListFun = async () => {
   getManageMusicList({ page: 1, size: 10, key: '' }).then(response => {
     response.data.forEach(music => {
       music.duration = durationFormater(music.duration);
@@ -190,8 +188,12 @@ const uploadMusicFun = () => {
   musicData.append('singer', data.singer.trim());
   musicData.append('album', data.album.trim());
 
-  uploadMusic(musicData).then(() => {
-
+  uploadMusic(musicData).then(async response => {
+    if (response.code === 200) {
+      await getManageMusicListFun();
+      uploadMusicDialogVisible.value = false;
+      uploadCoverFile.value = undefined;
+    }
   }).finally(() => {
     uploading.value = false;
   });

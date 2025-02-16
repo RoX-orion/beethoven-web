@@ -27,6 +27,8 @@
       <div class="playlist-info">
         <InputText class="input-text" placeholder="歌单名" v-model="playlistInfo.title"/>
         <InputText class="input-text" placeholder="简介(可选)" v-model="playlistInfo.introduction"/>
+        <span class="grey" style="font-size: 14px">是否公开: </span>
+        <a-switch size="small" v-model:checked="playlistInfo.accessible"/>
       </div>
     </div>
     <div style="padding: 1rem">
@@ -54,7 +56,7 @@ import eventBus from '@/util/eventBus';
 
 let addPlaylistDialogVisible = ref(false);
 const playlistList = ref<PlaylistType[]>([]);
-const playlistInfo: PlaylistType = reactive({ id: '', title: '' });
+const playlistInfo: PlaylistType = reactive({ id: '', title: '', accessible: true });
 
 onMounted(() => {
   if (getData(TOKEN)) {

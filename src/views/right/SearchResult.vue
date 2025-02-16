@@ -1,7 +1,7 @@
 <template>
   <TagGroup/>
   <div class="flex-row pointer music-wrapper" v-for="music in musicList" :key="music.cover">
-    <img class="cover" :src="music.cover" alt="cover">
+    <a-image class="cover" :src="music.cover" :width="64" :height="64"></a-image>
     <div class="flex-row content-space-between" style="width: 100%; align-items: center" @click="playMusicFun(music)">
       <div class="music-info">
         <p>{{ music.name }}</p>

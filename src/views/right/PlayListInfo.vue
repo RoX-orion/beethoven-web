@@ -56,6 +56,7 @@
       <div class="update-playlist-info">
         <InputText class="input-text" placeholder="歌单名" v-model="updatePlaylistInfo.title"/>
         <InputText class="input-text" placeholder="简介(可选)" v-model="updatePlaylistInfo.introduction"/>
+        <a-switch size="small" v-model:checked="updatePlaylistInfo.accessible"/>
       </div>
     </div>
     <div style="padding: 1rem">
@@ -106,7 +107,7 @@ const getPlaylistMusicFun = (playlistId: string) => {
   });
 };
 
-const playlistInfo = ref<PlaylistType>({ id: '', title: '' });
+const playlistInfo = ref<PlaylistType>({ id: '', title: '', accessible: true });
 let fileList = ref<any[]>([]);
 const getPlaylistInfoFun = async (playlistId: string) => {
   getPlaylistInfo(playlistId).then(response => {
@@ -116,19 +117,19 @@ const getPlaylistInfoFun = async (playlistId: string) => {
 }
 
 let updatePlaylistDialogVisible = ref(false);
-let updatePlaylistInfo: PlaylistType = { id: '', title: '' };
+let updatePlaylistInfo = ref<PlaylistType>({ id: '', title: '', accessible: true });
 const handleUpdatePlaylist = () => {
-  updatePlaylist(updatePlaylistInfo).then(async response => {
+  updatePlaylist(updatePlaylistInfo.value).then(async response => {
     if (response.code === 200) {
       await getPlaylistInfoFun(playlistInfo.value.id);
       updatePlaylistDialogVisible.value = false;
-      updatePlaylistInfo = { id: '', title: '' };
+      updatePlaylistInfo.value = { id: '', title: '', accessible: true };
     }
   });
 }
 
 const updatePlaylistFun = () => {
-  Object.assign(updatePlaylistInfo, playlistInfo.value);
+  updatePlaylistInfo.value = playlistInfo.value;
   updatePlaylistDialogVisible.value = true;
 }
 

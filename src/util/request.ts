@@ -1,12 +1,14 @@
 import axios from 'axios';
 import { deleteData, getData } from '@/util/localStorage';
 import { TOKEN } from '@/config';
+import router from '@/router';
+import { notification } from 'ant-design-vue';
 
 // create an axios instance
 const service = axios.create({
 	baseURL: import.meta.env.VITE_BASE_API,
 	// withCredentials: true, // send cookies when cross-domain requests
-	timeout: 1000 * 30 // request timeout
+	timeout: 1000 * 60, // request timeout
 })
 
 // request interceptor
@@ -34,7 +36,7 @@ service.interceptors.response.use(
 		const res = response.data
 
 		if (res.code !== 200) {
-			console.log(res.message || 'Error');
+			console.log(res.msg || 'Error');
 
 			// if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
 			// 	// to re-login
@@ -48,12 +50,19 @@ service.interceptors.response.use(
 			// 		})
 			// 	})
 			// }
+			if (res.code === 500 || res.code === 400) {
+				notification['error']({
+					message: 'Error',
+					description: res.msg,
+				});
+			}
 			if (res.code === 401) {
 				deleteData(TOKEN);
+				router.push('/auth');
 			}
-			return Promise.reject(new Error(res.message || 'Error'));
+			return Promise.reject(new Error(res.msg || 'Error'));
 		} else {
-			return res
+			return res;
 		}
 	},
 	error => {
