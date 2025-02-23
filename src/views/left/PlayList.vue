@@ -59,17 +59,4 @@ const playlist = defineProps({
     color: grey;
   }
 }
-
-@media (max-width: 800px) {
-  .playlist-wrapper {
-    padding: 0;
-    margin-bottom: 1rem;
-  }
-}
-
-@media (max-width: 500px) {
-  .playlist-card {
-    display: none;
-  }
-}
 </style>

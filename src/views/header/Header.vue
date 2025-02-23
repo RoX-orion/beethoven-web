@@ -1,5 +1,6 @@
 <template>
   <div class="flex-row header-wrapper content-space-between">
+    <IconButton class="menu" icon-name="menu" @click="openLeft"/>
     <div class="flex-row pointer" style="justify-items: center" @click="goToHome">
       <img class="brand" src="/assets/brand.png" alt="">
       <span class="brand-text">Beethoven Music</span>
@@ -25,12 +26,13 @@ import Account from './Account.vue';
 import SvgIcon from '@/components/SvgIcon.vue';
 import { ref, watch } from 'vue';
 import { searchMusic } from '@/api/music';
-import eventBus from '@/util/eventBus';
+import mitt from '@/util/eventBus';
 import { useGlobalStore } from '@/store/global';
 import { debounce, pause } from '@/util/schedulers';
 import { ComponentType } from '@/types/global';
 import { componentState } from '@/store/componentState';
 import router from '@/router';
+import IconButton from '@/components/IconButton.vue';
 
 const key = ref('');
 const searching = ref(false);
@@ -41,14 +43,14 @@ const goToHome = () => {
 }
 watch(key, debounce(async (newValue, oldValue) => {
   if (newValue.trim().length > 0 && oldValue.trim() !== newValue.trim()) {
-    await router.replace(`/music/${newValue}`);
+    await router.replace(`/music?search=${newValue}`);
     globalStore.global.searchMusicKey = newValue;
 
     searching.value = true;
-    await searchMusic({ page: 1, size: 10, key: newValue }).then(async response => {
+    await searchMusic({ page: 1, size: 100, key: newValue }).then(async response => {
       componentState.currentRightComponent = ComponentType.SEARCH_RESULT;
       await pause(50);
-      eventBus.emit('getSearchMusicResult', response.data);
+      mitt.emit('getSearchMusicResult', response.data);
     }).finally(() => {
       searching.value = false;
     });
@@ -57,6 +59,10 @@ watch(key, debounce(async (newValue, oldValue) => {
     // componentState.value.currentRightComponent = ComponentType.DEFAULT;
   }
 }, 300, false));
+
+const openLeft = () => {
+  mitt.emit('showDrawer');
+}
 </script>
 
 <style lang="scss" scoped>
@@ -92,6 +98,12 @@ watch(key, debounce(async (newValue, oldValue) => {
       margin: auto;
       gap: 1rem;
     }
+  }
+}
+
+@media (min-width: 801px) {
+  .menu {
+    display: none;
   }
 }
 

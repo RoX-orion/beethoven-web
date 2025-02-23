@@ -1,6 +1,6 @@
 <template>
   <Sidebar/>
-  <div class="right-container">
+  <div class="right-container custom-scroll">
     <RouterView/>
   </div>
 </template>
@@ -13,6 +13,7 @@ import Sidebar from './Sidebar/Sidebar.vue';
 .right-container {
   margin-left: var(--sidebar-width);
   padding: .5rem;
-  overflow: hidden;
+  height: 100dvh;
+  overflow: auto !important;
 }
 </style>

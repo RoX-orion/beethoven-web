@@ -7,20 +7,19 @@
     <div class="flex-row sound-wrapper">
       <svg-icon class="sound-button pointer" v-if="volume === 0" name="volume-off" size="1.5rem" @click="changeMute"/>
       <svg-icon class="sound-button pointer" v-else name="volume-on" size="1.5rem" @click="changeMute"/>
-
-      <div class="progress" style="position: relative;">
-        <div style="display: block; margin: auto">
-          <Progress v-model="volume" :data="progressData" @mousedown="changeVolume"/>
-        </div>
-        <div class="seek-line pointer" :style="{left: volume + '%'}" @mousedown="saveVolume"></div>
-      </div>
+      <a-slider class="progress" style="width: 100px" v-model:value="volume"/>
+      <!--      <div class="progress" style="position: relative;">-->
+      <!--        <div style="display: block; margin: auto">-->
+      <!--          <Progress v-model="volume" :data="progressData" @mousedown="changeVolume"/>-->
+      <!--        </div>-->
+      <!--        <div class="seek-line pointer" :style="{left: volume + '%'}" @mousedown="saveVolume"></div>-->
+      <!--      </div>-->
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import SvgIcon from '@/components/SvgIcon.vue';
-import Progress from '@/components/Progress.vue';
 import { useGlobalStore } from '@/store/global';
 import { storeToRefs } from 'pinia';
 import type { ProgressType } from '@/types/global';
@@ -42,6 +41,8 @@ const globalStore = useGlobalStore();
 const { global } = storeToRefs(globalStore);
 
 onMounted(() => {
+  screenWidth.value = window.innerWidth;
+  setMobileVolume();
   if (!global) {
     initGlobal();
   } else {
@@ -70,6 +71,19 @@ const changeVolume = (e: any) => {
   progressData.percentage = volume.value;
 }
 
+const screenWidth = ref(0);
+window.addEventListener('resize', function () {
+  screenWidth.value = window.innerWidth;
+  setMobileVolume();
+});
+
+const setMobileVolume = () => {
+  if (screenWidth.value <= 800) {
+    volume.value = 100;
+    emits('update', 'changeVolume', 1);
+  }
+}
+
 watch(volume, (newVolume) => {
   emits('update', 'changeVolume', newVolume / 100);
 });
@@ -82,7 +96,7 @@ watch(volume, (newVolume) => {
 
 .button-group {
   .button {
-    margin-right: 1rem;
+    margin: auto .5rem;
   }
 }
 

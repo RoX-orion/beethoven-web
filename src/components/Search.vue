@@ -58,7 +58,7 @@ const resetSearch = () => {
   width: 100%;
   outline: none;
   border: none;
-  font-size: 18px;
+  font-size: 1rem;
   background-color: inherit;
   //box-shadow: 0 0 .625rem 0 var(--color-default-shadow);
 }

@@ -15,8 +15,8 @@
       <div class="flex-row pointer">
         <img class="cover" :src="getCover" alt="cover">
         <div class="music-info">
-          <span>{{ music.name }}</span>
-          <span class="info-font">{{ music.singer }}</span>
+          <span class="music-name">{{ music.name }}</span>
+          <span class="grey">{{ music.singer }}</span>
         </div>
       </div>
 
@@ -37,7 +37,25 @@
         </div>
       </div>
 
-      <Panel @update="handleEvent"/>
+      <div class="flex-row panel-wrapper">
+        <div class="flex-row">
+          <svg-icon class="button pointer" name="loop" size="1.5rem"/>
+          <svg-icon class="button pointer" name="queue" size="1.5rem"/>
+        </div>
+        <div class="flex-row sound-wrapper">
+          <svg-icon class="sound-button pointer" v-if="volume === 0" name="volume-off" size="1.5rem"
+                    @click="changeMute"/>
+          <svg-icon class="sound-button pointer" v-else name="volume-on" size="1.5rem" @click="changeMute"/>
+          <a-slider class="progress" style="width: 100px" v-model:value="volume"/>
+          <!--      <div class="progress" style="position: relative;">-->
+          <!--        <div style="display: block; margin: auto">-->
+          <!--          <Progress v-model="volume" :data="progressData" @mousedown="changeVolume"/>-->
+          <!--        </div>-->
+          <!--        <div class="seek-line pointer" :style="{left: volume + '%'}" @mousedown="saveVolume"></div>-->
+          <!--      </div>-->
+        </div>
+      </div>
+      <!--      <Panel @update="handleEvent"/>-->
       <audio class="player" ref="audioPlayer" controls></audio>
     </div>
   </div>
@@ -45,7 +63,6 @@
 </template>
 
 <script setup lang="ts">
-import Panel from "./Panel.vue";
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import type { MusicItemType, ProgressType } from '@/types/global';
 import eventBus from '@/util/eventBus';
@@ -58,6 +75,9 @@ import Progress from '@/components/Progress.vue';
 import { SHARDING_SIZE } from '@/config';
 import { getData } from '@/util/localStorage';
 import { throttle } from '@/util/schedulers';
+import SvgIcon from '@/components/SvgIcon.vue';
+import { storeToRefs } from 'pinia';
+import { initGlobal } from '@/lib/init';
 
 const audioPlayer = ref<HTMLAudioElement>();
 const music: MusicItemType = reactive({
@@ -90,7 +110,6 @@ const getMusicInfoFun = (musicId: string) => {
   getMusicInfo(musicId as string).then(async response => {
     if (response.data) {
       shardingCount = Math.ceil(response.data.size / shardingSize);
-      console.log('count', shardingCount);
       await playMusic(response.data);
       firstPlay = false;
     }
@@ -98,21 +117,22 @@ const getMusicInfoFun = (musicId: string) => {
 }
 
 watch(() => globalStore.global.media.musicId, (musicId) => {
-  console.log('change', musicId);
-
   getMusicInfoFun(musicId);
 });
 
-const handleEvent = (eventName: string, ...state: any) => {
+const handleEvent = (eventName: string, state: any) => {
   if (eventName === 'play') {
     audioPlayer.value!.currentTime = currentTime.value;
     audioPlayer.value!.play();
   } else if (eventName === 'pause') {
     audioPlayer.value!.pause();
   } else if (eventName === 'changeVolume') {
+    console.log('volume', state);
     audioPlayer.value!.volume = state;
   } else if (eventName === 'changeCurrentTime') {
-    audioPlayer.value!.currentTime = state;
+    const offset = state.offsetX;
+    const total = state.target.getBoundingClientRect().width;
+    audioPlayer.value!.currentTime = offset / total * music.duration;
   }
 };
 
@@ -177,9 +197,9 @@ const playOrPause = () => {
   }
   updateCurrentTime(audioPlayer.value!.currentTime);
   if (audioPlayer.value?.paused) {
-    handleEvent('play');
+    handleEvent('play', undefined);
   } else {
-    handleEvent('pause');
+    handleEvent('pause', undefined);
   }
 }
 
@@ -197,11 +217,84 @@ const calculateProgress = computed(() => {
   return current;
 });
 
+// const updatingCurrentTime = ref(false);
+// audioPlayer.value!.addEventListener('mousedown', (e) => {
+//   updatingCurrentTime.value = true;
+//   handleEvent('changeCurrentTime', e);
+//   e.preventDefault();
+// });
+//
+// document.addEventListener('mousemove', (e) => {
+//   if (updatingCurrentTime.value) {
+//     handleEvent('changeCurrentTime', e);
+//   }
+// });
+//
+// document.addEventListener('mouseup', () => {
+//   updatingCurrentTime.value = false;
+// });
+
 const changeCurrentTime = (e: any) => {
+  handleEvent('changeCurrentTime', e);
+}
+
+const volumeProgressData: ProgressType = reactive({
+  width: '10rem',
+  height: '5px',
+  radius: '0.556rem',
+  percentage: 10,
+});
+
+let volume = ref(10);
+const { global } = storeToRefs(globalStore);
+
+onMounted(() => {
+  screenWidth.value = window.innerWidth;
+  setMobileVolume();
+  if (!global) {
+    initGlobal();
+  } else {
+    volume.value = global.value.player.volume;
+  }
+});
+
+const changeMute = () => {
+  if (volume.value === 0) {
+    volume.value = global.value.player.volume;
+  } else {
+    global.value.player.volume = volume.value;
+    volume.value = 0;
+  }
+}
+
+const saveVolume = () => {
+  // volume
+}
+
+const changeVolume = (e: any) => {
   const offset = e.offsetX;
   const total = e.target.getBoundingClientRect().width;
-  handleEvent('changeCurrentTime', offset / total * music.duration);
+  volume.value = Math.floor(offset / total * 100);
+  global.value.player.volume = volume.value;
+  volumeProgressData.percentage = volume.value;
 }
+
+const screenWidth = ref(0);
+window.addEventListener('resize', function () {
+  screenWidth.value = window.innerWidth;
+  setMobileVolume();
+});
+
+const setMobileVolume = () => {
+  if (screenWidth.value <= 800) {
+    volume.value = 100;
+    handleEvent('changeVolume', 1);
+  }
+}
+
+watch(volume, (newVolume) => {
+  handleEvent('changeVolume', newVolume / 100);
+});
 </script>
 
 <style lang="scss" scoped>
@@ -279,11 +372,30 @@ const changeCurrentTime = (e: any) => {
   .progress {
     display: none;
   }
+
+  .panel-wrapper {
+    display: none;
+  }
 }
 
 @media (min-width: 801px) {
   .progress-mobile {
     display: none;
+  }
+}
+
+.panel-wrapper {
+  margin: auto 0;
+
+  div {
+    .button {
+      margin: auto .5rem;
+    }
+  }
+
+  .sound-wrapper {
+    align-items: center;
+    position: relative;
   }
 }
 </style>

@@ -5,7 +5,7 @@
     <div class="flex-row content-space-between" style="width: 100%; align-items: center" @click="playMusicFun(music)">
       <div class="music-info">
         <p>{{ music.name }}</p>
-        <p>{{ music.singer }}</p>
+        <p class="grey">{{ music.singer }}</p>
       </div>
       <div class="flex-row">
         <IconButton icon-name="add-circle" size="1rem" icon-color="rgba(0, 0, 0, .5)"

@@ -1,5 +1,5 @@
 <template>
-  <div class="left-wrapper custom-scroll">
+  <div v-if="screenWidth > 800" class="left-wrapper custom-scroll">
     <div class="flex-row left-header">
       <div style="font-size: 1.2rem; padding: .5rem; margin: auto 0">
         歌单
@@ -19,6 +19,35 @@
       @click="gotoPlayListInfo(playlist.id)"/>
   </div>
 
+  <a-drawer
+    v-else
+    class="left-wrapper custom-scroll"
+
+    placement="left"
+    :closable="false"
+    :open="open"
+    width="80%"
+    @close="onClose"
+  >
+    <div class="flex-row left-header">
+      <div style="font-size: 1.2rem; padding: .5rem; margin: auto 0">
+        歌单
+      </div>
+      <IconButton
+        size="1.5rem"
+        icon-name="add"
+        icon-color="rgba(0, 0, 0, .5)"
+        @click="addPlaylistDialogVisible = !addPlaylistDialogVisible"/>
+    </div>
+    <PlayList
+      v-for="(playlist) in playlistList"
+      :title="playlist.title"
+      :musicCount="playlist.musicCount"
+      :author="playlist.author"
+      :key="playlist.id"
+      @click="gotoPlayListInfo(playlist.id)"/>
+  </a-drawer>
+
   <Dialog v-model="addPlaylistDialogVisible" width="30rem" title="新建歌单">
     <div class="flex-row playlist-dialog">
       <div class="cover">
@@ -36,7 +65,6 @@
         FINISH
       </Button>
     </div>
-
   </Dialog>
 </template>
 
@@ -52,13 +80,14 @@ import type { PlaylistType } from '@/types/playlist';
 import router from '@/router';
 import { TOKEN } from '@/config';
 import { getData } from '@/util/localStorage';
-import eventBus from '@/util/eventBus';
+import mitt from '@/util/eventBus';
 
 let addPlaylistDialogVisible = ref(false);
 const playlistList = ref<PlaylistType[]>([]);
 const playlistInfo: PlaylistType = reactive({ id: '', title: '', accessible: true });
 
 onMounted(() => {
+  screenWidth.value = window.innerWidth;
   if (getData(TOKEN)) {
     getPlayListFun(1);
   }
@@ -71,7 +100,7 @@ const getPlayListFun = (page: number) => {
   });
 }
 
-eventBus.on('getPlayListFun', getPlayListFun);
+mitt.on('getPlayListFun', getPlayListFun);
 
 const addPlaylistFun = () => {
   addPlaylist(playlistInfo).then(() => {
@@ -81,9 +110,27 @@ const addPlaylistFun = () => {
   });
 }
 
+const open = ref(false);
 const gotoPlayListInfo = (playlistId: string) => {
   router.push({ path: `/playlist/${playlistId}` });
+  open.value = false;
 }
+
+const screenWidth = ref(0);
+window.addEventListener('resize', function () {
+  screenWidth.value = window.innerWidth;
+});
+
+const showDrawer = () => {
+  console.log(playlistList.value);
+  open.value = true;
+};
+
+mitt.on('showDrawer', showDrawer);
+
+const onClose = () => {
+  open.value = false;
+};
 </script>
 
 <style lang="scss" scoped>
@@ -126,16 +173,6 @@ const gotoPlayListInfo = (playlistId: string) => {
     .input-text {
       margin: .75rem 0;
     }
-  }
-}
-
-@media (max-width: 800px) {
-  .playlist-wrapper {
-    padding: 0;
-  }
-
-  .left-header {
-    display: none;
   }
 }
 </style>

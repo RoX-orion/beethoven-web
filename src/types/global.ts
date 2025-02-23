@@ -93,3 +93,8 @@ export enum ComponentType {
 	SEARCH_RESULT,
 	PLAYLIST,
 }
+
+export interface Pagination {
+	page: number;
+	total: number;
+}

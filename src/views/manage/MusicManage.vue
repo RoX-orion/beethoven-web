@@ -7,7 +7,7 @@
                 @click="uploadMusicDialogVisible = true">上传
         </Button>
       </div>
-      <a-table class="music-item" :columns="columns" :data-source="musicList">
+      <a-table class="music-item" :columns="columns" :data-source="musicList" :pagination="false">
         <template v-slot:bodyCell="{ column, record}">
           <template v-if="column.dataIndex === 'cover'">
             <img :src="record.cover" alt="" class="cover"/>
@@ -20,6 +20,8 @@
           </template>
         </template>
       </a-table>
+      <a-pagination v-model:current="pagination.page" :total="pagination.total" show-size-changer
+                    @change="getManageMusicListFun"/>
     </a-tab-pane>
     <a-tab-pane key="uploadMusic" tab="歌单"></a-tab-pane>
     <a-tab-pane key="3" tab="Tab 3"></a-tab-pane>
@@ -80,6 +82,7 @@ import InputText from '@/components/InputText.vue';
 import { uploadMusic } from '@/api/music';
 import type { UploadChangeParam, UploadProps } from 'ant-design-vue';
 import { getBase64 } from '@/util/file';
+import { Pagination } from '@/types/global';
 
 onMounted(() => {
   getManageMusicListFun();
@@ -89,16 +92,22 @@ const musicList = ref<any[]>();
 const activeKey = ref("musicList");
 let searching = ref(false);
 let name = ref('');
+const pagination = ref<Pagination>({
+  page: 1,
+  total: 0,
+});
 
 const getManageMusicListFun = async () => {
-  getManageMusicList({ page: 1, size: 10, key: '' }).then(response => {
-    response.data.forEach(music => {
+  getManageMusicList({ page: pagination.value.page, size: 10, key: '' }).then(response => {
+    const { list, total } = response.data;
+    list.forEach(music => {
       music.duration = durationFormater(music.duration);
       music.size = sizeFormater(music.size);
       music.createTime = formatTime(music.createTime, '{y}-{m}-{d} {h}:{i}');
       music.updateTime = formatTime(music.updateTime, '{y}-{m}-{d} {h}:{i}');
     });
-    musicList.value = response.data;
+    pagination.value.total = total;
+    musicList.value = list;
   });
 };
 
