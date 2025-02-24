@@ -1,5 +1,5 @@
 <template>
-  <div @click="updateCurrentTime">
+  <div ref="seekLineContainer" @mousedown="updateCurrentTime">
     <canvas
       ref="progressCanvas"
       class="progress pointer"
@@ -9,34 +9,21 @@
     height: data.height,
     'border-radius': data.radius}">
     </canvas>
-    <div class="seek-line pointer" ref="seekBtn" :style="{left: props.data.percentage + '%'}"></div>
+    <div class="seek-line pointer" ref="seekButton" :style="{left: computePercentage + '%'}"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import type { ProgressType } from '@/types/global';
-
 const props = defineProps<{
   data: ProgressType;
 }>();
-const progressCanvas = ref<HTMLCanvasElement>();
-const seekBtn = ref<HTMLDivElement>();
-
 const emit = defineEmits();
-onMounted(() => {
-  // seekBtn.value!.addEventListener('mousedown', () => {
-  //   console.log('mousedown');
-  //   // seeking = true;
-  // });
-  // progressCanvas.value!.addEventListener('mousemove', e => {
-  //   emit('seek-move', e);
-  // }, false);
-  // progressCanvas.value!.addEventListener('mouseup', () => {
-  //   emit('seek-end');
-  //   // seeking = false;
-  // }, false);
-});
+const seekLineContainer = ref<HTMLDialogElement>();
+const progressCanvas = ref<HTMLCanvasElement>();
+const seekButton = ref<HTMLDivElement>();
+let seeking = false;
 
 const drawProgressBar = (percentage: number) => {
   const canvas = progressCanvas.value;
@@ -52,9 +39,38 @@ const drawProgressBar = (percentage: number) => {
   }
 };
 
+const handleMouseMove = (e: any) => {
+  let containerRect = seekLineContainer.value!.getBoundingClientRect();
+  let offsetX = e.clientX - containerRect.left;
+  if (offsetX < 0)
+    offsetX = 0;
+  if (offsetX > containerRect.width)
+    offsetX = containerRect.width;
+  props.data.percentage = (offsetX / containerRect.width) * 100;
+  seekButton.value!.style.left = `${offsetX - seekButton.value!.offsetWidth / 2}px`;
+  emit('update', props.data.percentage);
+  drawProgressBar(props.data.percentage);
+};
+
+const handleMouseUp = () => {
+  seeking = false;
+  emit('changeCurrentTime', props.data.percentage);
+  document.removeEventListener('mousemove', handleMouseMove);
+  document.removeEventListener('mouseup', handleMouseUp);
+};
+
 const updateCurrentTime = (e: any) => {
-  emit('changeCurrentTime', e);
+  e.preventDefault();
+  seeking = true;
+  handleMouseMove(e);
+  document.addEventListener('mouseup', handleMouseUp);
+  document.addEventListener('mousemove', handleMouseMove);
 }
+
+const computePercentage = computed(() => {
+  return props.data.percentage;
+  // return seekLineContainer.value && seekButton.value ? seekLineContainer.value!.getBoundingClientRect().width * (props.data.percentage / 100) - seekButton.value?.offsetWidth / 2 : 0;
+});
 watch(() => props.data.percentage, (newVal) => {
   drawProgressBar(newVal);
 });
@@ -63,7 +79,7 @@ onMounted(() => {
 });
 
 defineExpose({
-  drawProgressBar
+  handleMouseMove,
 });
 </script>
 
