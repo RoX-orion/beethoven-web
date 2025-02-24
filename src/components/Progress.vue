@@ -1,13 +1,16 @@
 <template>
-  <canvas
-    ref="progressCanvas"
-    class="progress pointer"
-    style="display: block; margin: auto"
-    :style="{
+  <div @click="updateCurrentTime">
+    <canvas
+      ref="progressCanvas"
+      class="progress pointer"
+      style="display: block; margin: auto"
+      :style="{
     width: data.width,
     height: data.height,
     'border-radius': data.radius}">
-  </canvas>
+    </canvas>
+    <div class="seek-line pointer" ref="seekBtn" :style="{left: props.data.percentage + '%'}"></div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -17,7 +20,23 @@ import type { ProgressType } from '@/types/global';
 const props = defineProps<{
   data: ProgressType;
 }>();
-const progressCanvas = ref<HTMLCanvasElement | null>(null);
+const progressCanvas = ref<HTMLCanvasElement>();
+const seekBtn = ref<HTMLDivElement>();
+
+const emit = defineEmits();
+onMounted(() => {
+  // seekBtn.value!.addEventListener('mousedown', () => {
+  //   console.log('mousedown');
+  //   // seeking = true;
+  // });
+  // progressCanvas.value!.addEventListener('mousemove', e => {
+  //   emit('seek-move', e);
+  // }, false);
+  // progressCanvas.value!.addEventListener('mouseup', () => {
+  //   emit('seek-end');
+  //   // seeking = false;
+  // }, false);
+});
 
 const drawProgressBar = (percentage: number) => {
   const canvas = progressCanvas.value;
@@ -32,11 +51,14 @@ const drawProgressBar = (percentage: number) => {
     }
   }
 };
+
+const updateCurrentTime = (e: any) => {
+  emit('changeCurrentTime', e);
+}
 watch(() => props.data.percentage, (newVal) => {
   drawProgressBar(newVal);
 });
 onMounted(() => {
-  console.log('init', props.data.percentage);
   drawProgressBar(props.data.percentage);
 });
 

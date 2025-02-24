@@ -2,8 +2,8 @@
   <div class="player">
     <div class="progress-mobile">
       <div style="width: 100%; position: relative; margin: auto">
-        <Progress :data="progressData" @mousedown="changeCurrentTime"/>
-        <div class="seek-line pointer" :style="{left: calculateProgress + '%'}"></div>
+        <Progress :data="progressData" />
+<!--        <div class="seek-line pointer" :style="{left: calculateProgress + '%'}"></div>-->
       </div>
       <div class="flex-row content-space-between" style="width: 100%">
         <div>{{ durationFormater(Math.floor(currentTime)) }}</div>
@@ -30,8 +30,7 @@
         <div class="flex-row progress">
           <div class="time">{{ durationFormater(Math.floor(currentTime)) }}</div>
           <div style="width: 100%; position: relative; margin: auto">
-            <Progress :data="progressData" @mousedown="changeCurrentTime"/>
-            <div class="seek-line pointer" :style="{left: calculateProgress + '%'}"></div>
+            <Progress :data="progressData" @changeCurrentTime="changeCurrentTime"/>
           </div>
           <div class="time" v-if="music.duration">{{ durationFormater(music.duration) }}</div>
         </div>
@@ -92,6 +91,7 @@ const music: MusicItemType = reactive({
 let firstPlay = true;
 let shardingSize: number;
 let shardingCount: number;
+let seeking = false;
 const globalStore = useGlobalStore();
 const currentPercentage = ref(0);
 
@@ -104,17 +104,36 @@ onMounted(() => {
     width: '100%',
     volume: 0.5
   });
+
   let route = useRoute();
   const { id, type } = route.params;
   if (type === 'music' && id) {
     getMusicInfoFun(id as string);
   }
   audioPlayer.value.on(Events.TIME_UPDATE, onTimeUpdate);
+  // audioPlayer.value.on(Events.SEEKING, () => {
+  //   seeking = true;
+  // });
+  // audioPlayer.value.on(Events.SEEKED, () => {
+  //   seeking = false;
+  // });
   // audioPlayer.value!.addEventListener('timeupdate', onTimeUpdate);
   // audioPlayer.value!.addEventListener('waiting', () => {
   //   console.log('waiting');
   // });
 });
+
+const seekMove = (e: any) => {
+  console.log('moving', seeking);
+  if (seeking) {
+    console.log(e);
+    changeCurrentTime(e);
+  }
+}
+const seekEnd = () => {
+  console.log('end');
+  seeking = false;
+}
 
 const getMusicInfoFun = (musicId: string) => {
   shardingSize = parseInt(getData(SHARDING_SIZE) as string);
@@ -144,7 +163,11 @@ const handleEvent = (eventName: string, state: any) => {
   } else if (eventName === 'changeCurrentTime') {
     const offset = state.offsetX;
     const total = state.target.getBoundingClientRect().width;
-    audioPlayer.value!.currentTime = offset / total * music.duration;
+    currentPercentage.value = Math.min(offset / total * 100, 100);
+    progressData.percentage = currentPercentage.value;
+    currentTime.value = offset / total * music.duration;
+    audioPlayer.value!.currentTime = currentTime.value;
+    console.log(offset, total, currentPercentage.value, audioPlayer.value.currentTime);
   }
 };
 
@@ -192,6 +215,7 @@ const updateCurrentTime = throttle((currentTime) => {
 const onTimeUpdate = async () => {
   // const buffered = audioPlayer.value!.buffered;
   currentTime.value = audioPlayer.value!.currentTime;
+  progressData.percentage = Math.min(currentTime.value / music.duration * 100, 100);
   updateCurrentTime(audioPlayer.value!.currentTime);
   // const bufferedEnd = buffered.length ? buffered.end(buffered.length - 1) : 0;
   // if (bufferedEnd - currentTime.value <= 30 && currentShard + 1 < shardingCount) {
@@ -224,11 +248,11 @@ const progressData: ProgressType = reactive({
   percentage: 0,
 });
 
-let current = 0;
 const calculateProgress = computed(() => {
-  current = Math.min(currentTime.value / music.duration * 100, 100);
-  progressData.percentage = current;
-  return current;
+  if (!seeking) {
+    currentPercentage.value = Math.min(currentTime.value / music.duration * 100, 100);
+    progressData.percentage = currentPercentage.value;
+  }
 });
 
 // const updatingCurrentTime = ref(false);
