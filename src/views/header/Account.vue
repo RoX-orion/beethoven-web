@@ -15,6 +15,7 @@ import { handleOAuth2Login } from '@/api/auth';
 import { useRoute, useRouter } from 'vue-router';
 import { getData, setData } from '@/util/localStorage';
 import { TOKEN } from '@/config';
+import { initApp } from "@/lib/init";
 
 let accountStore = useAccountStore();
 let {account} = storeToRefs(accountStore);
@@ -26,10 +27,14 @@ onMounted(async () => {
   if (!token) {
     const code = route.query.code as string;
     if (code) {
-      await handleOAuth2Login({ code, type: 'GITHUB' }).then(response => {
-        Object.assign(account.value, response.data);
-        setData(TOKEN, account.value.token);
-        router.push({ path: '/' });
+      await handleOAuth2Login({ code, type: 'GITHUB' }).then(async response => {
+        if (response.code === 200) {
+          Object.assign(account.value, response.data);
+          console.log(account.value.token);
+          setData(TOKEN, account.value.token);
+          await initApp();
+          await router.push({path: '/'});
+        }
       });
     }
   } else {

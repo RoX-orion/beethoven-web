@@ -56,7 +56,8 @@
         </div>
       </div>
       <!--      <Panel @update="handleEvent"/>-->
-      <audio class="player" ref="audioPlayer" controls></audio>
+      <div class="player" id="audioPlayer"></div>
+<!--      <audio class="player" ref="audioPlayer" controls></audio>-->
     </div>
   </div>
 
@@ -78,8 +79,10 @@ import { throttle } from '@/util/schedulers';
 import SvgIcon from '@/components/SvgIcon.vue';
 import { storeToRefs } from 'pinia';
 import { initGlobal } from '@/lib/init';
+import Player from "xgplayer/es/player";
+import { Events } from 'xgplayer'
 
-const audioPlayer = ref<HTMLAudioElement>();
+const audioPlayer = ref<any>();
 const music: MusicItemType = reactive({
   id: null,
   duration: 0,
@@ -90,17 +93,27 @@ let firstPlay = true;
 let shardingSize: number;
 let shardingCount: number;
 const globalStore = useGlobalStore();
+const currentPercentage = ref(0);
 
 onMounted(() => {
+  audioPlayer.value = new Player({
+    id: 'audioPlayer',
+    mediaType: 'audio',
+    url: '',
+    height: '100%',
+    width: '100%',
+    volume: 0.5
+  });
   let route = useRoute();
   const { id, type } = route.params;
   if (type === 'music' && id) {
     getMusicInfoFun(id as string);
   }
-  audioPlayer.value!.addEventListener('timeupdate', onTimeUpdate);
-  audioPlayer.value!.addEventListener('waiting', () => {
-    console.log('waiting');
-  });
+  audioPlayer.value.on(Events.TIME_UPDATE, onTimeUpdate);
+  // audioPlayer.value!.addEventListener('timeupdate', onTimeUpdate);
+  // audioPlayer.value!.addEventListener('waiting', () => {
+  //   console.log('waiting');
+  // });
 });
 
 const getMusicInfoFun = (musicId: string) => {
@@ -127,7 +140,6 @@ const handleEvent = (eventName: string, state: any) => {
   } else if (eventName === 'pause') {
     audioPlayer.value!.pause();
   } else if (eventName === 'changeVolume') {
-    console.log('volume', state);
     audioPlayer.value!.volume = state;
   } else if (eventName === 'changeCurrentTime') {
     const offset = state.offsetX;
@@ -145,12 +157,14 @@ const playMusic = async (musicInfo: MusicItemType) => {
   }
   Object.assign(music, musicInfo);
   audioPlayer.value!.src = music.link;
+  // audioPlayer.value!.url = music.link;
+
   // mediaSource = new MediaSource();
   // audioPlayer.value!.src = URL.createObjectURL(mediaSource);
   // mediaSource.addEventListener('sourceopen', async () => {
   //   await fetchMusic(musicInfo?.link!, 0, shardingSize);
   // });
-}
+};
 // const fetchMusic = async (fileName: string, start: number, end: number) => {
 //   if (start === 0) {
 //     if (sourceBuffer) {
