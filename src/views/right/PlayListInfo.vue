@@ -56,6 +56,7 @@
       <div class="update-playlist-info">
         <InputText class="input-text" placeholder="歌单名" v-model="updatePlaylistInfo.title"/>
         <InputText class="input-text" placeholder="简介(可选)" v-model="updatePlaylistInfo.introduction"/>
+        <span class="grey" style="font-size: 14px">是否公开: </span>
         <a-switch size="small" v-model:checked="updatePlaylistInfo.accessible"/>
       </div>
     </div>

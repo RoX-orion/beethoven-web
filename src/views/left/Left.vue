@@ -61,7 +61,7 @@
       </div>
     </div>
     <div style="padding: 1rem">
-      <Button @click="addPlaylistFun">
+      <Button @click="addPlaylistFun" :loading="loading">
         FINISH
       </Button>
     </div>
@@ -102,13 +102,19 @@ const getPlayListFun = (page: number) => {
 
 mitt.on('getPlayListFun', getPlayListFun);
 
+const loading = ref(false);
 const addPlaylistFun = () => {
-  addPlaylist(playlistInfo).then(() => {
-    addPlaylistDialogVisible.value = false;
-    Object.assign(playlistInfo, {title: ''});
-    getPlayListFun(1);
+  loading.value = true;
+  addPlaylist(playlistInfo).then(response => {
+    if (response.code === 200) {
+      addPlaylistDialogVisible.value = false;
+      Object.assign(playlistInfo, { id: '', title: '', introduction: '', accessible: true });
+      getPlayListFun(1);
+    }
+  }).finally(() => {
+    loading.value = false;
   });
-}
+};
 
 const open = ref(false);
 const gotoPlayListInfo = (playlistId: string) => {
