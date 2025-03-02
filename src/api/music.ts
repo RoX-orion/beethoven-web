@@ -1,5 +1,5 @@
 import request from '@/util/request';
-import type { SearchMusicParam } from '@/api/params/query';
+import type { SearchPageParam } from '@/api/params/query';
 
 export function uploadMusic(data: FormData) {
 	return request({
@@ -16,7 +16,7 @@ export function fetchMusic(url: string) {
 	});
 }
 
-export async function searchMusic(param: SearchMusicParam) : Promise<any> {
+export async function searchMusic(param: SearchPageParam): Promise<any> {
 	return request({
 		url: '/music/searchMusic',
 		method: 'get',
@@ -31,7 +31,7 @@ export function getMusicInfo(id: string) {
 	})
 }
 
-export function getManageMusicList(param: SearchMusicParam) {
+export function getManageMusicList(param: SearchPageParam) {
 	return request({
 		url: '/music/manage/getManageMusicList',
 		method: 'get',

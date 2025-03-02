@@ -1,5 +1,5 @@
 <template>
-  <div ref="seekLineContainer" @mousedown="updateCurrentTime">
+  <div ref="seekLineContainer" @mousedown="updateCurrentTime" @touchstart="updateCurrentTimeTouch">
     <canvas
       ref="progressCanvas"
       class="progress pointer"
@@ -48,6 +48,7 @@ const handleMouseMove = (e: any) => {
     offsetX = containerRect.width;
   props.data.percentage = (offsetX / containerRect.width) * 100;
   seekButton.value!.style.left = `${offsetX - seekButton.value!.offsetWidth / 2}px`;
+  console.log(offsetX, props.data.percentage);
   emit('update', props.data.percentage);
   drawProgressBar(props.data.percentage);
 };
@@ -63,9 +64,39 @@ const updateCurrentTime = (e: any) => {
   e.preventDefault();
   seeking = true;
   handleMouseMove(e);
-  document.addEventListener('mouseup', handleMouseUp);
   document.addEventListener('mousemove', handleMouseMove);
+  document.addEventListener('mouseup', handleMouseUp);
 }
+// mobile
+const updateCurrentTimeTouch = (e: any) => {
+  e.preventDefault();
+  seeking = true;
+  handleTouchMove(e);
+  document.addEventListener('touchmove', handleTouchMove, { passive: false });
+  document.addEventListener('touchend', handleTouchUp);
+};
+
+const handleTouchMove = (e: any) => {
+  // e.preventDefault();
+  let touch = e.touches[0];
+  let containerRect = seekLineContainer.value!.getBoundingClientRect();
+  let offsetX = touch.clientX - containerRect.left;
+
+  if (offsetX < 0) offsetX = 0;
+  if (offsetX > containerRect.width) offsetX = containerRect.width;
+  props.data.percentage = (offsetX / containerRect.width) * 100;
+  seekButton.value!.style.left = `${offsetX - seekButton.value!.offsetWidth / 2}px`;
+  emit('update', props.data.percentage);
+  drawProgressBar(props.data.percentage);
+};
+
+const handleTouchUp = () => {
+  seeking = false;
+  emit('changeCurrentTime', props.data.percentage);
+
+  document.removeEventListener('touchmove', handleTouchMove);
+  document.removeEventListener('touchend', handleTouchUp);
+};
 
 const computePercentage = computed(() => {
   return props.data.percentage;
@@ -76,10 +107,6 @@ watch(() => props.data.percentage, (newVal) => {
 });
 onMounted(() => {
   drawProgressBar(props.data.percentage);
-});
-
-defineExpose({
-  handleMouseMove,
 });
 </script>
 

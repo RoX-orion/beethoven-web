@@ -1,8 +1,6 @@
 <template>
   <div class="playlist-card">
-    <div class="cover" :style="backgroundImg">
-
-    </div>
+    <img class="cover" :src="playList.cover" alt="">
     <div class="playlist-detail">
       <span class="title">{{playList.title}}</span>
       <div>
@@ -15,23 +13,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import type { PlayList } from '@/types/global';
 
-const props = defineProps<{
+defineProps<{
   playList: PlayList
 }>();
-const backgroundImg = ref({
-  background: `url(${props.playList.cover})`
-});
 </script>
 
 <style scoped lang="scss">
 .playlist-card {
 
   .cover {
-    background-size: cover;
-    background-position: center;
     width: 14.687rem;
     height: 14.687rem;
     border-radius: 10px;

@@ -27,7 +27,7 @@
     <a-tab-pane key="3" tab="Tab 3"></a-tab-pane>
   </a-tabs>
 
-  <!--Upload Music-->
+  <!--UploadImage Music-->
   <a-modal v-model:open="uploadMusicDialogVisible" width="30rem" title="上传歌曲">
     <template #footer>
     </template>
@@ -113,7 +113,7 @@ const getManageMusicListFun = async () => {
 
 const uploadMusicDialogVisible = ref(false);
 
-// Upload Music
+// UploadImage Music
 const data = reactive({
   name: '',
   singer: '',

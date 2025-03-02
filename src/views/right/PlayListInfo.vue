@@ -1,6 +1,6 @@
 <template>
   <div class="flex-row">
-    <!--      <Upload type="image" v-model="fileList"/>-->
+    <!--      <UploadImage type="image" v-model="fileList"/>-->
     <div>
       <p class="pointer" style="font-size: 2rem" @click="updatePlaylistFun">{{ playlistInfo.title }}</p>
       <div style="color: grey">
@@ -10,7 +10,6 @@
         <span>·</span>
         <span>{{ formatTime(playlistInfo.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
       </div>
-
     </div>
   </div>
 
@@ -18,7 +17,7 @@
        :key="music.id" @click="playMusicFun(music)">
     <div class="flex-row">
       <div style="margin: auto .5rem auto auto;">{{ index + 1 }}</div>
-      <img class="cover" :src="music.cover" alt="cover">
+      <a-image class="cover" :src="music.cover" :width="64" :height="64"></a-image>
       <div style="margin: auto auto auto .5rem;">
         <p>{{ music.name }}</p>
         <p class="grey">{{ music.singer }}</p>
@@ -29,7 +28,6 @@
     <div>{{ sizeFormater(music.size) }}</div>
     <div class="flex-row">
       {{ durationFormater(music.duration) }}
-
       <a-dropdown :trigger="['click']">
         <svg-icon name="more" color="black"/>
         <template #overlay>
@@ -50,8 +48,8 @@
   </div>
   <Dialog title="编辑歌单" width="30rem" v-model="updatePlaylistDialogVisible">
     <div class="flex-row playlist-dialog">
-      <div class="cover">
-        <img src="/assets/img/playlistCover.png" alt="cover"/>
+      <div class="playlist-cover">
+        <UploadImage type="image" v-model="uploadFile"/>
       </div>
       <div class="update-playlist-info">
         <InputText class="input-text" placeholder="歌单名" v-model="updatePlaylistInfo.title"/>
@@ -62,13 +60,9 @@
     </div>
     <div style="padding: 1rem">
       <Button @click="handleUpdatePlaylist">
-        FINISH
+        确认
       </Button>
     </div>
-  </Dialog>
-
-  <Dialog title="" model-value="">
-
   </Dialog>
 </template>
 
@@ -81,7 +75,7 @@ import {
   getPlaylistMusic,
   updatePlaylist,
 } from '@/api/playlist';
-import type { MusicItemType } from '@/types/global';
+import type { FileListType, MusicItemType } from '@/types/global';
 import type { PlaylistType } from '@/types/playlist';
 import { sizeFormater } from '@/util/file';
 import { formatTime } from '@/util/time';
@@ -90,9 +84,13 @@ import Button from '@/components/Button.vue';
 import InputText from '@/components/InputText.vue';
 import { useGlobalStore } from '@/store/global';
 import SvgIcon from '@/components/SvgIcon.vue';
+import UploadImage from '@/components/UploadImage.vue';
 
 const route = useRoute();
 const musicList = ref<Array<MusicItemType>>([]);
+const playlistCover = ref();
+
+const uploadFile = ref<FileListType>();
 
 const globalStore = useGlobalStore();
 const playMusicFun = (music: MusicItemType) => {
@@ -109,18 +107,24 @@ const getPlaylistMusicFun = (playlistId: string) => {
 };
 
 const playlistInfo = ref<PlaylistType>({ id: '', title: '', accessible: true });
-let fileList = ref<any[]>([]);
 const getPlaylistInfoFun = async (playlistId: string) => {
   getPlaylistInfo(playlistId).then(response => {
     playlistInfo.value = response.data;
-    fileList.value[0] = response.data.cover;
+    uploadFile.value = { url: response.data.cover };
   });
 }
 
 let updatePlaylistDialogVisible = ref(false);
 let updatePlaylistInfo = ref<PlaylistType>({ id: '', title: '', accessible: true });
 const handleUpdatePlaylist = () => {
-  updatePlaylist(updatePlaylistInfo.value).then(async response => {
+  console.log('update', playlistCover.value);
+  const playlistData = new FormData();
+  playlistData.append('id', updatePlaylistInfo.value.id);
+  playlistData.append('title', updatePlaylistInfo.value.title);
+  playlistData.append('introduction', updatePlaylistInfo.value.introduction);
+  playlistData.append('accessible', updatePlaylistInfo.value.accessible);
+  playlistData.append('coverFile', uploadFile.value?.file);
+  updatePlaylist(playlistData).then(async response => {
     if (response.code === 200) {
       await getPlaylistInfoFun(playlistInfo.value.id);
       updatePlaylistDialogVisible.value = false;
@@ -131,6 +135,7 @@ const handleUpdatePlaylist = () => {
 
 const updatePlaylistFun = () => {
   updatePlaylistInfo.value = playlistInfo.value;
+  playlistCover.value = playlistInfo.value.cover;
   updatePlaylistDialogVisible.value = true;
 }
 
@@ -149,13 +154,6 @@ watch(() => route.params.id, (playlistId) => {
 </script>
 
 <style scoped lang="scss">
-.playlist-cover {
-  width: 7rem;
-  height: 7rem;
-  border-radius: .5rem;
-  background-color: #409eff;
-}
-
 .playlist-info {
   width: 100%;
   padding: .5rem;
@@ -171,18 +169,12 @@ watch(() => route.params.id, (playlistId) => {
 }
 
 .playlist-dialog {
-  --gap: 1rem;
-
+  --gap: .5rem;
   margin: auto;
 
-  .cover {
+  .playlist-cover {
     padding: var(--gap);
     border-radius: .25rem;
-
-    img {
-      width: 5rem;
-      height: 5rem;
-    }
   }
 
   .update-playlist-info {
@@ -190,7 +182,7 @@ watch(() => route.params.id, (playlistId) => {
     padding: var(--gap);
 
     .input-text {
-      margin: .75rem 0;
+      margin-bottom: 1rem;
     }
   }
 }

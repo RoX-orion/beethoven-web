@@ -4,6 +4,7 @@ export interface PlaylistType {
 	musicCount?: number;
 	author?: string;
 	cover?: string;
+	coverFile?: any;
 	createTime?: string;
 	introduction?: string;
 	accessible: boolean;

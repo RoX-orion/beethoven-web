@@ -15,6 +15,7 @@
       :title="playlist.title"
       :musicCount="playlist.musicCount"
       :author="playlist.author"
+      :cover="playlist.cover"
       :key="playlist.id"
       @click="gotoPlayListInfo(playlist.id)"/>
   </div>
@@ -44,6 +45,7 @@
       :title="playlist.title"
       :musicCount="playlist.musicCount"
       :author="playlist.author"
+      :cover="playlist.cover"
       :key="playlist.id"
       @click="gotoPlayListInfo(playlist.id)"/>
   </a-drawer>
@@ -97,6 +99,7 @@ const getPlayListFun = (page: number) => {
   getPlaylist({ page, size: 10 }).then(response => {
     const {data} = response;
     playlistList.value = data;
+    playlistList.value.forEach(e => e.cover = e.cover ? e.cover : '/assets/img/playlistCover.png');
   });
 }
 
@@ -128,7 +131,6 @@ window.addEventListener('resize', function () {
 });
 
 const showDrawer = () => {
-  console.log(playlistList.value);
   open.value = true;
 };
 

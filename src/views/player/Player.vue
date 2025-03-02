@@ -2,7 +2,7 @@
   <div class="player">
     <div class="progress-mobile">
       <div style="width: 100%; position: relative; margin: auto">
-        <Progress :data="progressData" />
+        <Progress :data="progressData" @changeCurrentTime="changeCurrentTime" @update="updateTime"/>
 <!--        <div class="seek-line pointer" :style="{left: calculateProgress + '%'}"></div>-->
       </div>
       <div class="flex-row content-space-between" style="width: 100%">
@@ -129,7 +129,7 @@ onMounted(() => {
 
 const getMusicInfoFun = (musicId: string) => {
   shardingSize = parseInt(getData(SHARDING_SIZE) as string);
-  audioPlayer.value!.volume = globalStore.global.player.volume / 100;
+  // audioPlayer.value!.volume = globalStore.global.player.volume / 100;
 
   getMusicInfo(musicId as string).then(async response => {
     if (response.data) {

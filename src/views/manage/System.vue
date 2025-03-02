@@ -3,7 +3,7 @@
     <a-tab-pane key="musicConfig" tab="音乐设置">
       <div>
         <p class="label-text">默认音乐封面:</p>
-        <Upload v-model="fileList" type="image"/>
+        <UploadImage v-model="fileList" type="image"/>
 
         <p class="label-text">分片大小:</p>
         <InputText v-model="musicConfig.shardingSize"/>
@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
-import Upload from '@/components/Upload.vue';
+import UploadImage from '@/components/UploadImage.vue';
 import InputText from '@/components/InputText.vue';
 import Button from '@/components/Button.vue';
 import { getMusicConfig, updateMusicConfig } from '@/api/appConfig';

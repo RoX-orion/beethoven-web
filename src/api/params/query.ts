@@ -3,6 +3,6 @@ export interface Page {
 	size: number;
 }
 
-export interface SearchMusicParam extends Page {
+export interface SearchPageParam extends Page {
 	key: string;
 }

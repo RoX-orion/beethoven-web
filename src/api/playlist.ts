@@ -1,13 +1,13 @@
 import request from '@/util/request';
-import type { Page } from '@/api/params/query';
+import type { Page, SearchPageParam } from '@/api/params/query';
 import type { AddMusicFormType, PlaylistType } from '@/types/playlist';
 import type { ApiResponse } from '@/types/global';
 
-export async function getPlaylist(query: Page) : Promise<any> {
+export async function getPlaylist(params: Page): Promise<any> {
 	return request({
 		url: '/playlist/getPlaylist',
 		method: 'get',
-		params: query
+		params,
 	});
 }
 
@@ -39,11 +39,11 @@ export function getPlaylistInfo(playlistId: string) {
 	});
 }
 
-export function updatePlaylist(playlistInfo: PlaylistType): Promise<ApiResponse> {
+export function updatePlaylist(playlistData: FormData): Promise<ApiResponse> {
 	return request({
 		url: '/playlist/updatePlaylist',
 		method: 'put',
-		data: playlistInfo,
+		data: playlistData,
 	});
 }
 
@@ -53,4 +53,12 @@ export function addMusicToPlaylist(addMusicForm: AddMusicFormType) {
 		method: 'post',
 		data: addMusicForm,
 	});
+}
+
+export function getHomePlaylist(params: SearchPageParam) {
+	return request({
+		url: '/playlist/home/playlist',
+		method: 'get',
+		params,
+	})
 }

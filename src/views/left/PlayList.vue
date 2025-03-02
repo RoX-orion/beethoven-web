@@ -17,15 +17,14 @@ const playlist = defineProps({
   },
   cover: {
     type: String,
-    default: '/assets/img/like.png',
   },
   author: {
     type: String,
-    require: true,
+    required: true,
   },
   musicCount: {
     type: Number,
-    require: true,
+    required: true,
   },
 });
 </script>

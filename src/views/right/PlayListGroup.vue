@@ -3,64 +3,79 @@
   <div class="playlist-group-wrapper" v-for="data in groupPlayList">
     <span class="playlist-group-title">{{data.groupTitle}}</span>
     <div class="flex-row playlist-info-wrapper">
-      <PlayListCard class="playlist-card" v-for="playList in data.playList" :playList="playList"></PlayListCard>
+      <PlayListCard class="playlist-card" v-for="playList in data.playlist" :playList="playList"></PlayListCard>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { onMounted, reactive } from 'vue';
 import PlayListCard from '@/views/right/PlayListCard.vue';
 import type { PlayList } from '@/types/global';
 import TagGroup from '@/views/right/TagGroup.vue';
+import { getHomePlaylist } from '@/api/playlist';
 
-interface groupPlayListArray {
+interface GroupPlayListArray {
   groupTitle: string,
-  playList: Array<PlayList>
+  playlist: Array<PlayList>
 }
-const groupPlayList: Array<groupPlayListArray> = reactive([
-  {
-    groupTitle: '热门歌单',
-    playList: [
-      {
-        cover: 'https://img.js.design/assets/smartFill/img314164da746310.jpg',
-        title: '李志原声带',
-        singers: ['李志'],
-        musicCount: 10
-      },
-      {
-        cover: 'https://img.js.design/assets/smartFill/img306164da746310.jpg',
-        title: '李志、电声与管弦乐',
-        singers: ['李志'],
-        musicCount: 5
-      },
-      {
-        cover: 'https://img.js.design/assets/smartFill/img308164da746310.jpeg',
-        title: '2016跨年音乐会',
-        singers: ['李志'],
-        musicCount: 7
-      },
-      {
-        cover: 'https://img.js.design/assets/smartFill/img329164da748e08.jpg',
-        title: '2018相信未来不插电版',
-        singers: ['李志'],
-        musicCount: 9
-      },
-      {
-        cover: 'https://img.js.design/assets/smartFill/img320164da746310.jpg',
-        title: '1701',
-        singers: ['李志'],
-        musicCount: 3
-      },
-      {
-        cover: 'https://img.js.design/assets/smartFill/img331164da748e08.jpg',
-        title: '这个世界会好吗',
-        singers: ['李志、许巍、陈奕迅'],
-        musicCount: 20
-      },
-    ]
+
+// const groupPlayList: Array<groupPlayListArray> = reactive([
+//   {
+//     groupTitle: '热门歌单',
+//     playList: [
+//       {
+//         cover: 'https://img.js.design/assets/smartFill/img314164da746310.jpg',
+//         title: '李志原声带',
+//         singers: ['李志'],
+//         musicCount: 10
+//       },
+//       {
+//         cover: 'https://img.js.design/assets/smartFill/img306164da746310.jpg',
+//         title: '李志、电声与管弦乐',
+//         singers: ['李志'],
+//         musicCount: 5
+//       },
+//       {
+//         cover: 'https://img.js.design/assets/smartFill/img308164da746310.jpeg',
+//         title: '2016跨年音乐会',
+//         singers: ['李志'],
+//         musicCount: 7
+//       },
+//       {
+//         cover: 'https://img.js.design/assets/smartFill/img329164da748e08.jpg',
+//         title: '2018相信未来不插电版',
+//         singers: ['李志'],
+//         musicCount: 9
+//       },
+//       {
+//         cover: 'https://img.js.design/assets/smartFill/img320164da746310.jpg',
+//         title: '1701',
+//         singers: ['李志'],
+//         musicCount: 3
+//       },
+//       {
+//         cover: 'https://img.js.design/assets/smartFill/img331164da748e08.jpg',
+//         title: '这个世界会好吗',
+//         singers: ['李志、许巍、陈奕迅'],
+//         musicCount: 20
+//       },
+//     ]
+//   }
+// ]);
+const groupPlayList: GroupPlayListArray[] = reactive([]);
+onMounted(() => {
+  const params = {
+    page: 1,
+    size: 15,
+    key: '',
   }
-]);
+  getHomePlaylist(params).then(response => {
+    groupPlayList[0] = { playlist: response.data, groupTitle: '热门歌单' };
+    console.log(groupPlayList);
+
+  });
+});
 </script>
 
 <style scoped lang="scss">
