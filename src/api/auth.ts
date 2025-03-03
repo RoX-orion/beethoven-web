@@ -18,3 +18,10 @@ export function handleOAuth2Login(data: OAuth2LoginType) {
 		data,
 	});
 }
+
+export function logout() {
+	return request({
+    url: '/auth/logout',
+    method: 'post'
+  })
+}

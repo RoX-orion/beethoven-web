@@ -1,6 +1,19 @@
 <template>
   <div style="display: flex; margin-left: 1rem">
-    <img class="avatar" v-if="account.avatar" :src="account.avatar" alt="">
+    <a-dropdown v-if="account.avatar" :trigger="['click']">
+      <img class="avatar" :src="account.avatar" alt="">
+      <template #overlay>
+        <a-menu @click="handleClick">
+          <a-menu-item key="github">
+            <a href="#">GitHub</a>
+          </a-menu-item>
+          <a-menu-item key="about">
+            <a href="#">About Beethoven Music</a>
+          </a-menu-item>
+          <a-menu-item key="logout">Logout</a-menu-item>
+        </a-menu>
+      </template>
+    </a-dropdown>
     <svg-icon style="margin: auto" class="pointer" v-else name="account" size="2rem" color="grey" @click="goToAuth"/>
   </div>
 </template>
@@ -11,9 +24,9 @@ import { onMounted } from 'vue';
 import { getAccountInfoByToken } from '@/api/account';
 import { storeToRefs } from 'pinia';
 import SvgIcon from '@/components/SvgIcon.vue';
-import { handleOAuth2Login } from '@/api/auth';
+import {handleOAuth2Login, logout} from '@/api/auth';
 import { useRoute, useRouter } from 'vue-router';
-import { getData, setData } from '@/util/localStorage';
+import {deleteData, getData, setData} from '@/util/localStorage';
 import { TOKEN } from '@/config';
 import { initApp } from "@/lib/init";
 
@@ -48,6 +61,19 @@ onMounted(async () => {
 const goToAuth = () => {
   router.push({ path: '/auth' });
 }
+
+const handleLogout = async () => {
+  logout().then(() => {
+    deleteData(TOKEN);
+    router.push({path: '/'});
+    window.locatioeload();
+  });
+};
+
+const handleClick = async (e: any) => {
+  if (e.key === 'logout')
+    await handleLogout();
+};
 </script>
 
 <style lang="scss" scoped>
