@@ -72,8 +72,6 @@ onMounted(() => {
   }
   getHomePlaylist(params).then(response => {
     groupPlayList[0] = { playlist: response.data, groupTitle: '热门歌单' };
-    console.log(groupPlayList);
-
   });
 });
 </script>
@@ -97,16 +95,17 @@ onMounted(() => {
     gap: 1rem;
 
     .playlist-card {
-      flex: 0 1 20%;
+      flex: 1 1 30%;
       cursor: pointer;
+      //flex-grow: 1;
       //margin-right: 3vw;
       //padding: 1rem 1rem 1rem 0;
       margin: var(--base-padding);
     }
 
-    .playlist-card:nth-last-child(-n + 5) {
-      align-self: flex-start;
-    }
+    //.playlist-card:nth-last-child(-n + 5) {
+    //  align-self: flex-start;
+    //}
   }
 }
 </style>

@@ -22,10 +22,15 @@ defineProps<{
 
 <style scoped lang="scss">
 .playlist-card {
+  aspect-ratio: 1 / 1;
 
   .cover {
-    width: 14.687rem;
-    height: 14.687rem;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    max-width: 14.687rem;
+    max-height: 14.687rem;
     border-radius: 10px;
   }
 
@@ -37,7 +42,6 @@ defineProps<{
     div {
       span {
         color: grey;
-        font-size: var(--info-font-size);
       }
     }
   }

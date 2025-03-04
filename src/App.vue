@@ -34,6 +34,10 @@ watch(() => globalStore.global, global => {
     playMode: global.player.playMode,
   });
 }, { deep: true });
+
+window.addEventListener('resize', function () {
+  globalStore.global.windowWidth = window.innerWidth;
+});
 </script>
 
 <template>

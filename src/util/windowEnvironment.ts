@@ -29,3 +29,7 @@ export const IS_WINDOWS = PLATFORM_ENV === 'Windows';
 export const IS_LINUX = PLATFORM_ENV === 'Linux';
 export const IS_IOS = PLATFORM_ENV === 'iOS';
 export const IS_ANDROID = PLATFORM_ENV === 'Android';
+
+export function getWindowWidth() {
+	return window.innerWidth;
+}

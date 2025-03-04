@@ -19,10 +19,10 @@ import { componentState } from '@/store/componentState';
 <style scoped lang="scss">
 .right-wrapper {
   width: 100%;
-  border-radius: .25rem;
+  //border-radius: .25rem;
   overflow: hidden;
   overflow-y: scroll;
-  padding: var(--base-padding);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, .04), 0 0 6px rgba(0, 0, 0, .04);
+  //padding: var(--base-padding);
+  //box-shadow: 0 2px 4px rgba(0, 0, 0, .04), 0 0 6px rgba(0, 0, 0, .04);
 }
 </style>

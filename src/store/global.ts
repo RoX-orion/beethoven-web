@@ -67,6 +67,7 @@ export const useGlobalStore = defineStore('global', () => {
 		searchMusicKey: '',
 		defaultMusicCover: undefined,
 		defaultPlaylistCover: undefined,
+		windowWidth: window.innerWidth,
 	});
 
 	return {

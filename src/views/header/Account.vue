@@ -66,7 +66,7 @@ const handleLogout = async () => {
   logout().then(() => {
     deleteData(TOKEN);
     router.push({path: '/'});
-    window.locatioeload();
+    window.location.reload();
   });
 };
 

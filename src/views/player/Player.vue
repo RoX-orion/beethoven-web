@@ -1,5 +1,8 @@
 <template>
-  <div class="player">
+  <div v-if="mobilePlayer" class="mobile-player">
+
+  </div>
+  <div class="player" @click="aa">
     <div class="progress-mobile">
       <div style="width: 100%; position: relative; margin: auto">
         <Progress :data="progressData" @changeCurrentTime="changeCurrentTime" @update="updateTime"/>
@@ -23,8 +26,8 @@
       <div class="flex-col controls-wrapper">
         <div class="button-group flex-row">
           <IconButton icon-name="prev"/>
-          <IconButton v-if="audioPlayer?.paused" icon-name="pause" @click="playOrPause"/>
-          <IconButton v-else icon-name="play" @click="playOrPause"/>
+          <IconButton v-if="audioPlayer?.paused" icon-name="pause" @click.stop="playOrPause"/>
+          <IconButton v-else icon-name="play" @click.stop="playOrPause"/>
           <IconButton icon-name="next"/>
         </div>
         <div class="progress">
@@ -39,7 +42,6 @@
           <!--          <div class="time" v-if="music.duration">{{ durationFormater(music.duration) }}</div>-->
         </div>
       </div>
-
       <div class="flex-row panel-wrapper">
         <div class="flex-row">
           <svg-icon class="button pointer" name="loop" size="1.5rem"/>
@@ -47,8 +49,8 @@
         </div>
         <div class="flex-row sound-wrapper">
           <svg-icon class="sound-button pointer" v-if="volume === 0" name="volume-off" size="1.5rem"
-                    @click="changeMute"/>
-          <svg-icon class="sound-button pointer" v-else name="volume-on" size="1.5rem" @click="changeMute"/>
+                    @click.stop="changeMute"/>
+          <svg-icon class="sound-button pointer" v-else name="volume-on" size="1.5rem" @click.stop="changeMute"/>
           <a-slider class="progress" style="width: 100px" v-model:value="volume"/>
           <!--      <div class="progress" style="position: relative;">-->
           <!--        <div style="display: block; margin: auto">-->
@@ -98,6 +100,11 @@ let shardingCount: number;
 let seeking = false;
 const globalStore = useGlobalStore();
 const currentPercentage = ref(0);
+
+const mobilePlayer = ref(false);
+const aa = () => {
+  console.log(11111111111111);
+}
 
 onMounted(() => {
   audioPlayer.value = new Player({
@@ -312,8 +319,7 @@ const changeVolume = (e: any) => {
 }
 
 const screenWidth = ref(0);
-window.addEventListener('resize', function () {
-  screenWidth.value = window.innerWidth;
+watch(() => global.value.windowWidth, (windowWidth) => {
   setMobileVolume();
 });
 
@@ -430,5 +436,15 @@ watch(volume, (newVolume) => {
     align-items: center;
     position: relative;
   }
+}
+
+.mobile-player {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #409eff;
+  z-index: 1;
 }
 </style>
