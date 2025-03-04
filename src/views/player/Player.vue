@@ -26,7 +26,7 @@
       <div class="flex-col controls-wrapper">
         <div class="button-group flex-row">
           <IconButton icon-name="prev"/>
-          <IconButton v-if="audioPlayer?.paused" icon-name="pause" @click.stop="playOrPause"/>
+          <IconButton v-if="paused" icon-name="pause" @click.stop="playOrPause"/>
           <IconButton v-else icon-name="play" @click.stop="playOrPause"/>
           <IconButton icon-name="next"/>
         </div>
@@ -100,6 +100,7 @@ let shardingCount: number;
 let seeking = false;
 const globalStore = useGlobalStore();
 const currentPercentage = ref(0);
+const paused = ref(true);
 
 const mobilePlayer = ref(false);
 const aa = () => {
@@ -163,9 +164,11 @@ const updateTime = (e: any) => {
 
 const handleEvent = (eventName: string, state: any) => {
   if (eventName === 'play') {
+    paused.value = false;
     audioPlayer.value!.currentTime = currentTime.value;
     audioPlayer.value!.play();
   } else if (eventName === 'pause') {
+    paused.value = true;
     audioPlayer.value!.pause();
   } else if (eventName === 'changeVolume') {
     audioPlayer.value!.volume = state;
@@ -246,7 +249,7 @@ const playOrPause = () => {
     return;
   }
   updateCurrentTime(audioPlayer.value!.currentTime);
-  if (audioPlayer.value?.paused) {
+  if (paused.value) {
     handleEvent('play', undefined);
   } else {
     handleEvent('pause', undefined);
@@ -319,7 +322,7 @@ const changeVolume = (e: any) => {
 }
 
 const screenWidth = ref(0);
-watch(() => global.value.windowWidth, (windowWidth) => {
+watch(() => global.value.windowWidth, () => {
   setMobileVolume();
 });
 

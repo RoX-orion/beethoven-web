@@ -20,14 +20,14 @@
       <a-image class="cover" :src="music.cover" :width="64" :height="64"></a-image>
       <div style="margin: auto auto auto .5rem;">
         <p>{{ music.name }}</p>
-        <p class="grey">{{ music.singer }}</p>
+        <p class="grey" style="font-size: .85rem">{{ music.singer }}</p>
       </div>
     </div>
 
-    <div>{{ music.album }}</div>
-    <div>{{ sizeFormater(music.size) }}</div>
+    <div class="mobile">{{ music.album }}</div>
+    <div class="mobile">{{ sizeFormater(music.size) }}</div>
     <div class="flex-row">
-      {{ durationFormater(music.duration) }}
+      <p style="margin: 0 .25rem">{{ durationFormater(music.duration) }}</p>
       <a-dropdown :trigger="['click']">
         <svg-icon name="more" color="black"/>
         <template #overlay>
@@ -59,7 +59,7 @@
       </div>
     </div>
     <div style="padding: 1rem">
-      <Button @click="handleUpdatePlaylist">
+      <Button @click="handleUpdatePlaylist" :loading="loading">
         确认
       </Button>
     </div>
@@ -89,6 +89,7 @@ import UploadImage from '@/components/UploadImage.vue';
 const route = useRoute();
 const musicList = ref<Array<MusicItemType>>([]);
 const playlistCover = ref();
+const loading = ref(false);
 
 const uploadFile = ref<FileListType>();
 
@@ -117,19 +118,21 @@ const getPlaylistInfoFun = async (playlistId: string) => {
 let updatePlaylistDialogVisible = ref(false);
 let updatePlaylistInfo = ref<PlaylistType>({ id: '', title: '', accessible: true });
 const handleUpdatePlaylist = () => {
-  console.log('update', playlistCover.value);
   const playlistData = new FormData();
   playlistData.append('id', updatePlaylistInfo.value.id);
   playlistData.append('title', updatePlaylistInfo.value.title);
   playlistData.append('introduction', updatePlaylistInfo.value.introduction);
   playlistData.append('accessible', updatePlaylistInfo.value.accessible);
   playlistData.append('coverFile', uploadFile.value?.file);
+  loading.value = true;
   updatePlaylist(playlistData).then(async response => {
     if (response.code === 200) {
       await getPlaylistInfoFun(playlistInfo.value.id);
       updatePlaylistDialogVisible.value = false;
       updatePlaylistInfo.value = { id: '', title: '', accessible: true };
     }
+  }).finally(() => {
+    loading.value = false;
   });
 }
 
@@ -184,6 +187,12 @@ watch(() => route.params.id, (playlistId) => {
     .input-text {
       margin-bottom: 1rem;
     }
+  }
+}
+
+@media (max-width: 800px) {
+  .mobile {
+    display: none;
   }
 }
 </style>

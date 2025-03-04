@@ -3,11 +3,9 @@
     <a-tab-pane key="musicConfig" tab="音乐设置">
       <div>
         <p class="label-text">默认音乐封面:</p>
-        <UploadImage v-model="fileList" type="image"/>
-
+        <UploadImage v-model="defaultMusicCover" type="image"/>
         <p class="label-text">分片大小:</p>
         <InputText v-model="musicConfig.shardingSize"/>
-
         <Button style="margin-top: 1rem" :loading="loading" label="保存" @click="updateMusicConfigFun"/>
       </div>
     </a-tab-pane>
@@ -23,14 +21,14 @@ import { getMusicConfig, updateMusicConfig } from '@/api/appConfig';
 import type { FileListType, MusicConfigType } from '@/types/global';
 
 const activeKey = ref('musicConfig');
-const fileList = ref<FileListType[]>([]);
+const defaultMusicCover = ref<FileListType>();
 const loading = ref(false);
 let musicConfig: MusicConfigType = reactive({});
 
 const getMusicConfigFun = () => {
   getMusicConfig().then(response => {
     Object.assign(musicConfig, response.data);
-    fileList.value.push({ 'url': musicConfig.defaultMusicCover });
+    defaultMusicCover.value = { 'url': musicConfig.defaultMusicCover };
   });
 }
 const updateMusicConfigFun = () => {
@@ -38,11 +36,8 @@ const updateMusicConfigFun = () => {
     return;
   }
   const musicConfigData = new FormData();
-  console.log(fileList.value);
-  if (fileList.value.length > 0) {
-    musicConfigData.append('defaultMusicCoverFile', fileList.value[0].file);
-    musicConfigData.append('shardingSize', musicConfig.shardingSize);
-  }
+  musicConfigData.append('defaultMusicCoverFile', defaultMusicCover.value?.file);
+  musicConfigData.append('shardingSize', musicConfig.shardingSize);
   loading.value = true;
   updateMusicConfig(musicConfigData)
     .finally(() => {

@@ -20,7 +20,7 @@
   --vt-c-text-dark-1: var(--vt-c-white);
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
 
-  --info-font-size: 15px;
+  --info-font-size: .85rem;
   --header-item-size: 2.75rem;
 
   --base-padding: .5rem;

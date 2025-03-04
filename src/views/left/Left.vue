@@ -23,7 +23,6 @@
   <a-drawer
     v-else
     class="left-wrapper custom-scroll"
-
     placement="left"
     :closable="false"
     :open="open"
@@ -38,7 +37,7 @@
         size="1.5rem"
         icon-name="add"
         icon-color="rgba(0, 0, 0, .5)"
-        @click="addPlaylistDialogVisible = !addPlaylistDialogVisible"/>
+        @click="addPlaylistDialogVisible = !addPlaylistDialogVisible; open = false"/>
     </div>
     <PlayList
       v-for="(playlist) in playlistList"

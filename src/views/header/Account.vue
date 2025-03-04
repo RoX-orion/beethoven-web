@@ -43,7 +43,6 @@ onMounted(async () => {
       await handleOAuth2Login({ code, type: 'GITHUB' }).then(async response => {
         if (response.code === 200) {
           Object.assign(account.value, response.data);
-          console.log(account.value.token);
           setData(TOKEN, account.value.token);
           await initApp();
           await router.push({path: '/'});
