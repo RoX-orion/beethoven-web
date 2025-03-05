@@ -12,7 +12,7 @@ import pinia from '@/store/store';
 // import { PiniaVuePlugin } from 'pinia';
 // import './router/RouteGuard';
 
-init();
+await init();
 async function init() {
 	await initApp();
 }

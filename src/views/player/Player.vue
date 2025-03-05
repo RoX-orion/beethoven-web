@@ -78,14 +78,13 @@ import { useGlobalStore } from '@/store/global';
 import { durationFormater } from '@/util/time';
 import IconButton from '@/components/IconButton.vue';
 import Progress from '@/components/Progress.vue';
-import { SHARDING_SIZE } from '@/config';
-import { getData } from '@/util/localStorage';
+import {PLAYER_SETTING, SHARDING_SIZE} from '@/config';
+import {getData, setData} from '@/util/localStorage';
 import { throttle } from '@/util/schedulers';
 import SvgIcon from '@/components/SvgIcon.vue';
-import { storeToRefs } from 'pinia';
-import { initGlobal } from '@/lib/init';
 import Player from "xgplayer/es/player";
 import { Events } from 'xgplayer'
+import {getSetting} from "@/api/setting";
 
 const audioPlayer = ref<any>();
 const music: MusicItemType = reactive({
@@ -105,9 +104,9 @@ const paused = ref(true);
 const mobilePlayer = ref(false);
 const aa = () => {
   console.log(11111111111111);
-}
+};
 
-onMounted(() => {
+onMounted(async () => {
   audioPlayer.value = new Player({
     id: 'audioPlayer',
     mediaType: 'audio',
@@ -116,6 +115,20 @@ onMounted(() => {
     width: '100%',
     volume: 0.5
   });
+  screenWidth.value = window.innerWidth;
+
+  if (screenWidth.value <= 800) {
+    setMobileVolume();
+  } else {
+    getSetting().then(response => {
+      if (response.data) {
+        setData(PLAYER_SETTING, response.data);
+        globalStore.global.player = response.data;
+        audioPlayer.value.volume = response.data?.volume / 100;
+        volume.value = response.data?.volume;
+      }
+    });
+  }
 
   let route = useRoute();
   const { id, type } = route.params;
@@ -128,10 +141,6 @@ onMounted(() => {
   // });
   // audioPlayer.value.on(Events.SEEKED, () => {
   //   seeking = false;
-  // });
-  // audioPlayer.value!.addEventListener('timeupdate', onTimeUpdate);
-  // audioPlayer.value!.addEventListener('waiting', () => {
-  //   console.log('waiting');
   // });
 });
 
@@ -172,6 +181,7 @@ const handleEvent = (eventName: string, state: any) => {
     audioPlayer.value!.pause();
   } else if (eventName === 'changeVolume') {
     audioPlayer.value!.volume = state;
+    globalStore.global.player.volume = Math.floor(state * 100);
   } else if (eventName === 'changeCurrentTime') {
     // const offset = state.offsetX;
     // const total = state.target.getBoundingClientRect().width;
@@ -263,23 +273,6 @@ const progressData: ProgressType = reactive({
   percentage: 0,
 });
 
-// const updatingCurrentTime = ref(false);
-// audioPlayer.value!.addEventListener('mousedown', (e) => {
-//   updatingCurrentTime.value = true;
-//   handleEvent('changeCurrentTime', e);
-//   e.preventDefault();
-// });
-//
-// document.addEventListener('mousemove', (e) => {
-//   if (updatingCurrentTime.value) {
-//     handleEvent('changeCurrentTime', e);
-//   }
-// });
-//
-// document.addEventListener('mouseup', () => {
-//   updatingCurrentTime.value = false;
-// });
-
 const volumeProgressData: ProgressType = reactive({
   width: '10rem',
   height: '5px',
@@ -288,49 +281,26 @@ const volumeProgressData: ProgressType = reactive({
 });
 
 let volume = ref(10);
-const { global } = storeToRefs(globalStore);
-
-onMounted(() => {
-  screenWidth.value = window.innerWidth;
-  setMobileVolume();
-  if (!global) {
-    initGlobal();
-  } else {
-    volume.value = global.value.player.volume;
-  }
-});
 
 const changeMute = () => {
   if (volume.value === 0) {
-    volume.value = global.value.player.volume;
+    volume.value = globalStore.global.player.volume;
   } else {
-    global.value.player.volume = volume.value;
+    globalStore.global.player.volume = volume.value;
     volume.value = 0;
   }
 }
 
-const saveVolume = () => {
-  // volume
-}
-
-const changeVolume = (e: any) => {
-  const offset = e.offsetX;
-  const total = e.target.getBoundingClientRect().width;
-  volume.value = Math.floor(offset / total * 100);
-  global.value.player.volume = volume.value;
-  volumeProgressData.percentage = volume.value;
-}
-
 const screenWidth = ref(0);
-watch(() => global.value.windowWidth, () => {
-  setMobileVolume();
+watch(() => globalStore.global.windowWidth, (windowWidth) => {
+  if (windowWidth <= 800) {
+    setMobileVolume();
+  }
 });
 
 const setMobileVolume = () => {
-  if (screenWidth.value <= 800) {
-    volume.value = 100;
-    handleEvent('changeVolume', 1);
-  }
+  volume.value = 100;
+  handleEvent('changeVolume', 1);
 }
 
 watch(volume, (newVolume) => {
