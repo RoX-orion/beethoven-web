@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import Header from './header/Header.vue';
 import Left from './left/Left.vue';
-import Right from './right/Right.vue'
+import Right from '@/views/middle/Right.vue'
 import Player from './player/Player.vue';
 import {useGlobalStore, useRouteStore} from '@/store/global';
 import {onMounted, ref, watch} from 'vue';

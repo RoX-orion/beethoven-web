@@ -14,15 +14,14 @@
       </div>
     </div>
 
-    <div class="player-wrapper flex-row content-space-between">
-      <div class="flex-row pointer">
+    <div class="player-wrapper flex-row ">
+      <div class="flex-row pointer base-info">
         <img class="cover" :src="getCover" alt="cover">
         <div class="music-info">
           <span class="music-name">{{ music.name }}</span>
           <span class="grey">{{ music.singer }}</span>
         </div>
       </div>
-
       <div class="flex-col controls-wrapper">
         <div class="button-group flex-row">
           <IconButton icon-name="prev"/>
@@ -117,23 +116,29 @@ onMounted(async () => {
   });
   screenWidth.value = window.innerWidth;
 
+  getSetting().then(response => {
+    if (response.data) {
+      setData(PLAYER_SETTING, response.data);
+      globalStore.global.player = response.data;
+      globalStore.global.media.musicId = response.data.musicId;
+      globalStore.global.media.currentTime = response.data.currentTime;
+      audioPlayer.value.volume = response.data?.volume / 100;
+      volume.value = response.data?.volume;
+    }
+  });
   if (screenWidth.value <= 800) {
     setMobileVolume();
-  } else {
-    getSetting().then(response => {
-      if (response.data) {
-        setData(PLAYER_SETTING, response.data);
-        globalStore.global.player = response.data;
-        audioPlayer.value.volume = response.data?.volume / 100;
-        volume.value = response.data?.volume;
-      }
-    });
   }
 
   let route = useRoute();
   const { id, type } = route.params;
+  console.log('player', globalStore.global.media.musicId);
   if (type === 'music' && id) {
     getMusicInfoFun(id as string);
+  } else if (globalStore.global.media.musicId) {
+    getMusicInfoFun(globalStore.global.media.musicId as string);
+    currentTime.value = globalStore.global.media.currentTime;
+    console.log(currentTime.value);
   }
   audioPlayer.value.on(Events.TIME_UPDATE, onTimeUpdate);
   // audioPlayer.value.on(Events.SEEKING, () => {
@@ -292,11 +297,6 @@ const changeMute = () => {
 }
 
 const screenWidth = ref(0);
-watch(() => globalStore.global.windowWidth, (windowWidth) => {
-  if (windowWidth <= 800) {
-    setMobileVolume();
-  }
-});
 
 const setMobileVolume = () => {
   volume.value = 100;
@@ -319,30 +319,37 @@ watch(volume, (newVolume) => {
   justify-content: space-between;
   padding: 1rem;
 
-  .cover {
-    width: 4.25rem;
-    height: 100%;
-    border-radius: .25rem;
+  .base-info {
+    .cover {
+      width: 4.25rem;
+      height: 4.25rem;
+      aspect-ratio: 1 / 1;
+      border-radius: .25rem;
+    }
+
+    .music-info {
+      padding: 0 10px;
+
+      span {
+        display: block;
+        line-height: 1.5rem;
+      }
+    }
   }
 
-  .music-info {
-    padding: 0 10px;
+  .controls-wrapper {
     margin: auto;
+    width: 40%;
+  }
 
-    span {
-      display: block;
-      line-height: 1.5rem;
-    }
+  .panel-wrapper {
+    width: 30%;
+    justify-content: flex-end;
   }
 
   .player {
     display: none;
   }
-}
-
-.controls-wrapper {
-  width: 40vw;
-  margin: auto;
 }
 
 .button-group {
@@ -388,11 +395,23 @@ watch(volume, (newVolume) => {
   .panel-wrapper {
     display: none;
   }
+
+  .base-info {
+    width: 70%;
+  }
+
+  .controls-wrapper {
+    width: 30%;
+  }
 }
 
 @media (min-width: 801px) {
   .progress-mobile {
     display: none;
+  }
+
+  .base-info {
+    width: 30%;
   }
 }
 

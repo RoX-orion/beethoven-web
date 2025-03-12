@@ -10,9 +10,9 @@
 
 <script setup lang="ts">
 import { onMounted, reactive } from 'vue';
-import PlayListCard from '@/views/right/PlayListCard.vue';
+import PlayListCard from '@/views/middle/PlayListCard.vue';
 import type { PlayList } from '@/types/global';
-import TagGroup from '@/views/right/TagGroup.vue';
+import TagGroup from '@/views/middle/TagGroup.vue';
 import { getHomePlaylist } from '@/api/playlist';
 
 interface GroupPlayListArray {

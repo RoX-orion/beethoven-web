@@ -42,7 +42,7 @@ import { addMusicToPlaylist, getPlaylist } from '@/api/playlist';
 import type { AddMusicFormType, PlaylistType } from '@/types/playlist';
 import type { MusicItemType } from '@/types/global';
 import Button from '@/components/Button.vue';
-import TagGroup from '@/views/right/TagGroup.vue';
+import TagGroup from '@/views/middle/TagGroup.vue';
 import { useRoute } from 'vue-router';
 
 const musicList = ref<Array<MusicItemType>>([]);
