@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-row">
+  <div class="flex-row" style="padding: 1rem">
     <!--      <UploadImage type="image" v-model="fileList"/>-->
     <div>
       <p class="pointer" style="font-size: 2rem" @click="updatePlaylistFun">{{ playlistInfo.title }}</p>
@@ -159,7 +159,7 @@ watch(() => route.params.id, (playlistId) => {
 <style scoped lang="scss">
 .playlist-info {
   width: 100%;
-  padding: .5rem;
+  padding: .5rem 1rem;
   border-radius: .25rem;
 
   &:hover {

@@ -9,7 +9,7 @@
       </div>
       <div class="flex-row">
         <IconButton icon-name="add-circle" size="1rem" icon-color="rgba(0, 0, 0, .5)"
-                    @click="openAddMusicToPlaylistDialog(music.id)"/>
+                    @click.stop="openAddMusicToPlaylistDialog(music.id)"/>
         <div style="margin: auto 0; line-height: 1rem">{{ durationFormater(music.duration) }}</div>
       </div>
     </div>

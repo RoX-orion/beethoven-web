@@ -24,9 +24,14 @@ defineProps({
 
 <style scoped lang="scss">
 .svg-wrapper {
+  width: 2.5rem;
+  height: 2.5rem;
   padding: .5rem;
   cursor: pointer;
   border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   &:hover {
     background-color: var(--svg-button-shadow);

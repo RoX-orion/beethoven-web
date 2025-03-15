@@ -31,34 +31,25 @@ service.interceptors.request.use(
 
 // response interceptor
 service.interceptors.response.use(
-
-	response => {
+	async response => {
 		const res = response.data
 
 		if (res.code !== 200) {
 			console.log(res.msg || 'Error');
-
-			// if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
-			// 	// to re-login
-			// 	MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
-			// 		confirmButtonText: 'Re-Login',
-			// 		cancelButtonText: 'Cancel',
-			// 		type: 'warning'
-			// 	}).then(() => {
-			// 		store.dispatch('user/resetToken').then(() => {
-			// 			location.reload()
-			// 		})
-			// 	})
-			// }
-			if (res.code === 500 || res.code === 400) {
+			if (res.code === 400) {
+				notification.warning({
+					message: '失败',
+					description: res.msg,
+				});
+			} else if (res.code === 500) {
 				notification['error']({
-					message: 'Error',
+					message: '错误',
 					description: res.msg,
 				});
 			}
 			if (res.code === 401) {
 				deleteData(TOKEN);
-				router.push('/auth');
+				await router.push('/auth');
 			}
 			return Promise.reject(new Error(res.msg || 'Error'));
 		} else {

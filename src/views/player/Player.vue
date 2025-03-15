@@ -1,8 +1,41 @@
 <template>
-  <div v-if="mobilePlayer" class="mobile-player">
+  <Transition name="slide">
+    <div v-if="mobilePlayer" class="mobile-player">
+      <IconButton icon-name="down" @click="closeMobilePlayer"/>
+      <img class="mobile-cover" :src="getCover" alt=""/>
 
-  </div>
-  <div class="player" @click="aa">
+      <div class="mobile-player-panel">
+        <div class="flex-row content-space-between" style="padding: 1rem 0">
+          <div>
+            <p style="font-size: 1.5rem">{{ music.name }}</p>
+            <p class="grey">{{ music.singer }}</p>
+          </div>
+          <svg-icon style="margin: auto 0" name="favorite"/>
+        </div>
+        <div style="width: 100%; position: relative; margin: auto">
+          <Progress :data="progressData" @changeCurrentTime="changeCurrentTime" @update="updateTime"/>
+        </div>
+        <div class="flex-row content-space-between" style="width: 100%; margin-top: .25rem">
+          <div>{{ durationFormater(Math.floor(currentTime)) }}</div>
+          <div v-if="music.duration">{{ durationFormater(music.duration) }}</div>
+        </div>
+
+        <div class="flex-row">
+          <div class="flex-row mobile-button-group content-space-between">
+            <svg-icon name="loop"/>
+            <svg-icon name="prev"/>
+            <svg-icon v-if="paused" name="pause" @click.stop="playOrPause"/>
+            <svg-icon v-else name="play" @click.stop="playOrPause"/>
+            <svg-icon name="next"/>
+            <svg-icon name="menu"/>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </Transition>
+
+  <div class="player" @click="openMobilePlayer">
     <div class="progress-mobile">
       <div style="width: 100%; position: relative; margin: auto">
         <Progress :data="progressData" @changeCurrentTime="changeCurrentTime" @update="updateTime"/>
@@ -101,9 +134,14 @@ const currentPercentage = ref(0);
 const paused = ref(true);
 
 const mobilePlayer = ref(false);
-const aa = () => {
-  console.log(11111111111111);
+const openMobilePlayer = (event: MouseEvent) => {
+  event.preventDefault();
+  mobilePlayer.value = true;
 };
+
+const closeMobilePlayer = () => {
+  mobilePlayer.value = false;
+}
 
 onMounted(async () => {
   audioPlayer.value = new Player({
@@ -141,6 +179,8 @@ onMounted(async () => {
     console.log(currentTime.value);
   }
   audioPlayer.value.on(Events.TIME_UPDATE, onTimeUpdate);
+  audioPlayer.value.on(Events.PLAY, () => paused.value = false);
+  audioPlayer.value.on(Events.PAUSE, () => paused.value = true);
   // audioPlayer.value.on(Events.SEEKING, () => {
   //   seeking = true;
   // });
@@ -314,10 +354,10 @@ watch(volume, (newVolume) => {
   bottom: 0;
   left: 0;
   right: 0;
+  padding: 0 1rem;
 }
 .player-wrapper {
   justify-content: space-between;
-  padding: 1rem;
 
   .base-info {
     .cover {
@@ -374,13 +414,9 @@ watch(volume, (newVolume) => {
   }
 }
 
-.progress-mobile {
-  margin: 0 .5rem;
-}
-
 @media (max-width: 800px) {
   .player-wrapper {
-    padding: .5rem;
+    padding: .5rem 0;
 
     .cover {
       width: 4rem;
@@ -436,7 +472,59 @@ watch(volume, (newVolume) => {
   top: 0;
   right: 0;
   bottom: 0;
-  background-color: #409eff;
+  background: var(--background-color-light);
   z-index: 1;
+
+  .mobile-cover {
+    width: 80%;
+    aspect-ratio: 1 / 1;
+    border-radius: 1rem;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .mobile-player-panel {
+    padding: .5rem 1rem;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+  }
+
+  .mobile-button-group {
+    width: 100%;
+    margin: 1rem auto;
+  }
+}
+
+.slide-enter-active {
+  opacity: 1;
+  animation: slide-up 0.25s ease forwards;
+}
+
+.slide-leave-active {
+  animation: slide-down 0.25s ease forwards;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-down {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 1;
+  }
 }
 </style>
