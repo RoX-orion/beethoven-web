@@ -78,13 +78,11 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .playlist-group-wrapper {
-  //margin-top: 1rem;
-  margin-right: var(--base-margin);
+  padding: var(--base-padding);
 
   .playlist-group-title {
     font-size: 1.375rem;
-    padding: var(--base-padding);
-    margin: .75rem 0;
+    padding: .5rem 0;
     display: inline-block;
     text-shadow: 3px 3px 4px rgba(0, 0, 0, 0.25);
   }
@@ -97,15 +95,8 @@ onMounted(() => {
     .playlist-card {
       flex: 1 1 30%;
       cursor: pointer;
-      //flex-grow: 1;
-      //margin-right: 3vw;
-      //padding: 1rem 1rem 1rem 0;
-      margin: var(--base-padding);
+      margin: .5rem 0;
     }
-
-    //.playlist-card:nth-last-child(-n + 5) {
-    //  align-self: flex-start;
-    //}
   }
 }
 </style>

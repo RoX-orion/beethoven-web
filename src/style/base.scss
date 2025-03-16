@@ -23,7 +23,7 @@
   --info-font-size: .85rem;
   --header-item-size: 2.75rem;
 
-  --base-padding: .5rem;
+  --base-padding: 1rem;
   --base-margin: .5rem;
 
   @media (min-width: 1920px) {
@@ -81,7 +81,7 @@
 
 html,
 body {
-  height: 100dvh;
+  height: 100vh;
   overflow-y: hidden;
   background: var(--background-color-light);
   transition: color 0.5s,

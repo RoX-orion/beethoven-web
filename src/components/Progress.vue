@@ -1,13 +1,13 @@
 <template>
-  <div ref="seekLineContainer" @mousedown="updateCurrentTime" @touchstart="updateCurrentTimeTouch">
+  <div ref="seekLineContainer" @mousedown.stop="updateCurrentTime" @touchstart.stop="updateCurrentTimeTouch">
     <canvas
       ref="progressCanvas"
       class="progress pointer"
       style="display: block; margin: auto"
       :style="{
-    width: data.width,
-    height: data.height,
-    'border-radius': data.radius}">
+      width: data.width,
+      height: data.height,
+      'border-radius': data.radius}">
     </canvas>
     <div class="seek-line pointer" ref="seekButton" :style="{left: computePercentage + '%'}"></div>
   </div>
@@ -47,8 +47,7 @@ const handleMouseMove = (e: any) => {
   if (offsetX > containerRect.width)
     offsetX = containerRect.width;
   props.data.percentage = (offsetX / containerRect.width) * 100;
-  seekButton.value!.style.left = `${offsetX - seekButton.value!.offsetWidth / 2}px`;
-  console.log(offsetX, props.data.percentage);
+  seekButton.value!.style.left = `${offsetX}px`;
   emit('update', props.data.percentage);
   drawProgressBar(props.data.percentage);
 };
@@ -64,16 +63,16 @@ const updateCurrentTime = (e: any) => {
   e.preventDefault();
   seeking = true;
   handleMouseMove(e);
-  document.addEventListener('mousemove', handleMouseMove);
-  document.addEventListener('mouseup', handleMouseUp);
+  document.addEventListener('mousemove', handleMouseMove, false);
+  document.addEventListener('mouseup', handleMouseUp, false);
 }
 // mobile
 const updateCurrentTimeTouch = (e: any) => {
   e.preventDefault();
   seeking = true;
   handleTouchMove(e);
-  document.addEventListener('touchmove', handleTouchMove, { passive: false });
-  document.addEventListener('touchend', handleTouchUp);
+  document.addEventListener('touchmove', handleTouchMove, false);
+  document.addEventListener('touchend', handleTouchUp, false);
 };
 
 const handleTouchMove = (e: any) => {
@@ -85,7 +84,7 @@ const handleTouchMove = (e: any) => {
   if (offsetX < 0) offsetX = 0;
   if (offsetX > containerRect.width) offsetX = containerRect.width;
   props.data.percentage = (offsetX / containerRect.width) * 100;
-  seekButton.value!.style.left = `${offsetX - seekButton.value!.offsetWidth / 2}px`;
+  seekButton.value!.style.left = `${offsetX}px`;
   emit('update', props.data.percentage);
   drawProgressBar(props.data.percentage);
 };
@@ -100,7 +99,6 @@ const handleTouchUp = () => {
 
 const computePercentage = computed(() => {
   return props.data.percentage;
-  // return seekLineContainer.value && seekButton.value ? seekLineContainer.value!.getBoundingClientRect().width * (props.data.percentage / 100) - seekButton.value?.offsetWidth / 2 : 0;
 });
 watch(() => props.data.percentage, (newVal) => {
   drawProgressBar(newVal);

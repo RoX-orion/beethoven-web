@@ -2,7 +2,7 @@
   <Header/>
   <div class="flex-row left-right">
     <Left v-if="getData(TOKEN)"/>
-    <Right/>
+    <Middle/>
   </div>
 
   <Player/>
@@ -11,11 +11,10 @@
 <script setup lang="ts">
 import Header from './header/Header.vue';
 import Left from './left/Left.vue';
-import Right from '@/views/middle/Right.vue'
+import Middle from '@/views/middle/Middle.vue'
 import Player from './player/Player.vue';
 import {useGlobalStore, useRouteStore} from '@/store/global';
-import {onMounted, ref, watch} from 'vue';
-import {getWindowWidth} from "@/util/windowEnvironment";
+import { onMounted, watch } from 'vue';
 import {getData} from "@/util/localStorage";
 import {TOKEN} from "@/config";
 

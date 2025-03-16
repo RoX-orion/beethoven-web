@@ -10,7 +10,7 @@
             <p style="font-size: 1.5rem">{{ music.name }}</p>
             <p class="grey">{{ music.singer }}</p>
           </div>
-          <svg-icon style="margin: auto 0" name="favorite"/>
+          <svg-icon class="pointer" style="margin: auto 0" name="favorite"/>
         </div>
         <div style="width: 100%; position: relative; margin: auto">
           <Progress :data="progressData" @changeCurrentTime="changeCurrentTime" @update="updateTime"/>
@@ -22,12 +22,12 @@
 
         <div class="flex-row">
           <div class="flex-row mobile-button-group content-space-between">
-            <svg-icon name="loop"/>
-            <svg-icon name="prev"/>
-            <svg-icon v-if="paused" name="pause" @click.stop="playOrPause"/>
-            <svg-icon v-else name="play" @click.stop="playOrPause"/>
-            <svg-icon name="next"/>
-            <svg-icon name="menu"/>
+            <svg-icon class="pointer" name="loop"/>
+            <svg-icon class="pointer" name="prev"/>
+            <svg-icon class="pointer" v-if="paused" name="pause" size="2rem" @click.stop="playOrPause"/>
+            <svg-icon class="pointer" v-else name="play" size="2rem" @click.stop="playOrPause"/>
+            <svg-icon class="pointer" name="next"/>
+            <svg-icon class="pointer" name="menu"/>
           </div>
 
         </div>
@@ -57,7 +57,7 @@
       </div>
       <div class="flex-col controls-wrapper">
         <div class="button-group flex-row">
-          <IconButton icon-name="prev"/>
+          <IconButton icon-name="prev                                       "/>
           <IconButton v-if="paused" icon-name="pause" @click.stop="playOrPause"/>
           <IconButton v-else icon-name="play" @click.stop="playOrPause"/>
           <IconButton icon-name="next"/>
@@ -101,7 +101,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import type { MusicItemType, ProgressType } from '@/types/global';
 import eventBus from '@/util/eventBus';
 import { getMusicInfo } from '@/api/music';
@@ -135,12 +135,44 @@ const paused = ref(true);
 
 const mobilePlayer = ref(false);
 const openMobilePlayer = (event: MouseEvent) => {
-  event.preventDefault();
-  mobilePlayer.value = true;
+  if (globalStore.global.windowWidth <= 800) {
+    event.preventDefault();
+    mobilePlayer.value = true;
+  }
 };
 
 const closeMobilePlayer = () => {
   mobilePlayer.value = false;
+}
+
+const handleSeek = async (forward: number) => {
+  currentTime.value = forward === -1 ? currentTime.value - 15 : currentTime.value + 15;
+  console.log(currentTime.value);
+  if (forward === -1) {
+    currentTime.value = currentTime.value < 0 ? 0 : currentTime.value;
+  } else {
+    currentTime.value = currentTime.value > music.duration ? music.duration : currentTime.value;
+  }
+  await changeCurrentTime(currentTime.value);
+  await onTimeUpdate();
+}
+
+const handleKeyEvent = (e: KeyboardEvent) => {
+  switch (e.key) {
+    case ' ':
+    case 'Enter':
+      e.preventDefault();
+      playOrPause();
+      break;
+    case 'Left':
+    case 'ArrowLeft':
+      handleSeek(-1);
+      break;
+    case 'Right':
+    case 'ArrowRight':
+      handleSeek(1);
+      break;
+  }
 }
 
 onMounted(async () => {
@@ -181,12 +213,18 @@ onMounted(async () => {
   audioPlayer.value.on(Events.TIME_UPDATE, onTimeUpdate);
   audioPlayer.value.on(Events.PLAY, () => paused.value = false);
   audioPlayer.value.on(Events.PAUSE, () => paused.value = true);
+
+  document.addEventListener('keydown', handleKeyEvent, false);
   // audioPlayer.value.on(Events.SEEKING, () => {
   //   seeking = true;
   // });
   // audioPlayer.value.on(Events.SEEKED, () => {
   //   seeking = false;
   // });
+});
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeyEvent, false);
 });
 
 const getMusicInfoFun = (musicId: string) => {
@@ -206,9 +244,9 @@ watch(() => globalStore.global.media.musicId, (musicId) => {
   getMusicInfoFun(musicId);
 });
 
-const changeCurrentTime = (e: any) => {
+const changeCurrentTime = async (e: any) => {
   seeking = false;
-  handleEvent('changeCurrentTime', e);
+  await handleEvent('changeCurrentTime', e);
 }
 
 const updateTime = (e: any) => {
@@ -216,7 +254,7 @@ const updateTime = (e: any) => {
   handleEvent('updateTime', e);
 }
 
-const handleEvent = (eventName: string, state: any) => {
+const handleEvent = async (eventName: string, state: any) => {
   if (eventName === 'play') {
     paused.value = false;
     audioPlayer.value!.currentTime = currentTime.value;
@@ -354,7 +392,8 @@ watch(volume, (newVolume) => {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 0 1rem;
+  padding: 1rem 1rem 0 1rem;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, .04);
 }
 .player-wrapper {
   justify-content: space-between;
@@ -494,6 +533,7 @@ watch(volume, (newVolume) => {
   .mobile-button-group {
     width: 100%;
     margin: 1rem auto;
+    align-items: center;
   }
 }
 

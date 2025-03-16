@@ -76,5 +76,10 @@
   border-radius: 50%;
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-50%) translateX(-50%);
+  left: 0;
+}
+
+.ant-drawer-body {
+  padding: 1rem !important;
 }
