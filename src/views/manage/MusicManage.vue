@@ -15,7 +15,7 @@
           <template v-if="column.dataIndex === 'options'">
             <div class="flex-row">
               <Button class="btn">编辑</Button>
-              <Button class="btn" style="background-color: #e53935">删除</Button>
+              <Button class="btn" style="background-color: #e53935" @click="deleteMusicFun(record)">删除</Button>
             </div>
           </template>
         </template>
@@ -71,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import { getManageMusicList } from '@/api/music';
+import {deleteMusic, getManageMusicList} from '@/api/music';
 import { onMounted, ref, reactive } from 'vue';
 import { durationFormater, formatTime } from '@/util/time';
 import { sizeFormater } from '@/util/file';
@@ -80,7 +80,7 @@ import Search from '@/components/Search.vue';
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import InputText from '@/components/InputText.vue';
 import { uploadMusic } from '@/api/music';
-import type { UploadChangeParam, UploadProps } from 'ant-design-vue';
+import {Modal, notification, UploadChangeParam, UploadProps} from 'ant-design-vue';
 import { getBase64 } from '@/util/file';
 import { Pagination } from '@/types/global';
 
@@ -233,6 +233,26 @@ const beforeUploadCover = (file: UploadChangeParam) => {
 const beforeUploadMusic = (file: UploadChangeParam) => {
   uploadMusicFile.value = file;
   return false;
+}
+
+const deleteMusicFun = (record) => {
+  Modal.confirm({
+    title: `删除歌曲《${record.name}》?`,
+    // icon: Outlined),
+    content: '是否确定删除此歌曲？',
+    okText: '确认',
+    cancelText: '取消',
+    async onOk() {
+      deleteMusic(record.id).then(() => {
+        getManageMusicListFun();
+        notification.success({
+          message: '成功',
+          description: '删除成功！'
+        });
+      });
+    },
+    onCancel() {},
+  });
 }
 </script>
 

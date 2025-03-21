@@ -38,3 +38,10 @@ export function getManageMusicList(param: SearchPageParam) {
 		params: param,
 	});
 }
+
+export function deleteMusic(musicId: number) {
+	return request({
+		url: `/music/manage/deleteMusic/${musicId}`,
+		method: 'delete'
+	});
+}
