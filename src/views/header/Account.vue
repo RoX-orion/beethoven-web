@@ -5,7 +5,7 @@
       <template #overlay>
         <a-menu @click="handleClick">
           <a-menu-item key="github">
-            <a href="#">GitHub</a>
+            <a href="https://github.com/RoX-orion/beethoven-web" target="_blank">GitHub</a>
           </a-menu-item>
           <a-menu-item key="about">
             <a href="#">About Beethoven Music</a>

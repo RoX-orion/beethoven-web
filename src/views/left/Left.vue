@@ -49,7 +49,7 @@
       @click="gotoPlayListInfo(playlist.id)"/>
   </a-drawer>
 
-  <Dialog v-model="addPlaylistDialogVisible" width="30rem" title="新建歌单">
+  <a-modal v-model:open="addPlaylistDialogVisible" width="30rem" title="新建歌单">
     <div class="flex-row playlist-dialog">
       <div class="cover">
         <img src="/assets/img/playlistCover.png" alt="cover"/>
@@ -61,17 +61,17 @@
         <a-switch size="small" v-model:checked="playlistInfo.accessible"/>
       </div>
     </div>
-    <div style="padding: 1rem">
+    <div style="padding: 1rem 0">
       <Button @click="addPlaylistFun" :loading="loading">
         FINISH
       </Button>
     </div>
-  </Dialog>
+    <template #footer/>
+  </a-modal>
 </template>
 
 <script setup lang="ts">
 import PlayList from './PlayList.vue';
-import Dialog from '@/components/Dialog.vue';
 import { onMounted, reactive, ref } from 'vue';
 import IconButton from '@/components/IconButton.vue';
 import InputText from '@/components/InputText.vue';

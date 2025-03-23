@@ -1,6 +1,6 @@
 <template>
   <div class="flex-row" style="padding: 1rem">
-    <!--      <UploadImage type="image" v-model="fileList"/>-->
+    <!--    <a-image style="max-width: 8rem; max-height: 8rem" class="playlist-cover" :src="playlistInfo.cover"/>-->
     <div>
       <p class="pointer" style="font-size: 2rem" @click="updatePlaylistFun">{{ playlistInfo.title }}</p>
       <div style="color: grey">
@@ -46,9 +46,9 @@
       </a-dropdown>
     </div>
   </div>
-  <Dialog title="编辑歌单" width="30rem" v-model="updatePlaylistDialogVisible">
+  <a-modal title="编辑歌单" width="30rem" v-model:open="updatePlaylistDialogVisible">
     <div class="flex-row playlist-dialog">
-      <div class="playlist-cover">
+      <div class="playlist-cover-edit">
         <UploadImage type="image" v-model="uploadFile"/>
       </div>
       <div class="update-playlist-info">
@@ -58,12 +58,13 @@
         <a-switch size="small" v-model:checked="updatePlaylistInfo.accessible"/>
       </div>
     </div>
-    <div style="padding: 1rem">
+    <div style="padding: 1rem 0">
       <Button @click="handleUpdatePlaylist" :loading="loading">
         确认
       </Button>
     </div>
-  </Dialog>
+    <template #footer/>
+  </a-modal>
 </template>
 
 <script setup lang="ts">
@@ -79,7 +80,6 @@ import type { FileListType, MusicItemType } from '@/types/global';
 import type { PlaylistType } from '@/types/playlist';
 import { sizeFormater } from '@/util/file';
 import { formatTime } from '@/util/time';
-import Dialog from '@/components/Dialog.vue';
 import Button from '@/components/Button.vue';
 import InputText from '@/components/InputText.vue';
 import { useGlobalStore } from '@/store/global';
@@ -171,11 +171,17 @@ watch(() => route.params.id, (playlistId) => {
   }
 }
 
+.playlist-cover {
+  width: 1rem;
+  height: 1rem;
+  border-radius: .5rem;
+}
+
 .playlist-dialog {
   --gap: .5rem;
   margin: auto;
 
-  .playlist-cover {
+  .playlist-cover-edit {
     padding: var(--gap);
     border-radius: .25rem;
   }

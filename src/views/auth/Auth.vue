@@ -1,13 +1,12 @@
 <template>
   <div class="auth-wrapper">
-    <div class="auth flex-col">
-      <div class="login-wrapper">
-        Beethoven Music Web
+    <div class="auth">
+      <div class="login-wrapper flex-col">
         <img class="oauth-item pointer" src="/assets/img/GitHub.png" alt="" @click="handleAuth">
-        <p class=" grey">目前只支持GitHub登录</p>
+        <h2>Beethoven Music Web</h2>
+        <p style="margin: 1rem 0" class="grey">目前只支持GitHub登录</p>
         <Button style="" @click="handleAuth">登录</Button>
       </div>
-
     </div>
   </div>
 </template>
@@ -34,18 +33,20 @@ const handleAuth = () => {
 
   .auth {
     width: 100%;
-    max-width: max(30%, 25rem);
-    height: 30rem;
+    max-width: max(30%, 30rem);
+    height: 25rem;
     border-radius: 1rem;
     background-color: white !important;
     box-shadow: 0 .5rem 2rem 0 rgba(0, 0, 0, .15);
 
     .login-wrapper {
-      margin: auto;
+      margin: 4rem auto 0 auto;
+      align-items: center;
+      width: 80%;
 
       .oauth-item {
-        width: 4rem;
-        margin: auto auto 1rem auto;
+        width: 5rem;
+        margin: 1rem;
       }
     }
   }

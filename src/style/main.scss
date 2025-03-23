@@ -1,6 +1,6 @@
-@import 'base.scss';
-@import 'index.scss';
-@import 'variables.scss';
+@use 'base';
+@use 'index';
+@use 'variables';
 
 a,
 .green {

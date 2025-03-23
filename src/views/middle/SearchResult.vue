@@ -8,9 +8,9 @@
         <p class="grey">{{ music.singer }}</p>
       </div>
       <div class="flex-row">
-        <IconButton icon-name="add-circle" size="1rem" icon-color="rgba(0, 0, 0, .5)"
-                    @click.stop="openAddMusicToPlaylistDialog(music.id)"/>
         <div style="margin: auto 0; line-height: 1rem">{{ durationFormater(music.duration) }}</div>
+        <IconButton icon-name="add-circle" size="1.25rem" icon-color="rgba(0, 0, 0, .5)"
+                    @click.stop="openAddMusicToPlaylistDialog(music.id)"/>
       </div>
     </div>
   </div>
@@ -33,7 +33,7 @@
 
 <script setup lang="ts">
 import eventBus from '@/util/eventBus';
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import { durationFormater } from '@/util/time';
 import router from '@/router';
 import IconButton from '@/components/IconButton.vue';
@@ -43,7 +43,6 @@ import type { AddMusicFormType, PlaylistType } from '@/types/playlist';
 import type { MusicItemType } from '@/types/global';
 import Button from '@/components/Button.vue';
 import TagGroup from '@/views/middle/TagGroup.vue';
-import { useRoute } from 'vue-router';
 
 const musicList = ref<Array<MusicItemType>>([]);
 const defaultCover = '../../src/assets/img/playlistCover.png';
@@ -82,11 +81,6 @@ const addMusicToPlaylistFun = () => {
     }
   });
 }
-
-const route = useRoute();
-onMounted(() => {
-  // console.log('search init', route);
-});
 </script>
 
 <style scoped lang="scss">

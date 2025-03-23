@@ -114,7 +114,7 @@ const getManageMusicListFun = async () => {
 const uploadMusicDialogVisible = ref(false);
 
 // UploadImage Music
-const data = reactive({
+let data = reactive({
   name: '',
   singer: '',
   album: '',
@@ -180,6 +180,16 @@ const columns = [
 
 let uploading = ref(false);
 
+const resetUploadMusicData = async () => {
+  uploadMusicFile.value = undefined;
+  uploadCoverFile.value = undefined;
+  data = {
+    name: '',
+    singer: '',
+    album: '',
+  }
+}
+
 const uploadMusicFun = () => {
   if (!uploadMusicFile.value) {
     alert('Please select music!');
@@ -201,7 +211,7 @@ const uploadMusicFun = () => {
     if (response.code === 200) {
       await getManageMusicListFun();
       uploadMusicDialogVisible.value = false;
-      uploadCoverFile.value = undefined;
+      await resetUploadMusicData();
     }
   }).finally(() => {
     uploading.value = false;

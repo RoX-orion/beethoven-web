@@ -1,7 +1,7 @@
 <template>
   <Transition name="slide">
     <div v-if="mobilePlayer" class="mobile-player">
-      <IconButton icon-name="down" @click="closeMobilePlayer"/>
+      <IconButton style="float: right; margin: 1rem" icon-name="down" @click="closeMobilePlayer"/>
       <img class="mobile-cover" :src="getCover" alt=""/>
 
       <div class="mobile-player-panel">
@@ -125,7 +125,6 @@ const music: MusicItemType = reactive({
   mime: '',
   link: '',
 });
-let firstPlay = true;
 let shardingSize: number;
 let shardingCount: number;
 let seeking = false;
@@ -147,7 +146,6 @@ const closeMobilePlayer = () => {
 
 const handleSeek = async (forward: number) => {
   currentTime.value = forward === -1 ? currentTime.value - 15 : currentTime.value + 15;
-  console.log(currentTime.value);
   if (forward === -1) {
     currentTime.value = currentTime.value < 0 ? 0 : currentTime.value;
   } else {
@@ -192,8 +190,6 @@ onMounted(async () => {
       globalStore.global.player = response.data;
       globalStore.global.media.musicId = response.data.musicId;
       globalStore.global.media.currentTime = response.data.currentTime;
-      audioPlayer.value.volume = response.data?.volume / 100;
-      volume.value = response.data?.volume;
     }
   });
   if (screenWidth.value <= 800) {
@@ -202,32 +198,24 @@ onMounted(async () => {
 
   let route = useRoute();
   const { id, type } = route.params;
-  console.log('player', globalStore.global.media.musicId);
   if (type === 'music' && id) {
-    getMusicInfoFun(id as string);
+    getMusicInfoFun(id as string, true);
   } else if (globalStore.global.media.musicId) {
-    getMusicInfoFun(globalStore.global.media.musicId as string);
+    getMusicInfoFun(globalStore.global.media.musicId as string, true);
     currentTime.value = globalStore.global.media.currentTime;
-    console.log(currentTime.value);
   }
   audioPlayer.value.on(Events.TIME_UPDATE, onTimeUpdate);
   audioPlayer.value.on(Events.PLAY, () => paused.value = false);
   audioPlayer.value.on(Events.PAUSE, () => paused.value = true);
 
   document.addEventListener('keydown', handleKeyEvent, false);
-  // audioPlayer.value.on(Events.SEEKING, () => {
-  //   seeking = true;
-  // });
-  // audioPlayer.value.on(Events.SEEKED, () => {
-  //   seeking = false;
-  // });
 });
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeyEvent, false);
 });
 
-const getMusicInfoFun = (musicId: string) => {
+const getMusicInfoFun = (musicId: string, isInit = false) => {
   shardingSize = parseInt(getData(SHARDING_SIZE) as string);
   // audioPlayer.value!.volume = globalStore.global.player.volume / 100;
 
@@ -235,7 +223,10 @@ const getMusicInfoFun = (musicId: string) => {
     if (response.data) {
       shardingCount = Math.ceil(response.data.size / shardingSize);
       await playMusic(response.data);
-      firstPlay = false;
+      if (!isInit) {
+        currentTime.value = 0;
+        await handleEvent('play', null);
+      }
     }
   });
 }
@@ -258,7 +249,7 @@ const handleEvent = async (eventName: string, state: any) => {
   if (eventName === 'play') {
     paused.value = false;
     audioPlayer.value!.currentTime = currentTime.value;
-    audioPlayer.value!.play();
+    await audioPlayer.value!.play();
   } else if (eventName === 'pause') {
     paused.value = true;
     audioPlayer.value!.pause();
@@ -281,7 +272,7 @@ let mediaSource: MediaSource;
 let sourceBuffer: SourceBuffer;
 let currentShard = 0;
 const playMusic = async (musicInfo: MusicItemType) => {
-  if (!musicInfo || (!firstPlay && music && musicInfo.id === music.id)) {
+  if (!musicInfo || (music && musicInfo.id === music.id)) {
     return;
   }
   Object.assign(music, musicInfo);
@@ -519,6 +510,7 @@ watch(volume, (newVolume) => {
     aspect-ratio: 1 / 1;
     border-radius: 1rem;
     position: absolute;
+    top: 4rem;
     left: 50%;
     transform: translateX(-50%);
   }

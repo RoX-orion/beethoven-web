@@ -2,14 +2,6 @@ import { defineStore } from 'pinia';
 import { reactive, ref } from 'vue';
 import { ComponentType } from '@/types/global';
 
-interface PlayerSetting {
-	isMute: boolean;
-	volume: number;
-	defaultSound: number;
-	defaultPlayMode: 'loop' | 'random';
-	defaultMusicCover?: string
-}
-
 interface ComponentState {
 	currentRightComponent: ComponentType;
 }
@@ -73,4 +65,9 @@ export const useGlobalStore = defineStore('global', () => {
 	return {
 		global,
 	}
+});
+
+
+export const useMusicStore = defineStore('music', () => {
+	const music = reactive({});
 });

@@ -3,7 +3,8 @@
   <div class="playlist-group-wrapper" v-for="data in groupPlayList">
     <span class="playlist-group-title">{{data.groupTitle}}</span>
     <div class="flex-row playlist-info-wrapper">
-      <PlayListCard class="playlist-card" v-for="playList in data.playlist" :playList="playList"></PlayListCard>
+      <PlayListCard class="playlist-card" v-for="playList in data.playlist" :playList="playList"
+                    @click="gotoPlayListInfo(playList.id)"></PlayListCard>
     </div>
   </div>
 </template>
@@ -14,6 +15,7 @@ import PlayListCard from '@/views/middle/PlayListCard.vue';
 import type { PlayList } from '@/types/global';
 import TagGroup from '@/views/middle/TagGroup.vue';
 import { getHomePlaylist } from '@/api/playlist';
+import router from '@/router';
 
 interface GroupPlayListArray {
   groupTitle: string,
@@ -74,6 +76,11 @@ onMounted(() => {
     groupPlayList[0] = { playlist: response.data, groupTitle: '热门歌单' };
   });
 });
+
+const gotoPlayListInfo = (playlistId: string) => {
+  router.push({ path: `/playlist/${playlistId}` });
+  // open.value = false;
+}
 </script>
 
 <style scoped lang="scss">
