@@ -4,5 +4,5 @@ export interface Page {
 }
 
 export interface SearchPageParam extends Page {
-	key: string;
+	key?: string;
 }

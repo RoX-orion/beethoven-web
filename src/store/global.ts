@@ -69,5 +69,9 @@ export const useGlobalStore = defineStore('global', () => {
 
 
 export const useMusicStore = defineStore('music', () => {
-	const music = reactive({});
+	const music = reactive({
+		video: undefined,
+	});
+
+	return { music }
 });

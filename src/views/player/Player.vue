@@ -57,7 +57,7 @@
       </div>
       <div class="flex-col controls-wrapper">
         <div class="button-group flex-row">
-          <IconButton icon-name="prev                                       "/>
+          <IconButton icon-name="prev"/>
           <IconButton v-if="paused" icon-name="pause" @click.stop="playOrPause"/>
           <IconButton v-else icon-name="play" @click.stop="playOrPause"/>
           <IconButton icon-name="next"/>
@@ -76,6 +76,7 @@
       </div>
       <div class="flex-row panel-wrapper">
         <div class="flex-row">
+          <svg-icon class="button pointer" name="video" @click.stop="openVideoPlayer"/>
           <svg-icon class="button pointer" name="loop" size="1.5rem"/>
           <svg-icon class="button pointer" name="queue" size="1.5rem"/>
         </div>
@@ -93,7 +94,7 @@
         </div>
       </div>
       <!--      <Panel @update="handleEvent"/>-->
-      <div class="player" id="audioPlayer"></div>
+      <div class="media-player" id="audioPlayer"></div>
 <!--      <audio class="player" ref="audioPlayer" controls></audio>-->
     </div>
   </div>
@@ -103,6 +104,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import type { MusicItemType, ProgressType } from '@/types/global';
+import { ComponentType } from '@/types/global';
 import eventBus from '@/util/eventBus';
 import { getMusicInfo } from '@/api/music';
 import { useRoute } from 'vue-router';
@@ -110,13 +112,13 @@ import { useGlobalStore } from '@/store/global';
 import { durationFormater } from '@/util/time';
 import IconButton from '@/components/IconButton.vue';
 import Progress from '@/components/Progress.vue';
-import {PLAYER_SETTING, SHARDING_SIZE} from '@/config';
-import {getData, setData} from '@/util/localStorage';
+import { PLAYER_SETTING, SHARDING_SIZE } from '@/config';
+import { getData, setData } from '@/util/localStorage';
 import { throttle } from '@/util/schedulers';
 import SvgIcon from '@/components/SvgIcon.vue';
-import Player from "xgplayer/es/player";
-import { Events } from 'xgplayer'
-import {getSetting} from "@/api/setting";
+import { getSetting } from "@/api/setting";
+import Player, { Events } from "xgplayer";
+import { componentState } from '@/store/componentState';
 
 const audioPlayer = ref<any>();
 const music: MusicItemType = reactive({
@@ -173,6 +175,9 @@ const handleKeyEvent = (e: KeyboardEvent) => {
   }
 }
 
+const openVideoPlayer = () => {
+  componentState.currentMiddleComponent = ComponentType.VIDEO_PLAYER;
+}
 onMounted(async () => {
   audioPlayer.value = new Player({
     id: 'audioPlayer',
@@ -182,6 +187,7 @@ onMounted(async () => {
     width: '100%',
     volume: 0.5
   });
+
   screenWidth.value = window.innerWidth;
 
   getSetting().then(response => {
@@ -417,7 +423,7 @@ watch(volume, (newVolume) => {
     justify-content: flex-end;
   }
 
-  .player {
+  .media-player {
     display: none;
   }
 }

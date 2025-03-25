@@ -92,6 +92,7 @@ export enum ComponentType {
 	DEFAULT,
 	SEARCH_RESULT,
 	PLAYLIST,
+	VIDEO_PLAYER
 }
 
 export interface Pagination {

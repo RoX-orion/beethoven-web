@@ -47,8 +47,8 @@ watch(key, debounce(async (newValue, oldValue) => {
     globalStore.global.searchMusicKey = newValue;
 
     searching.value = true;
-    await searchMusic({ page: 1, size: 100, key: newValue }).then(async response => {
-      componentState.currentRightComponent = ComponentType.SEARCH_RESULT;
+    await searchMusic({ page: 1, size: 100, key: newValue.trim() }).then(async response => {
+      componentState.currentMiddleComponent = ComponentType.SEARCH_RESULT;
       await pause(50);
       mitt.emit('getSearchMusicResult', response.data);
     }).finally(() => {

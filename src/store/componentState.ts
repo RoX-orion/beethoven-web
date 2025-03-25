@@ -2,9 +2,9 @@ import { reactive } from 'vue';
 import { ComponentType } from '@/types/global';
 
 interface ComponentState {
-	currentRightComponent: ComponentType;
+	currentMiddleComponent: ComponentType;
 }
 
 export const componentState = reactive<ComponentState>({
-	currentRightComponent: ComponentType.DEFAULT,
+	currentMiddleComponent: ComponentType.DEFAULT,
 });

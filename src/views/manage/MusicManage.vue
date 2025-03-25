@@ -2,9 +2,9 @@
   <a-tabs v-model:activeKey="activeKey" size="small">
     <a-tab-pane key="musicList" tab="歌曲">
       <div class="flex-row top">
-        <Search v-model="name" :searching="searching" style="width: 100%"/>
+        <Search v-model="key" :searching="searching" style="width: 100%"/>
         <Button style="width: 5rem; height: 2.25rem; border-radius: .25rem; margin: .25rem 0"
-                @click="uploadMusicDialogVisible = true">上传
+                @click="musicDialogVisible = true; title = '上传歌曲'">上传
         </Button>
       </div>
       <a-table class="music-item" :columns="columns" :data-source="musicList" :pagination="false">
@@ -14,7 +14,7 @@
           </template>
           <template v-if="column.dataIndex === 'options'">
             <div class="flex-row">
-              <Button class="btn">编辑</Button>
+              <Button class="btn" @click="musicDialogVisible = true; title = '编辑歌曲'">编辑</Button>
               <Button class="btn" style="background-color: #e53935" @click="deleteMusicFun(record)">删除</Button>
             </div>
           </template>
@@ -24,11 +24,10 @@
                     @change="getManageMusicListFun"/>
     </a-tab-pane>
     <a-tab-pane key="uploadMusic" tab="歌单"></a-tab-pane>
-    <a-tab-pane key="3" tab="Tab 3"></a-tab-pane>
   </a-tabs>
 
   <!--UploadImage Music-->
-  <a-modal v-model:open="uploadMusicDialogVisible" width="30rem" title="上传歌曲">
+  <a-modal v-model:open="musicDialogVisible" :title="title">
     <template #footer>
     </template>
     <div class="manage-wrapper">
@@ -63,7 +62,7 @@
       </div>
     </div>
 
-    <a-modal style="z-index: 9999;  position: relative;" :open="previewVisible" :title="previewTitle" :footer="null"
+    <a-modal :open="previewVisible" :title="previewTitle" :footer="null"
              @cancel="handleCancel">
       <img alt="" style="width: 100%;" :src="previewImage"/>
     </a-modal>
@@ -71,34 +70,45 @@
 </template>
 
 <script setup lang="ts">
-import {deleteMusic, getManageMusicList} from '@/api/music';
-import { onMounted, ref, reactive } from 'vue';
+import { deleteMusic, getManageMusicList, uploadMusic } from '@/api/music';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { durationFormater, formatTime } from '@/util/time';
-import { sizeFormater } from '@/util/file';
+import { getBase64, sizeFormater } from '@/util/file';
 import Button from '@/components/Button.vue';
 import Search from '@/components/Search.vue';
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import InputText from '@/components/InputText.vue';
-import { uploadMusic } from '@/api/music';
-import {Modal, notification, UploadChangeParam, UploadProps} from 'ant-design-vue';
-import { getBase64 } from '@/util/file';
+import { Modal, notification, UploadChangeParam, UploadProps } from 'ant-design-vue';
 import { Pagination } from '@/types/global';
+import { debounce } from '@/util/schedulers';
 
 onMounted(() => {
-  getManageMusicListFun();
+  getManageMusicListFun(undefined);
 });
 
 const musicList = ref<any[]>();
 const activeKey = ref("musicList");
+let title = '';
 let searching = ref(false);
-let name = ref('');
+let key = ref('');
 const pagination = ref<Pagination>({
   page: 1,
   total: 0,
 });
 
-const getManageMusicListFun = async () => {
-  getManageMusicList({ page: pagination.value.page, size: 10, key: '' }).then(response => {
+watch(key, debounce(async (newValue, oldValue) => {
+  searching.value = true;
+  if (newValue.trim().length > 0 && oldValue.trim() !== newValue.trim()) {
+    await getManageMusicListFun(newValue.trim())
+      .finally(() => searching.value = false);
+  } else if (newValue?.trim().length === 0) {
+    await getManageMusicListFun(undefined)
+      .finally(() => searching.value = false);
+  }
+}, 300, false));
+
+const getManageMusicListFun = async (key: string | undefined) => {
+  await getManageMusicList({ page: pagination.value.page, size: 10, key }).then(response => {
     const { list, total } = response.data;
     list.forEach(music => {
       music.duration = durationFormater(music.duration);
@@ -111,7 +121,7 @@ const getManageMusicListFun = async () => {
   });
 };
 
-const uploadMusicDialogVisible = ref(false);
+const musicDialogVisible = ref(false);
 
 // UploadImage Music
 let data = reactive({
@@ -192,11 +202,16 @@ const resetUploadMusicData = async () => {
 
 const uploadMusicFun = () => {
   if (!uploadMusicFile.value) {
-    alert('Please select music!');
+    notification.warning({
+      message: 'Please select music',
+    });
     return;
-  }
-  if (!uploadCoverFile.value) {
-    alert('Please select cover!');
+  } else if (!uploadCoverFile.value) {
+    notification.warning({
+      message: 'Please select cover',
+    });
+    return;
+  } else if (data.name?.trim().length === 0) {
     return;
   }
   uploading.value = true;
@@ -207,12 +222,10 @@ const uploadMusicFun = () => {
   musicData.append('singer', data.singer.trim());
   musicData.append('album', data.album.trim());
 
-  uploadMusic(musicData).then(async response => {
-    if (response.code === 200) {
-      await getManageMusicListFun();
-      uploadMusicDialogVisible.value = false;
-      await resetUploadMusicData();
-    }
+  uploadMusic(musicData).then(async () => {
+    await getManageMusicListFun(key.value?.trim());
+    musicDialogVisible.value = false;
+    await resetUploadMusicData();
   }).finally(() => {
     uploading.value = false;
   });
@@ -254,7 +267,7 @@ const deleteMusicFun = (record) => {
     cancelText: '取消',
     async onOk() {
       deleteMusic(record.id).then(() => {
-        getManageMusicListFun();
+        getManageMusicListFun(key.value?.trim());
         notification.success({
           message: '成功',
           description: '删除成功！'
@@ -264,6 +277,8 @@ const deleteMusicFun = (record) => {
     onCancel() {},
   });
 }
+
+
 </script>
 
 <style scoped lang="scss">
