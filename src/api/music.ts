@@ -6,6 +6,7 @@ export function uploadMusic(data: FormData) {
 		method: 'post',
 		url: '/music/uploadMusic',
 		data,
+		timeout: 1000 * 60 * 60 * 5
 	})
 }
 

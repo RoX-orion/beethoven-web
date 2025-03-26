@@ -8,7 +8,7 @@ import { notification } from 'ant-design-vue';
 const service = axios.create({
 	baseURL: import.meta.env.VITE_BASE_API,
 	// withCredentials: true, // send cookies when cross-domain requests
-	timeout: 1000 * 60, // request timeout
+	timeout: 1000 * 30, // request timeout
 })
 
 // request interceptor

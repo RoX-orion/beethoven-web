@@ -14,7 +14,7 @@
           </template>
           <template v-if="column.dataIndex === 'options'">
             <div class="flex-row">
-              <Button class="btn" @click="musicDialogVisible = true; title = '编辑歌曲'">编辑</Button>
+              <Button class="btn" @click="handleUpdateMusic(record)">编辑</Button>
               <Button class="btn" style="background-color: #e53935" @click="deleteMusicFun(record)">删除</Button>
             </div>
           </template>
@@ -23,28 +23,32 @@
       <a-pagination v-model:current="pagination.page" :total="pagination.total" show-size-changer
                     @change="getManageMusicListFun"/>
     </a-tab-pane>
-    <a-tab-pane key="uploadMusic" tab="歌单"></a-tab-pane>
+    <a-tab-pane key="playlist" tab="歌单"></a-tab-pane>
+    <a-tab-pane key="album" tab="专辑"></a-tab-pane>
   </a-tabs>
 
   <!--UploadImage Music-->
-  <a-modal v-model:open="musicDialogVisible" :title="title">
+  <a-modal v-model:open="musicDialogVisible" :title="title" @cancel="resetUploadMusicData">
     <template #footer>
     </template>
     <div class="manage-wrapper">
       <div class="flex-row">
         <span class="grey" style="width: 3rem">封面:</span>
+        <UploadImage type="image" v-model="uploadCoverFile"/>
+      </div>
+      <div class="flex-row" style="margin: 1rem 0">
+        <span class="grey" style="width: 3rem">音频:</span>
         <a-upload
-          style="margin: auto"
           :max-count="1"
-          list-type="picture-card"
-          :before-upload="beforeUploadCover"
-          @preview="handlePreview">
-          <plus-outlined v-if="!uploadCoverFile"/>
+          :before-upload="(file: UploadChangeParam) => {uploadMusicFile = file; return false}">
+          <a-button>
+            <upload-outlined/>
+            Upload
+          </a-button>
         </a-upload>
-
       </div>
       <div class="flex-row">
-        <span class="grey" style="width: 3rem">音频:</span>
+        <span class="grey" style="width: 3rem">视频:</span>
         <a-upload
           :max-count="1"
           :before-upload="beforeUploadMusic">
@@ -81,6 +85,7 @@ import InputText from '@/components/InputText.vue';
 import { Modal, notification, UploadChangeParam, UploadProps } from 'ant-design-vue';
 import { Pagination } from '@/types/global';
 import { debounce } from '@/util/schedulers';
+import UploadImage from "@/components/UploadImage.vue";
 
 onMounted(() => {
   getManageMusicListFun(undefined);
@@ -130,8 +135,9 @@ let data = reactive({
   album: '',
 });
 
-let uploadMusicFile = ref();
-let uploadCoverFile = ref();
+const uploadMusicFile = ref();
+const uploadCoverFile = ref();
+const uploadVideoFile = ref();
 
 const columns = [
   {
@@ -190,23 +196,26 @@ const columns = [
 
 let uploading = ref(false);
 
-const resetUploadMusicData = async () => {
+const resetUploadMusicData = () => {
   uploadMusicFile.value = undefined;
   uploadCoverFile.value = undefined;
+  uploadVideoFile.value = undefined;
   data = {
     name: '',
     singer: '',
     album: '',
   }
+  console.log(uploadVideoFile.value);
 }
 
 const uploadMusicFun = () => {
+  console.log(uploadMusicFile.value);
   if (!uploadMusicFile.value) {
     notification.warning({
       message: 'Please select music',
     });
     return;
-  } else if (!uploadCoverFile.value) {
+  } else if (!uploadCoverFile.value?.file) {
     notification.warning({
       message: 'Please select cover',
     });
@@ -216,8 +225,11 @@ const uploadMusicFun = () => {
   }
   uploading.value = true;
   const musicData = new FormData();
+  if (uploading.value) {
+    musicData.append('video', uploadVideoFile.value);
+  }
   musicData.append('music', uploadMusicFile.value);
-  musicData.append('cover', uploadCoverFile.value);
+  musicData.append('cover', uploadCoverFile.value.file);
   musicData.append('name', data.name.trim());
   musicData.append('singer', data.singer.trim());
   musicData.append('album', data.album.trim());
@@ -225,7 +237,7 @@ const uploadMusicFun = () => {
   uploadMusic(musicData).then(async () => {
     await getManageMusicListFun(key.value?.trim());
     musicDialogVisible.value = false;
-    await resetUploadMusicData();
+    resetUploadMusicData();
   }).finally(() => {
     uploading.value = false;
   });
@@ -240,19 +252,6 @@ const handleCancel = () => {
   previewTitle.value = '';
 };
 
-const handlePreview = async (file: UploadProps['fileList'][number]) => {
-  if (!file.url && !file.preview) {
-    file.preview = (await getBase64(file.originFileObj)) as string;
-  }
-  previewImage.value = file.url || file.preview;
-  previewVisible.value = true;
-  previewTitle.value = file.name || file.url.substring(file.url.lastIndexOf('/') + 1);
-};
-
-const beforeUploadCover = (file: UploadChangeParam) => {
-  uploadCoverFile.value = file;
-  return false;
-}
 const beforeUploadMusic = (file: UploadChangeParam) => {
   uploadMusicFile.value = file;
   return false;
@@ -278,7 +277,14 @@ const deleteMusicFun = (record) => {
   });
 }
 
-
+const handleUpdateMusic = (record) => {
+  musicDialogVisible.value = true;
+  title = '编辑歌曲';
+  data.name = record.name;
+  data.singer = record.singer;
+  data.album = record.album;
+  uploadCoverFile.value = { url: record.cover }
+}
 </script>
 
 <style scoped lang="scss">
