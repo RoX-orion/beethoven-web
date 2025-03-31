@@ -62,3 +62,10 @@ export function getHomePlaylist(params: SearchPageParam) {
 		params,
 	})
 }
+
+export function removeMusic(playlistId: string, musicId: string) {
+	return request({
+		url: `/playlist/removeMusic/${playlistId}/${musicId}`,
+		method: 'delete',
+	});
+}

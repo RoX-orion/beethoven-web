@@ -25,7 +25,7 @@
     <!--            </div>-->
     <!--          </div>-->
     <!--      </div>-->
-    <Button @click="addMusicToPlaylistFun">
+    <Button @click="addMusicToPlaylistFun" :loading="loading">
       Finish
     </Button>
   </Dialog>
@@ -40,7 +40,7 @@ import IconButton from '@/components/IconButton.vue';
 import Dialog from '@/components/Dialog.vue';
 import { addMusicToPlaylist, getPlaylist } from '@/api/playlist';
 import type { AddMusicFormType, PlaylistType } from '@/types/playlist';
-import { MusicItemType } from '@/types/global';
+import type { MusicItemType } from '@/types/global';
 import Button from '@/components/Button.vue';
 import TagGroup from "@/views/middle/TagGroup.vue";
 import { searchMusic } from "@/api/music";
@@ -49,9 +49,10 @@ import { useGlobalStore } from "@/store/global";
 const musicList = ref<Array<MusicItemType>>([]);
 const defaultCover = '../../src/assets/img/playlistCover.png';
 
+const globalStore = useGlobalStore();
 const playMusicFun = (music: MusicItemType) => {
   router.push({ path: '/music/' + music.id });
-  eventBus.emit('playMusic', music);
+  globalStore.global.media.musicId = music.id;
 }
 
 const searchMediaFun = (key: string) => {
@@ -62,8 +63,6 @@ const searchMediaFun = (key: string) => {
     globalStore.global.searching = false;
   });
 }
-
-const globalStore = useGlobalStore();
 
 onMounted(() => {
   searchMediaFun(globalStore.global.searchKey);
@@ -89,12 +88,16 @@ const openAddMusicToPlaylistDialog = (musicId: string) => {
   });
 }
 
+const loading = ref(false);
 const addMusicToPlaylistFun = () => {
+  loading.value = true;
   addMusicToPlaylist(addMusicForm.value).then(() => {
-    eventBus.emit('getPlayListFun', 1);
     addMusicToPlaylistDialogVisible.value = false;
+    eventBus.emit('getPlayListFun', 1);
+  }).finally(() => {
+    loading.value = false;
   });
-}
+};
 </script>
 
 <style scoped lang="scss">

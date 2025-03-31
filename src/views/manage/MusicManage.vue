@@ -77,12 +77,12 @@
 import { deleteMusic, getManageMusicList, uploadMusic } from '@/api/music';
 import { onMounted, reactive, ref, watch } from 'vue';
 import { durationFormater, formatTime } from '@/util/time';
-import { getBase64, sizeFormater } from '@/util/file';
+import { sizeFormater } from '@/util/file';
 import Button from '@/components/Button.vue';
 import Search from '@/components/Search.vue';
-import { PlusOutlined, UploadOutlined } from '@ant-design/icons-vue';
+import { UploadOutlined } from '@ant-design/icons-vue';
 import InputText from '@/components/InputText.vue';
-import { Modal, notification, UploadChangeParam, UploadProps } from 'ant-design-vue';
+import { Modal, notification, UploadChangeParam } from 'ant-design-vue';
 import { Pagination } from '@/types/global';
 import { debounce } from '@/util/schedulers';
 import UploadImage from "@/components/UploadImage.vue";
@@ -205,11 +205,9 @@ const resetUploadMusicData = () => {
     singer: '',
     album: '',
   }
-  console.log(uploadVideoFile.value);
 }
 
 const uploadMusicFun = () => {
-  console.log(uploadMusicFile.value);
   if (!uploadMusicFile.value) {
     notification.warning({
       message: 'Please select music',

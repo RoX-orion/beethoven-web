@@ -14,7 +14,7 @@
   </div>
 
   <div class="flex-row content-space-between playlist-info pointer" v-for="(music, index) in musicList"
-       :key="music.id" @click="playMusicFun(music)">
+       :key="music.id" @dblclick="playMusicFun(music)">
     <div class="flex-row">
       <div style="margin: auto .5rem auto auto;">{{ index + 1 }}</div>
       <a-image class="cover" :src="music.cover" :width="64" :height="64"></a-image>
@@ -35,7 +35,7 @@
             <a-menu-item key="0">
               加入歌单
             </a-menu-item>
-            <a-menu-item key="1">
+            <a-menu-item key="1" @click="removeMusicFun(music.id)">
               从此歌单中删除
             </a-menu-item>
             <a-menu-item key="3">
@@ -70,26 +70,24 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
 import { onMounted, ref, watch } from 'vue';
-import { durationFormater } from '@/util/time';
-import {
-  getPlaylistInfo,
-  getPlaylistMusic,
-  updatePlaylist,
-} from '@/api/playlist';
+import { durationFormater, formatTime } from '@/util/time';
+import { getPlaylistInfo, getPlaylistMusic, removeMusic, updatePlaylist } from '@/api/playlist';
 import type { FileListType, MusicItemType } from '@/types/global';
 import type { PlaylistType } from '@/types/playlist';
 import { sizeFormater } from '@/util/file';
-import { formatTime } from '@/util/time';
 import Button from '@/components/Button.vue';
 import InputText from '@/components/InputText.vue';
 import { useGlobalStore } from '@/store/global';
 import SvgIcon from '@/components/SvgIcon.vue';
 import UploadImage from '@/components/UploadImage.vue';
+import { notification } from 'ant-design-vue';
+import eventBus from '@/util/eventBus';
 
 const route = useRoute();
 const musicList = ref<Array<MusicItemType>>([]);
 const playlistCover = ref();
 const loading = ref(false);
+let playlistId: string;
 
 const uploadFile = ref<FileListType>();
 
@@ -144,16 +142,27 @@ const updatePlaylistFun = () => {
 
 onMounted(() => {
   if (route.params.id) {
-    getPlaylistMusicFun(route.params.id as string);
-    getPlaylistInfoFun(route.params.id as string);
+    playlistId = route.params.id as string;
+    getPlaylistMusicFun(playlistId);
+    getPlaylistInfoFun(playlistId);
   }
 });
 
-watch(() => route.params.id, (playlistId) => {
-  getPlaylistMusicFun(playlistId as string);
-  getPlaylistInfoFun(route.params.id as string);
+watch(() => route.params.id, id => {
+  playlistId = id as string;
+  getPlaylistMusicFun(playlistId);
+  getPlaylistInfoFun(playlistId);
 });
 
+const removeMusicFun = (musicId: string) => {
+  removeMusic(playlistId, musicId).then(() => {
+    notification.success({
+      message: '删除成功',
+    });
+    getPlaylistMusicFun(playlistId);
+    eventBus.emit('getPlayListFun', 1);
+  });
+}
 </script>
 
 <style scoped lang="scss">
