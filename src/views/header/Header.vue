@@ -5,7 +5,7 @@
       <img class="brand" src="/assets/brand.png" alt="">
       <span class="brand-text">Beethoven Music</span>
     </div>
-    <Search class="search-wrapper" v-model:searching="searching" v-model="key"/>
+    <Search class="search-wrapper" v-model:searching="globalStore.global.searching" v-model="key"/>
     <div class="flex-row header-right">
       <div class="button-group flex-row">
         <router-link to="/">
@@ -25,17 +25,15 @@ import Search from "@/components/Search.vue";
 import Account from './Account.vue';
 import SvgIcon from '@/components/SvgIcon.vue';
 import { ref, watch } from 'vue';
-import { searchMusic } from '@/api/music';
 import mitt from '@/util/eventBus';
 import { useGlobalStore } from '@/store/global';
-import { debounce, pause } from '@/util/schedulers';
+import { debounce } from '@/util/schedulers';
 import { ComponentType } from '@/types/global';
 import { componentState } from '@/store/componentState';
 import router from '@/router';
 import IconButton from '@/components/IconButton.vue';
 
 const key = ref('');
-const searching = ref(false);
 
 const globalStore = useGlobalStore();
 const goToHome = () => {
@@ -44,19 +42,11 @@ const goToHome = () => {
 watch(key, debounce(async (newValue, oldValue) => {
   if (newValue.trim().length > 0 && oldValue.trim() !== newValue.trim()) {
     await router.replace(`/music?search=${newValue}`);
-    globalStore.global.searchMusicKey = newValue;
-
-    searching.value = true;
-    await searchMusic({ page: 1, size: 100, key: newValue.trim() }).then(async response => {
-      componentState.currentMiddleComponent = ComponentType.SEARCH_RESULT;
-      await pause(50);
-      mitt.emit('getSearchMusicResult', response.data);
-    }).finally(() => {
-      searching.value = false;
-    });
+    globalStore.global.searchKey = newValue;
+    globalStore.global.searching = true;
   } else if (newValue.trim().length === 0) {
-    // await router.replace({ path: '/' });
-    // componentState.value.currentRightComponent = ComponentType.DEFAULT;
+    await router.replace({ path: '/' });
+    componentState.currentMiddleComponent = ComponentType.DEFAULT;
   }
 }, 300, false));
 

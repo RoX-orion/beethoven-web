@@ -14,10 +14,10 @@
 import {onMounted, reactive, ref} from 'vue';
 import PlayListCard from '@/views/middle/PlayListCard.vue';
 import type { PlayList } from '@/types/global';
-import TagGroup from '@/views/middle/TagGroup.vue';
 import { getHomePlaylist } from '@/api/playlist';
 import router from '@/router';
 import Pinned from "@/views/middle/Pinned.vue";
+import TagGroup from "@/views/middle/TagGroup.vue";
 
 interface GroupPlayListArray {
   groupTitle: string,

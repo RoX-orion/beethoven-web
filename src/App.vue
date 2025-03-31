@@ -1,22 +1,21 @@
 <script setup lang="ts">
 import { RouterView, useRoute } from 'vue-router';
-import { watch } from 'vue';
+import {onMounted, watch} from 'vue';
 import { ComponentType } from '@/types/global';
 import { componentState } from '@/store/componentState';
 import { useGlobalStore } from '@/store/global';
 
 const route = useRoute();
 
-watch(() => route?.params?.type, type => {
-  switch (type) {
-    case 'playlist':
-      componentState.currentMiddleComponent = ComponentType.PLAYLIST;
-      break;
-    case 'music':
-      componentState.currentMiddleComponent = ComponentType.SEARCH_RESULT;
-      break;
-    default:
-      componentState.currentMiddleComponent = ComponentType.DEFAULT;
+watch(() => route?.params?.type, async type => {
+  const query = route.query;
+  if (type === 'playlist')
+    componentState.currentMiddleComponent = ComponentType.PLAYLIST;
+  else if (type === 'music' && query?.hasOwnProperty('search')) {
+    globalStore.global.searchKey = query.search;
+    componentState.currentMiddleComponent = ComponentType.SEARCH_RESULT;
+  } else {
+    componentState.currentMiddleComponent = ComponentType.DEFAULT;
   }
 });
 

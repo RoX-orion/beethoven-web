@@ -178,6 +178,8 @@ const handleKeyEvent = (e: KeyboardEvent) => {
 const openVideoPlayer = () => {
   componentState.currentMiddleComponent = ComponentType.VIDEO_PLAYER;
 }
+const route = useRoute();
+
 onMounted(async () => {
   audioPlayer.value = new Player({
     id: 'audioPlayer',
@@ -189,30 +191,31 @@ onMounted(async () => {
   });
 
   screenWidth.value = window.innerWidth;
+  const { id, type } = route.params;
 
   getSetting().then(response => {
     if (response.data) {
       setData(PLAYER_SETTING, response.data);
       globalStore.global.player = response.data;
-      globalStore.global.media.musicId = response.data.musicId;
-      globalStore.global.media.currentTime = response.data.currentTime;
+      if (type === 'music' && id) {
+        globalStore.global.media.musicId = response.data.musicId;
+      } else if (response.data.musicId) {
+        currentTime.value = globalStore.global.media.currentTime;
+        globalStore.global.media.musicId = response.data.musicId;
+        globalStore.global.media.currentTime = response.data.currentTime;
+      }
     }
   });
   if (screenWidth.value <= 800) {
     setMobileVolume();
   }
 
-  let route = useRoute();
-  const { id, type } = route.params;
-  if (type === 'music' && id) {
-    getMusicInfoFun(id as string, true);
-  } else if (globalStore.global.media.musicId) {
-    getMusicInfoFun(globalStore.global.media.musicId as string, true);
-    currentTime.value = globalStore.global.media.currentTime;
-  }
   audioPlayer.value.on(Events.TIME_UPDATE, onTimeUpdate);
   audioPlayer.value.on(Events.PLAY, () => paused.value = false);
   audioPlayer.value.on(Events.PAUSE, () => paused.value = true);
+  audioPlayer.value.on(Events.WAITING, () => console.log('waiting'));
+  audioPlayer.value.on(Events.CANPLAY, () => console.log('canplay'));
+  audioPlayer.value.on(Events.CANPLAY_THROUGH, () => console.log('canplay through'));
 
   document.addEventListener('keydown', handleKeyEvent, false);
 });
@@ -221,7 +224,8 @@ onUnmounted(() => {
   document.removeEventListener('keydown', handleKeyEvent, false);
 });
 
-const getMusicInfoFun = (musicId: string, isInit = false) => {
+let initialized = false;
+const getMusicInfoFun = (musicId: string) => {
   shardingSize = parseInt(getData(SHARDING_SIZE) as string);
   // audioPlayer.value!.volume = globalStore.global.player.volume / 100;
 
@@ -229,10 +233,11 @@ const getMusicInfoFun = (musicId: string, isInit = false) => {
     if (response.data) {
       shardingCount = Math.ceil(response.data.size / shardingSize);
       await playMusic(response.data);
-      if (!isInit) {
+      if (initialized) {
         currentTime.value = 0;
         await handleEvent('play', null);
       }
+      initialized = true;
     }
   });
 }

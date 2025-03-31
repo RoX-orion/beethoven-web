@@ -17,11 +17,11 @@ export function fetchMusic(url: string) {
 	});
 }
 
-export async function searchMusic(param: SearchPageParam): Promise<any> {
+export async function searchMusic(params: SearchPageParam): Promise<any> {
 	return request({
 		url: '/music/searchMusic',
 		method: 'get',
-		params: param,
+		params
 	});
 }
 

@@ -1,19 +1,37 @@
 <template>
-  <div class="tag-wrapper">
-    <Tag class="tag pointer" v-for="() in 4"/>
+  <div class="tag-wrapper flex-row">
+    <div v-for="tag in TagList" class="tag pointer">
+      <span class="tag-text">{{tag.label}}</span>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import Tag from './Tag.vue';
+const TagList = [
+  {key: 'music', label: '歌曲'},
+  {key: 'video', label: '视频'},
+  {key: 'playlist', label: '歌单'},
+]
 </script>
 
 <style scoped lang="scss">
 .tag-wrapper {
   padding: 0 var(--base-padding);
+  gap: 1rem;
+
   .tag {
-    display: inline-block;
-    margin-right: 1.187rem;
+    width: 4rem;
+    height: 2.3rem;
+    border-radius: .5rem;
+    background: white;
+    position: relative;
+
+    .tag-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
   }
 }
 </style>

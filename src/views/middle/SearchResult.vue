@@ -2,7 +2,7 @@
   <TagGroup/>
   <div class="flex-row pointer music-wrapper" v-for="music in musicList" :key="music.cover">
     <a-image class="cover" :src="music.cover" :width="64" :height="64"></a-image>
-    <div class="flex-row content-space-between" style="width: 100%; align-items: center" @click="playMusicFun(music)">
+    <div class="flex-row content-space-between" style="width: 100%; align-items: center" @dblclick="playMusicFun(music)">
       <div class="music-info">
         <p>{{ music.name }}</p>
         <p class="grey">{{ music.singer }}</p>
@@ -33,29 +33,45 @@
 
 <script setup lang="ts">
 import eventBus from '@/util/eventBus';
-import { ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { durationFormater } from '@/util/time';
 import router from '@/router';
 import IconButton from '@/components/IconButton.vue';
 import Dialog from '@/components/Dialog.vue';
 import { addMusicToPlaylist, getPlaylist } from '@/api/playlist';
 import type { AddMusicFormType, PlaylistType } from '@/types/playlist';
-import type { MusicItemType } from '@/types/global';
+import { MusicItemType } from '@/types/global';
 import Button from '@/components/Button.vue';
-import TagGroup from '@/views/middle/TagGroup.vue';
+import TagGroup from "@/views/middle/TagGroup.vue";
+import { searchMusic } from "@/api/music";
+import { useGlobalStore } from "@/store/global";
 
 const musicList = ref<Array<MusicItemType>>([]);
 const defaultCover = '../../src/assets/img/playlistCover.png';
-const getSearchMusicResult = (result: Array<MusicItemType>) => {
-  result.forEach(e => e.cover = e.cover ? e.cover : defaultCover);
-  musicList.value = result;
-};
 
 const playMusicFun = (music: MusicItemType) => {
   router.push({ path: '/music/' + music.id });
   eventBus.emit('playMusic', music);
 }
-eventBus.on('getSearchMusicResult', getSearchMusicResult);
+
+const searchMediaFun = (key: string) => {
+  searchMusic({ page: 1, size: 100, key }).then(response => {
+    response.data.forEach(e => e.cover = e.cover ? e.cover : defaultCover);
+    musicList.value = response.data;
+  }).finally(() => {
+    globalStore.global.searching = false;
+  });
+}
+
+const globalStore = useGlobalStore();
+
+onMounted(() => {
+  searchMediaFun(globalStore.global.searchKey);
+});
+
+watch(() => globalStore.global.searchKey, newValue => {
+  searchMediaFun(newValue.trim());
+});
 
 let addMusicToPlaylistDialogVisible = ref(false);
 const playlistList = ref<PlaylistType[]>([]);
@@ -74,11 +90,9 @@ const openAddMusicToPlaylistDialog = (musicId: string) => {
 }
 
 const addMusicToPlaylistFun = () => {
-  addMusicToPlaylist(addMusicForm.value).then(response => {
-    if (response.code === 200) {
-      eventBus.emit('getPlayListFun', 1);
-      addMusicToPlaylistDialogVisible.value = false;
-    }
+  addMusicToPlaylist(addMusicForm.value).then(() => {
+    eventBus.emit('getPlayListFun', 1);
+    addMusicToPlaylistDialogVisible.value = false;
   });
 }
 </script>
