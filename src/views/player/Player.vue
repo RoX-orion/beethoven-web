@@ -1,7 +1,6 @@
 <template>
   <Transition name="slide">
     <div v-if="mobilePlayer" class="mobile-player">
-      <IconButton style="float: right; margin: 1rem" icon-name="down" @click="closeMobilePlayer"/>
       <img class="mobile-cover" :src="getCover" alt=""/>
 
       <div class="mobile-player-panel">
@@ -20,7 +19,7 @@
           <div v-if="music.duration">{{ durationFormater(music.duration) }}</div>
         </div>
 
-        <div class="flex-row">
+        <div class="">
           <div class="flex-row mobile-button-group content-space-between">
             <svg-icon class="pointer" name="loop"/>
             <svg-icon class="pointer" name="prev"/>
@@ -29,9 +28,19 @@
             <svg-icon class="pointer" name="next"/>
             <svg-icon class="pointer" name="menu"/>
           </div>
-
+          <div class="flex-row content-space-between">
+            <svg-icon style="margin: .5rem 0" class="pointer" name="devices" @click="devicesVisible = true"/>
+            <svg-icon style="margin: .5rem 0" class="pointer" name="down" @click="mobilePlayer = false"/>
+          </div>
         </div>
       </div>
+      <a-drawer title="设备" placement="bottom" :open="devicesVisible" @close="devicesVisible = false">
+        <div class="flex-row mobile-sound-wrapper">
+          <svg-icon class="pointer" style="margin: .5rem" v-if="volume === 0" name="volume-off" size="1.5rem" @click.stop="changeMute"/>
+          <svg-icon class="pointer" style="margin: .5rem" v-else name="volume-on" size="1.5rem" @click.stop="changeMute"/>
+          <a-slider style="width: 90%" v-model:value="volume"/>
+        </div>
+      </a-drawer>
     </div>
   </Transition>
 
@@ -81,9 +90,9 @@
           <svg-icon class="button pointer" name="queue" size="1.5rem"/>
         </div>
         <div class="flex-row sound-wrapper">
-          <svg-icon class="sound-button pointer" v-if="volume === 0" name="volume-off" size="1.5rem"
+          <svg-icon class="pointer" v-if="volume === 0" name="volume-off" size="1.5rem"
                     @click.stop="changeMute"/>
-          <svg-icon class="sound-button pointer" v-else name="volume-on" size="1.5rem" @click.stop="changeMute"/>
+          <svg-icon class="pointer" v-else name="volume-on" size="1.5rem" @click.stop="changeMute"/>
           <a-slider class="progress" style="width: 100px" v-model:value="volume"/>
           <!--      <div class="progress" style="position: relative;">-->
           <!--        <div style="display: block; margin: auto">-->
@@ -141,10 +150,6 @@ const openMobilePlayer = (event: MouseEvent) => {
     mobilePlayer.value = true;
   }
 };
-
-const closeMobilePlayer = () => {
-  mobilePlayer.value = false;
-}
 
 const handleSeek = async (forward: number) => {
   currentTime.value = forward === -1 ? currentTime.value - 15 : currentTime.value + 15;
@@ -386,6 +391,9 @@ const setMobileVolume = () => {
 watch(volume, (newVolume) => {
   handleEvent('changeVolume', newVolume / 100);
 });
+
+const devicesVisible = ref(false);
+
 </script>
 
 <style lang="scss" scoped>
@@ -537,6 +545,11 @@ watch(volume, (newVolume) => {
     width: 100%;
     margin: 1rem auto;
     align-items: center;
+  }
+
+  .mobile-sound-wrapper {
+    position: absolute;
+    bottom: 1rem;
   }
 }
 

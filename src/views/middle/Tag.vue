@@ -1,6 +1,6 @@
 <template>
   <div class="tag-wrapper flex-row">
-    <div v-for="tag in TagList" class="tag pointer">
+    <div v-for="tag in TagList" class="tag pointer" @click="">
       <span class="tag-text">{{tag.label}}</span>
     </div>
   </div>

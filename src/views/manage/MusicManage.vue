@@ -62,7 +62,7 @@
         <InputText class="input-text" placeholder="请输入歌曲名" v-model="data.name"/>
         <InputText class="input-text" placeholder="请输入歌手名" v-model="data.singer"/>
         <InputText class="input-text" placeholder="请输入专辑名(可选)" v-model="data.album"/>
-        <Button @click="uploadMusicFun" label="FINISH" :loading="uploading"/>
+        <Button @click="uploadOrUpdateMusic" label="FINISH" :loading="loading"/>
       </div>
     </div>
 
@@ -74,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import { deleteMusic, getManageMusicList, uploadMusic } from '@/api/music';
+import {deleteMusic, getManageMusicList, updateMusic, uploadMusic} from '@/api/music';
 import { onMounted, reactive, ref, watch } from 'vue';
 import { durationFormater, formatTime } from '@/util/time';
 import { sizeFormater } from '@/util/file';
@@ -130,6 +130,7 @@ const musicDialogVisible = ref(false);
 
 // UploadImage Music
 let data = reactive({
+  musicId: undefined,
   name: '',
   singer: '',
   album: '',
@@ -194,7 +195,7 @@ const columns = [
   },
 ];
 
-let uploading = ref(false);
+let loading = ref(false);
 
 const resetUploadMusicData = () => {
   uploadMusicFile.value = undefined;
@@ -207,23 +208,38 @@ const resetUploadMusicData = () => {
   }
 }
 
+const uploadOrUpdateMusic = () => {
+  data.musicId ? updateMusicFun() : uploadMusicFun();
+}
+
 const uploadMusicFun = () => {
   if (!uploadMusicFile.value) {
     notification.warning({
       message: 'Please select music',
     });
     return;
-  } else if (!uploadCoverFile.value?.file) {
+  }
+  if (!uploadCoverFile.value?.file) {
     notification.warning({
       message: 'Please select cover',
     });
     return;
-  } else if (data.name?.trim().length === 0) {
+  }
+  if (data.name?.trim().length === 0) {
+    notification.warning({
+      message: '歌曲名不能为空！',
+    });
     return;
   }
-  uploading.value = true;
+  if (data.singer?.trim().length === 0) {
+    notification.warning({
+      message: '歌手不能为空！',
+    });
+    return;
+  }
+  loading.value = true;
   const musicData = new FormData();
-  if (uploading.value) {
+  if (uploadVideoFile.value) {
     musicData.append('video', uploadVideoFile.value);
   }
   musicData.append('music', uploadMusicFile.value);
@@ -237,7 +253,7 @@ const uploadMusicFun = () => {
     musicDialogVisible.value = false;
     resetUploadMusicData();
   }).finally(() => {
-    uploading.value = false;
+    loading.value = false;
   });
 };
 
@@ -255,7 +271,7 @@ const beforeUploadMusic = (file: UploadChangeParam) => {
   return false;
 }
 
-const deleteMusicFun = (record) => {
+const deleteMusicFun = (record: any) => {
   Modal.confirm({
     title: `删除歌曲《${record.name}》?`,
     // icon: Outlined),
@@ -275,13 +291,50 @@ const deleteMusicFun = (record) => {
   });
 }
 
-const handleUpdateMusic = (record) => {
+const handleUpdateMusic = (record: any) => {
   musicDialogVisible.value = true;
   title = '编辑歌曲';
+  data.musicId = record.id;
   data.name = record.name;
   data.singer = record.singer;
   data.album = record.album;
   uploadCoverFile.value = { url: record.cover }
+}
+
+const updateMusicFun = () => {
+  if (data.name?.trim().length === 0) {
+    notification.warning({
+      message: '歌曲名不能为空！',
+    });
+    return;
+  }
+  if (data.singer?.trim().length === 0) {
+    notification.warning({
+      message: '歌手不能为空！',
+    });
+    return;
+  }
+  loading.value = true;
+  const musicData = new FormData();
+  if (uploadCoverFile.value.file) {
+    musicData.append('cover', uploadCoverFile.value.file);
+  }
+  if (uploadMusicFile.value) {
+    musicData.append('music', uploadMusicFile.value);
+  }
+  if (uploadVideoFile.value) {
+    musicData.append('video', uploadVideoFile.value);
+  }
+  musicData.append('musicId', data.musicId!);
+  musicData.append('name', data.name.trim());
+  musicData.append('singer', data.singer.trim());
+  musicData.append('album', data.album?.trim());
+
+  updateMusic(musicData).then(() => {
+
+  }).finally(() => {
+    loading.value = false;
+  });
 }
 </script>
 

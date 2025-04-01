@@ -1,5 +1,5 @@
 <template>
-  <TagGroup/>
+  <Tag/>
   <Pinned v-if="pinnedList.length > 0"/>
   <div class="playlist-group-wrapper" v-for="data in groupPlayList">
     <span class="playlist-group-title">{{data.groupTitle}}</span>
@@ -17,7 +17,7 @@ import type { PlayList } from '@/types/global';
 import { getHomePlaylist } from '@/api/playlist';
 import router from '@/router';
 import Pinned from "@/views/middle/Pinned.vue";
-import TagGroup from "@/views/middle/TagGroup.vue";
+import Tag from "@/views/middle/Tag.vue";
 
 interface GroupPlayListArray {
   groupTitle: string,

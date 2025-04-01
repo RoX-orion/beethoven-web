@@ -46,3 +46,11 @@ export function deleteMusic(musicId: number) {
 		method: 'delete'
 	});
 }
+
+export function updateMusic(data: FormData) {
+	return request({
+		url: '/music/manage/updateMusic',
+		method: "put",
+		data
+	});
+}

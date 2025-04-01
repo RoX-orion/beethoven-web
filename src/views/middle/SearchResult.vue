@@ -1,5 +1,5 @@
 <template>
-  <TagGroup/>
+  <Tag/>
   <div class="flex-row pointer music-wrapper" v-for="music in musicList" :key="music.cover">
     <a-image class="cover" :src="music.cover" :width="64" :height="64"></a-image>
     <div class="flex-row content-space-between" style="width: 100%; align-items: center" @dblclick="playMusicFun(music)">
@@ -42,7 +42,7 @@ import { addMusicToPlaylist, getPlaylist } from '@/api/playlist';
 import type { AddMusicFormType, PlaylistType } from '@/types/playlist';
 import type { MusicItemType } from '@/types/global';
 import Button from '@/components/Button.vue';
-import TagGroup from "@/views/middle/TagGroup.vue";
+import Tag from "@/views/middle/Tag.vue";
 import { searchMusic } from "@/api/music";
 import { useGlobalStore } from "@/store/global";
 
