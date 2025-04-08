@@ -41,11 +41,12 @@ const goToHome = () => {
 }
 watch(key, debounce(async (newValue, oldValue) => {
   if (newValue.trim().length > 0 && oldValue.trim() !== newValue.trim()) {
-    await router.replace(`/music?search=${newValue}`);
-    globalStore.global.searchKey = newValue;
     globalStore.global.searching = true;
+    globalStore.global.searchKey = newValue;
+    await router.replace(`/music?search=${newValue}`);
   } else if (newValue.trim().length === 0) {
-    await router.replace({ path: '/' });
+    globalStore.global.searching = false;
+    await router.replace({path: '/'});
     componentState.currentMiddleComponent = ComponentType.DEFAULT;
   }
 }, 300, false));

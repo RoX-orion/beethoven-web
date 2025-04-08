@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { reactive, ref } from 'vue';
-import { ComponentType } from '@/types/global';
+import { ComponentType, MusicItemType } from '@/types/global';
+import {getData, setData} from "@/util/localStorage";
 
 interface ComponentState {
 	currentRightComponent: ComponentType;
@@ -76,3 +77,11 @@ export const useMusicStore = defineStore('music', () => {
 
 	return { music }
 });
+
+export function setMusicInfo(music: MusicItemType) {
+	setData('music', JSON.stringify(music));
+}
+
+export function getMusicInfoFromLocal(): MusicItemType {
+	return JSON.parse(getData('music') as string);
+}

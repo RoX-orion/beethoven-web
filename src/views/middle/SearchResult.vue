@@ -44,7 +44,7 @@ import type { MusicItemType } from '@/types/global';
 import Button from '@/components/Button.vue';
 import Tag from "@/views/middle/Tag.vue";
 import { searchMusic } from "@/api/music";
-import { useGlobalStore } from "@/store/global";
+import {setMusicInfo, useGlobalStore} from "@/store/global";
 
 const musicList = ref<Array<MusicItemType>>([]);
 const defaultCover = '../../src/assets/img/playlistCover.png';
@@ -53,6 +53,7 @@ const globalStore = useGlobalStore();
 const playMusicFun = (music: MusicItemType) => {
   router.push({ path: '/music/' + music.id });
   globalStore.global.media.musicId = music.id;
+  setMusicInfo(music);
 }
 
 const searchMediaFun = (key: string) => {

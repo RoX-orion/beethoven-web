@@ -114,20 +114,19 @@
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import type { MusicItemType, ProgressType } from '@/types/global';
 import { ComponentType } from '@/types/global';
-import eventBus from '@/util/eventBus';
-import { getMusicInfo } from '@/api/music';
 import { useRoute } from 'vue-router';
-import { useGlobalStore } from '@/store/global';
+import {getMusicInfoFromLocal, useGlobalStore} from '@/store/global';
 import { durationFormater } from '@/util/time';
 import IconButton from '@/components/IconButton.vue';
 import Progress from '@/components/Progress.vue';
-import { PLAYER_SETTING, SHARDING_SIZE } from '@/config';
+import { PLAYER_SETTING } from '@/config';
 import { getData, setData } from '@/util/localStorage';
 import { throttle } from '@/util/schedulers';
 import SvgIcon from '@/components/SvgIcon.vue';
 import { getSetting } from "@/api/setting";
 import Player, { Events } from "xgplayer";
 import { componentState } from '@/store/componentState';
+import {getMusicInfo} from "@/api/music";
 
 const audioPlayer = ref<any>();
 const music: MusicItemType = reactive({
@@ -200,6 +199,7 @@ onMounted(async () => {
 
   getSetting().then(response => {
     if (response.data) {
+      const music = getData('music');
       setData(PLAYER_SETTING, response.data);
       globalStore.global.player = response.data;
       if (type === 'music' && id) {
@@ -208,6 +208,8 @@ onMounted(async () => {
         currentTime.value = globalStore.global.media.currentTime;
         globalStore.global.media.musicId = response.data.musicId;
         globalStore.global.media.currentTime = response.data.currentTime;
+      } else if (music) {
+        setMusic(JSON.parse(music));
       }
     }
   });
@@ -230,25 +232,26 @@ onUnmounted(() => {
 });
 
 let initialized = false;
-const getMusicInfoFun = (musicId: string) => {
-  shardingSize = parseInt(getData(SHARDING_SIZE) as string);
-  // audioPlayer.value!.volume = globalStore.global.player.volume / 100;
-
-  getMusicInfo(musicId as string).then(async response => {
-    if (response.data) {
-      shardingCount = Math.ceil(response.data.size / shardingSize);
-      await playMusic(response.data);
-      if (initialized) {
-        currentTime.value = 0;
-        await handleEvent('play', null);
-      }
-      initialized = true;
+watch(() => globalStore.global.media.musicId, async musicId => {
+  if (musicId) {
+    let music = getMusicInfoFromLocal();
+    if (!music) {
+      getMusicInfo(musicId as string).then(async response => {
+        if (response.data) {
+          music = response.data;
+          await setMusic(music);
+        }
+      });
+    } else {
+      await setMusic(music);
     }
-  });
-}
+  }
 
-watch(() => globalStore.global.media.musicId, (musicId) => {
-  getMusicInfoFun(musicId);
+  if (initialized) {
+    currentTime.value = 0;
+    await handleEvent('play', null);
+  }
+  initialized = true;
 });
 
 const changeCurrentTime = async (e: any) => {
@@ -287,7 +290,7 @@ const handleEvent = async (eventName: string, state: any) => {
 let mediaSource: MediaSource;
 let sourceBuffer: SourceBuffer;
 let currentShard = 0;
-const playMusic = async (musicInfo: MusicItemType) => {
+const setMusic = async (musicInfo: MusicItemType) => {
   if (!musicInfo || (music && musicInfo.id === music.id)) {
     return;
   }
@@ -337,8 +340,6 @@ const onTimeUpdate = async () => {
   //   fetchMusic(music.link, currentShard * shardingSize, (currentShard + 1) * shardingSize);
   // }
 };
-
-eventBus.on('playMusic', playMusic);
 
 const getCover = computed(() => {
   return music?.cover ? music.cover : globalStore.global.defaultMusicCover;

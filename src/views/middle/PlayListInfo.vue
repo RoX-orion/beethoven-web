@@ -77,7 +77,7 @@ import type { PlaylistType } from '@/types/playlist';
 import { sizeFormater } from '@/util/file';
 import Button from '@/components/Button.vue';
 import InputText from '@/components/InputText.vue';
-import { useGlobalStore } from '@/store/global';
+import { setMusicInfo, useGlobalStore } from '@/store/global';
 import SvgIcon from '@/components/SvgIcon.vue';
 import UploadImage from '@/components/UploadImage.vue';
 import { notification } from 'ant-design-vue';
@@ -95,8 +95,7 @@ const globalStore = useGlobalStore();
 const playMusicFun = (music: MusicItemType) => {
   // router.push({ path: '/music/' + music.id });
   globalStore.global.media.musicId = music.id;
-  globalStore.global.music = music;
-  // eventBus.emit('playMusic', music);
+  setMusicInfo(music);
 };
 
 const getPlaylistMusicFun = (playlistId: string) => {
