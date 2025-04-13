@@ -74,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import {deleteMusic, getManageMusicList, updateMusic, uploadMusic} from '@/api/music';
+import { deleteMusic, getManageMusicList, updateMusic, uploadMusic } from '@/api/music';
 import { onMounted, reactive, ref, watch } from 'vue';
 import { durationFormater, formatTime } from '@/util/time';
 import { sizeFormater } from '@/util/file';
@@ -115,7 +115,7 @@ watch(key, debounce(async (newValue, oldValue) => {
 const getManageMusicListFun = async (key: string | undefined) => {
   await getManageMusicList({ page: pagination.value.page, size: 10, key }).then(response => {
     const { list, total } = response.data;
-    list.forEach(music => {
+    list.forEach((music: any) => {
       music.duration = durationFormater(music.duration);
       music.size = sizeFormater(music.size);
       music.createTime = formatTime(music.createTime, '{y}-{m}-{d} {h}:{i}');
@@ -202,6 +202,7 @@ const resetUploadMusicData = () => {
   uploadCoverFile.value = undefined;
   uploadVideoFile.value = undefined;
   data = {
+    musicId: undefined,
     name: '',
     singer: '',
     album: '',
