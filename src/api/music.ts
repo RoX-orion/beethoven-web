@@ -32,11 +32,11 @@ export function getMusicInfo(id: string) {
 	})
 }
 
-export function getManageMusicList(param: SearchPageParam) {
+export function getManageMusicList(params: SearchPageParam) {
 	return request({
 		url: '/music/manage/getManageMusicList',
 		method: 'get',
-		params: param,
+		params,
 	});
 }
 

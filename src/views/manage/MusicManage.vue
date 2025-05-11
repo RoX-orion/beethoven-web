@@ -1,6 +1,6 @@
 <template>
   <a-tabs v-model:activeKey="activeKey" size="small">
-    <a-tab-pane key="musicList" tab="歌曲">
+    <a-tab-pane key="musicManage" tab="歌曲">
       <div class="flex-row top">
         <Search v-model="key" :searching="searching" style="width: 100%"/>
         <Button style="width: 5rem; height: 2.25rem; border-radius: .25rem; margin: .25rem 0"
@@ -23,8 +23,10 @@
       <a-pagination v-model:current="pagination.page" :total="pagination.total" show-size-changer
                     @change="getManageMusicListFun"/>
     </a-tab-pane>
-    <a-tab-pane key="playlist" tab="歌单"></a-tab-pane>
-    <a-tab-pane key="album" tab="专辑"></a-tab-pane>
+    <a-tab-pane key="playlistManage" tab="歌单"></a-tab-pane>
+    <a-tab-pane key="albumManage" tab="专辑">
+      <AlbumManage/>
+    </a-tab-pane>
   </a-tabs>
 
   <!--UploadImage Music-->
@@ -86,13 +88,14 @@ import { Modal, notification, UploadChangeParam } from 'ant-design-vue';
 import { Pagination } from '@/types/global';
 import { debounce } from '@/util/schedulers';
 import UploadImage from "@/components/UploadImage.vue";
+import AlbumManage from '@/views/manage/AlbumManage.vue';
 
 onMounted(() => {
   getManageMusicListFun(undefined);
 });
 
 const musicList = ref<any[]>();
-const activeKey = ref("musicList");
+const activeKey = ref("albumManage");
 let title = '';
 let searching = ref(false);
 let key = ref('');
@@ -347,7 +350,6 @@ const updateMusicFun = () => {
 }
 
 .music-item {
-  padding: .25rem;
   border-radius: .25rem;
   div {
     margin: auto 0;

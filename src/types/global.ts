@@ -99,3 +99,10 @@ export interface Pagination {
 	page: number;
 	total: number;
 }
+
+export interface AlbumType {
+	cover?: string;
+	name: string;
+	createTime: string;
+	updateTime: string;
+}
