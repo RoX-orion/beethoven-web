@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { reactive, ref } from 'vue';
 import { ComponentType, MusicItemType } from '@/types/global';
-import {getData, setData} from "@/util/localStorage";
+import { getData, setData } from "@/util/localStorage";
 
 interface ComponentState {
 	currentRightComponent: ComponentType;
@@ -62,6 +62,7 @@ export const useGlobalStore = defineStore('global', () => {
 		defaultMusicCover: undefined,
 		defaultPlaylistCover: undefined,
 		windowWidth: window.innerWidth,
+		videoId: undefined,
 	});
 
 	return {

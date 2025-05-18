@@ -66,6 +66,7 @@ export interface MusicItemType {
 	mime: string;
 	album?: string;
 	size?: number;
+	videoId?: number;
 }
 
 export interface MusicConfigType {

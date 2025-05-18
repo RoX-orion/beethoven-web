@@ -1,8 +1,8 @@
 <template>
   <Tag/>
   <div class="flex-row pointer music-wrapper" v-for="music in musicList" :key="music.cover">
-    <a-image class="cover" :src="music.cover" :width="64" :height="64"></a-image>
-    <div class="flex-row content-space-between" style="width: 100%; align-items: center" @dblclick="playMusicFun(music)">
+    <img class="cover" :src="music.cover" :width="64" :height="64" alt=""/>
+    <div class="flex-row content-space-between" style="width: 100%; align-items: center" @click="playMusicFun(music)">
       <div class="music-info">
         <p>{{ music.name }}</p>
         <p class="grey">{{ music.singer }}</p>
@@ -44,7 +44,7 @@ import type { MusicItemType } from '@/types/global';
 import Button from '@/components/Button.vue';
 import Tag from "@/views/middle/Tag.vue";
 import { searchMusic } from "@/api/music";
-import {setMusicInfo, useGlobalStore} from "@/store/global";
+import { setMusicInfo, useGlobalStore } from "@/store/global";
 
 const musicList = ref<Array<MusicItemType>>([]);
 const defaultCover = '../../src/assets/img/playlistCover.png';
@@ -78,6 +78,7 @@ const playlistList = ref<PlaylistType[]>([]);
 const playlistOptions = ref<any[]>([]);
 let addMusicForm = ref<AddMusicFormType>({});
 const openAddMusicToPlaylistDialog = (musicId: string) => {
+  addMusicToPlaylistDialogVisible.value = true;
   getPlaylist({ page: 1, size: 10 }).then(response => {
     const { data } = response;
     playlistOptions.value = [];
@@ -85,7 +86,6 @@ const openAddMusicToPlaylistDialog = (musicId: string) => {
       playlistOptions.value.push({ 'label': e.title, 'value': e.id });
     });
     addMusicForm.value.musicId = musicId;
-    addMusicToPlaylistDialogVisible.value = true;
   });
 }
 

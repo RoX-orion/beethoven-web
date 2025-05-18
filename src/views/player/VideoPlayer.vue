@@ -1,32 +1,41 @@
 <template>
-  <div class="" id="player"></div>
+  <div class="" id="videoPlayer"></div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import Player from 'xgplayer';
 import 'xgplayer/dist/index.min.css';
-import { useMusicStore } from '@/store/global';
-import { componentState } from '@/store/componentState';
-import { ComponentType } from '@/types/global';
+import { useGlobalStore } from '@/store/global';
+import { getVideoInfo } from '@/api/video';
+import Player from "xgplayer";
 
-const musicStore = useMusicStore();
+const globalStore = useGlobalStore();
 
 const player = ref();
 onMounted(() => {
   player.value = new Player({
-    id: 'player',
+    id: 'videoPlayer',
     url: '',
     height: '100%',
     width: '100%',
   });
-});
-
-watch(() => musicStore.music, music => {
-  if (music.video) {
-    componentState.currentMiddleComponent = ComponentType.VIDEO_PLAYER;
+  if (globalStore.global.videoId) {
+    getVideoInfoFun(globalStore.global.videoId);
   }
 });
+
+watch(() => globalStore.global.videoId, videoId => {
+  if (videoId) {
+    getVideoInfoFun(videoId);
+  }
+});
+
+const getVideoInfoFun = (videoId: number) => {
+  getVideoInfo(videoId).then(response => {
+    if (response.data.link)
+      player.value.switchURL(response.data.link);
+  });
+}
 </script>
 
 <style scoped lang="scss">

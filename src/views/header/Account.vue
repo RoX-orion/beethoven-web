@@ -4,9 +4,6 @@
       <img class="avatar" :src="account.avatar" alt="">
       <template #overlay>
         <a-menu @click="handleClick">
-          <a-menu-item key="github">
-            <a href="https://github.com/RoX-orion/beethoven-web" target="_blank">GitHub</a>
-          </a-menu-item>
           <a-menu-item key="about">
             <a href="#">About Beethoven Music</a>
           </a-menu-item>
@@ -24,9 +21,9 @@ import { onMounted } from 'vue';
 import { getAccountInfoByToken } from '@/api/account';
 import { storeToRefs } from 'pinia';
 import SvgIcon from '@/components/SvgIcon.vue';
-import {handleOAuth2Login, logout} from '@/api/auth';
+import { handleOAuth2Login, logout } from '@/api/auth';
 import { useRoute, useRouter } from 'vue-router';
-import {deleteData, getData, setData} from '@/util/localStorage';
+import { deleteData, getData, setData } from '@/util/localStorage';
 import { TOKEN } from '@/config';
 import { initApp } from "@/lib/init";
 

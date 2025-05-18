@@ -1,9 +1,9 @@
 <template>
   <a-tabs v-model:activeKey="activeKey" size="small">
     <a-tab-pane key="musicManage" tab="歌曲">
-      <div class="flex-row top">
+      <div class="flex-row management-top">
         <Search v-model="key" :searching="searching" style="width: 100%"/>
-        <Button style="width: 5rem; height: 2.25rem; border-radius: .25rem; margin: .25rem 0"
+        <Button style="width: 5rem; height: 2.25rem; border-radius: .25rem; margin: auto 0"
                 @click="musicDialogVisible = true; title = '上传歌曲'">上传
         </Button>
       </div>
@@ -24,6 +24,9 @@
                     @change="getManageMusicListFun"/>
     </a-tab-pane>
     <a-tab-pane key="playlistManage" tab="歌单"></a-tab-pane>
+    <a-tab-pane key="videoManage" tab="视频">
+      <VideoManage/>
+    </a-tab-pane>
     <a-tab-pane key="albumManage" tab="专辑">
       <AlbumManage/>
     </a-tab-pane>
@@ -53,7 +56,7 @@
         <span class="grey" style="width: 3rem">视频:</span>
         <a-upload
           :max-count="1"
-          :before-upload="beforeUploadMusic">
+          :before-upload="(file: UploadChangeParam) => {uploadVideoFile = file; return false}">
           <a-button>
             <upload-outlined/>
             Upload
@@ -89,13 +92,14 @@ import { Pagination } from '@/types/global';
 import { debounce } from '@/util/schedulers';
 import UploadImage from "@/components/UploadImage.vue";
 import AlbumManage from '@/views/manage/AlbumManage.vue';
+import VideoManage from '@/views/manage/VideoManage.vue';
 
 onMounted(() => {
   getManageMusicListFun(undefined);
 });
 
 const musicList = ref<any[]>();
-const activeKey = ref("albumManage");
+const activeKey = ref("videoManage");
 let title = '';
 let searching = ref(false);
 let key = ref('');
@@ -121,6 +125,7 @@ const getManageMusicListFun = async (key: string | undefined) => {
     list.forEach((music: any) => {
       music.duration = durationFormater(music.duration);
       music.size = sizeFormater(music.size);
+      music.video = music.videoId ? '是' : '否';
       music.createTime = formatTime(music.createTime, '{y}-{m}-{d} {h}:{i}');
       music.updateTime = formatTime(music.updateTime, '{y}-{m}-{d} {h}:{i}');
     });
@@ -177,6 +182,12 @@ const columns = [
     title: 'MIME',
     dataIndex: 'mime',
     key: 'mime',
+    ellipsis: true,
+  },
+  {
+    title: '视频',
+    dataIndex: 'video',
+    key: 'video',
     ellipsis: true,
   },
   {
@@ -270,11 +281,6 @@ const handleCancel = () => {
   previewTitle.value = '';
 };
 
-const beforeUploadMusic = (file: UploadChangeParam) => {
-  uploadMusicFile.value = file;
-  return false;
-}
-
 const deleteMusicFun = (record: any) => {
   Modal.confirm({
     title: `删除歌曲《${record.name}》?`,
@@ -335,7 +341,7 @@ const updateMusicFun = () => {
   musicData.append('album', data.album?.trim());
 
   updateMusic(musicData).then(() => {
-
+    musicDialogVisible.value = false;
   }).finally(() => {
     loading.value = false;
   });
@@ -343,11 +349,6 @@ const updateMusicFun = () => {
 </script>
 
 <style scoped lang="scss">
-.top {
-  justify-content: right;
-  margin-bottom: .5rem;
-  gap: 1rem;
-}
 
 .music-item {
   border-radius: .25rem;

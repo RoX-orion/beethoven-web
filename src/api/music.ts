@@ -6,7 +6,7 @@ export function uploadMusic(data: FormData) {
 		method: 'post',
 		url: '/music/uploadMusic',
 		data,
-		timeout: 1000 * 60 * 60 * 5
+		timeout: 1000 * 60 * 60 * 5, // 5 hours
 	})
 }
 
@@ -29,7 +29,7 @@ export function getMusicInfo(id: string) {
 	return request({
 		url: `/music/info/${id}`,
 		method: 'get',
-	})
+	});
 }
 
 export function getManageMusicList(params: SearchPageParam) {
@@ -51,6 +51,7 @@ export function updateMusic(data: FormData) {
 	return request({
 		url: '/music/manage/updateMusic',
 		method: "put",
-		data
+		data,
+		timeout: 1000 * 60 * 60 * 5, // 5 hours
 	});
 }

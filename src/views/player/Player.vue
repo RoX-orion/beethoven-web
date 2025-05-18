@@ -115,7 +115,7 @@ import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import type { MusicItemType, ProgressType } from '@/types/global';
 import { ComponentType } from '@/types/global';
 import { useRoute } from 'vue-router';
-import {getMusicInfoFromLocal, useGlobalStore} from '@/store/global';
+import { getMusicInfoFromLocal, useGlobalStore } from '@/store/global';
 import { durationFormater } from '@/util/time';
 import IconButton from '@/components/IconButton.vue';
 import Progress from '@/components/Progress.vue';
@@ -126,7 +126,7 @@ import SvgIcon from '@/components/SvgIcon.vue';
 import { getSetting } from "@/api/setting";
 import Player, { Events } from "xgplayer";
 import { componentState } from '@/store/componentState';
-import {getMusicInfo} from "@/api/music";
+import { getMusicInfo } from "@/api/music";
 
 const audioPlayer = ref<any>();
 const music: MusicItemType = reactive({
@@ -180,7 +180,9 @@ const handleKeyEvent = (e: KeyboardEvent) => {
 }
 
 const openVideoPlayer = () => {
-  componentState.currentMiddleComponent = ComponentType.VIDEO_PLAYER;
+  globalStore.global.videoId = music.videoId;
+  if (music.videoId)
+    componentState.currentMiddleComponent = ComponentType.VIDEO_PLAYER;
 }
 const route = useRoute();
 

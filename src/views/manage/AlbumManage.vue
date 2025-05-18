@@ -1,7 +1,7 @@
 <template>
-  <div class="flex-row">
-    <Search v-model="key" :searching="searching" style="width: 100%; margin: 0 1rem .5rem 0"/>
-    <Button style="width: 5rem; height: 2.25rem; border-radius: .25rem; margin: .25rem 0"
+  <div class="flex-row management-top">
+    <Search v-model="key" :searching="searching" style="width: 100%"/>
+    <Button style="width: 5rem; height: 2.25rem; border-radius: .25rem; margin: auto 0"
             @click="albumDialogVisible = true; title = '添加专辑'">添加专辑
     </Button>
   </div>

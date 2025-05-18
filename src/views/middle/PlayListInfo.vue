@@ -14,10 +14,10 @@
   </div>
 
   <div class="flex-row content-space-between playlist-info pointer" v-for="(music, index) in musicList"
-       :key="music.id" @dblclick="playMusicFun(music)">
+       :key="music.id" @click.stop="playMusicFun(music)">
     <div class="flex-row">
       <div style="margin: auto .5rem auto auto;">{{ index + 1 }}</div>
-      <a-image class="cover" :src="music.cover" :width="64" :height="64"></a-image>
+      <img class="cover" :src="music.cover" :width="64" :height="64" alt=""/>
       <div style="margin: auto auto auto .5rem;">
         <p>{{ music.name }}</p>
         <p class="grey" style="font-size: .85rem">{{ music.singer }}</p>
@@ -28,22 +28,22 @@
     <div class="mobile">{{ sizeFormater(music.size) }}</div>
     <div class="flex-row">
       <p style="margin: 0 .25rem">{{ durationFormater(music.duration) }}</p>
-      <a-dropdown :trigger="['click']">
-        <svg-icon name="more" color="black"/>
-        <template #overlay>
-          <a-menu>
-            <a-menu-item key="0">
-              加入歌单
-            </a-menu-item>
-            <a-menu-item key="1" @click="removeMusicFun(music.id)">
-              从此歌单中删除
-            </a-menu-item>
-            <a-menu-item key="3">
-              分享
-            </a-menu-item>
-          </a-menu>
-        </template>
-      </a-dropdown>
+      <!--      <a-dropdown :trigger="['click']">-->
+      <!--        <svg-icon name="more" color="black"/>-->
+      <!--        <template #overlay>-->
+      <!--          <a-menu>-->
+      <!--            <a-menu-item key="0">-->
+      <!--              加入歌单-->
+      <!--            </a-menu-item>-->
+      <!--            <a-menu-item key="1" @click="removeMusicFun(music.id)">-->
+      <!--              从此歌单中删除-->
+      <!--            </a-menu-item>-->
+      <!--            <a-menu-item key="3">-->
+      <!--              分享-->
+      <!--            </a-menu-item>-->
+      <!--          </a-menu>-->
+      <!--        </template>-->
+      <!--      </a-dropdown>-->
     </div>
   </div>
   <a-modal title="编辑歌单" width="30rem" v-model:open="updatePlaylistDialogVisible">
@@ -78,7 +78,6 @@ import { sizeFormater } from '@/util/file';
 import Button from '@/components/Button.vue';
 import InputText from '@/components/InputText.vue';
 import { setMusicInfo, useGlobalStore } from '@/store/global';
-import SvgIcon from '@/components/SvgIcon.vue';
 import UploadImage from '@/components/UploadImage.vue';
 import { notification } from 'ant-design-vue';
 import eventBus from '@/util/eventBus';
