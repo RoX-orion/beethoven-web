@@ -17,13 +17,9 @@
   </a-table>
 
   <a-modal v-model:open="albumDialogVisible" :title="title" @cancel="resetAddAlbumData">
-    <template #footer>
-    </template>
-    <div class="flex-row">
-      <span class="grey" style="width: 3rem">封面:</span>
-      <UploadImage type="image" v-model="uploadCoverFile"/>
-    </div>
-    <InputText placeholder="请输入专辑名"/>
+    <InputText v-model="addAlbumParam.name" placeholder="请输入专辑名"/>
+    <Button style="margin-top: 1rem" @click="addAlbumFun" label="FINISH" :loading="loading"/>
+    <template #footer/>
   </a-modal>
 </template>
 
@@ -32,17 +28,13 @@ import { onMounted, ref } from 'vue';
 import { AlbumType, Pagination } from '@/types/global';
 import Search from '@/components/Search.vue';
 import Button from '@/components/Button.vue';
-import { getManageAlbumList } from '@/api/album';
+import { addAlbum, getManageAlbumList } from '@/api/album';
 import { formatTime } from '@/util/time';
-import UploadImage from '@/components/UploadImage.vue';
 import InputText from '@/components/InputText.vue';
+import type { AddAlbumType } from '@/types/album';
+import { notification } from 'ant-design-vue';
 
 const columns = [
-  {
-    title: '封面',
-    dataIndex: 'cover',
-    key: 'cover',
-  },
   {
     title: '专辑名',
     dataIndex: 'name',
@@ -77,15 +69,19 @@ const columns = [
 const albumList = ref<AlbumType[]>();
 
 onMounted(() => {
-  getManageAlbumListFun(undefined);
+  getManageAlbumListFun();
 });
 
 const pagination = ref<Pagination>({
   page: 1,
   total: 0,
 });
-const getManageAlbumListFun = (key: string | undefined) => {
-  getManageAlbumList({ page: pagination.value.page, size: 10, key }).then(response => {
+let title = '';
+const key = ref('');
+const searching = ref(false);
+
+const getManageAlbumListFun = () => {
+  getManageAlbumList({ page: pagination.value.page, size: 10, key: key.value?.trim() }).then(response => {
     const { list, total } = response.data;
     list.forEach((album: AlbumType) => {
       album.createTime = formatTime(album.createTime, '{y}-{m}-{d} {h}:{i}');
@@ -96,11 +92,24 @@ const getManageAlbumListFun = (key: string | undefined) => {
   });
 }
 
-let title = '';
-const key = ref('');
-const searching = ref(false);
-
 const albumDialogVisible = ref(false);
+const loading = ref(false);
+const addAlbumParam = ref<AddAlbumType>({ name: '' });
+const addAlbumFun = () => {
+  if (addAlbumParam.value.name?.trim().length === 0) {
+    notification.warning({
+      message: '专辑名不能为空',
+    });
+    return;
+  }
+  loading.value = true;
+  addAlbum(addAlbumParam.value).then(() => {
+    getManageAlbumListFun();
+    albumDialogVisible.value = false;
+  }).finally(() => {
+    loading.value = false;
+  });
+};
 const handleUpdateAlbum = (album: AlbumType) => {
 
 }
@@ -116,5 +125,8 @@ const resetAddAlbumData = () => {
 </script>
 
 <style scoped lang="scss">
-
+.btn {
+  width: 4rem;
+  height: 1.5rem;
+}
 </style>

@@ -1,8 +1,12 @@
 <template>
-  <div class="flex-row" style="padding: 1rem">
-    <!--    <a-image style="max-width: 8rem; max-height: 8rem" class="playlist-cover" :src="playlistInfo.cover"/>-->
-    <div>
-      <p class="pointer" style="font-size: 2rem" @click="updatePlaylistFun">{{ playlistInfo.title }}</p>
+  <div id="playlist-info-top" class="flex-row" style="padding: 1rem">
+    <a-image
+      style="max-width: 12rem; max-height: 12rem; border-radius: .25rem; box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .5);"
+      :src="playlistInfo.cover"/>
+    <div style="padding: 0 1rem; display: flex; flex-direction: column; justify-content: end">
+      <p class="pointer" style="font-size: clamp(1rem, 4vw, 3rem);" @click="updatePlaylistFun">{{
+          playlistInfo.title
+        }}</p>
       <div style="color: grey">
         <span>{{ playlistInfo.author }}</span>
         <span>·</span>
@@ -144,6 +148,7 @@ onMounted(() => {
     getPlaylistMusicFun(playlistId);
     getPlaylistInfoFun(playlistId);
   }
+  changeScreenWidth(globalStore.global.mobile);
 });
 
 watch(() => route.params.id, id => {
@@ -151,6 +156,18 @@ watch(() => route.params.id, id => {
   getPlaylistMusicFun(playlistId);
   getPlaylistInfoFun(playlistId);
 });
+
+watch(() => globalStore.global.mobile, value => {
+  changeScreenWidth(value);
+});
+
+const changeScreenWidth = (mobile: boolean) => {
+  // if (mobile) {
+  //   const element = document.getElementById('playlist-info-top')!;
+  //   element.classList.remove('flex-row');
+  //   element.classList.add('flex-col');
+  // }
+}
 
 const removeMusicFun = (musicId: string) => {
   removeMusic(playlistId, musicId).then(() => {
@@ -176,12 +193,6 @@ const removeMusicFun = (musicId: string) => {
   div {
     margin: auto 0;
   }
-}
-
-.playlist-cover {
-  width: 1rem;
-  height: 1rem;
-  border-radius: .5rem;
 }
 
 .playlist-dialog {

@@ -15,7 +15,7 @@
     </div>
   </div>
 
-  <Dialog title="添加到歌单" v-model="addMusicToPlaylistDialogVisible" width="30rem">
+  <a-modal title="添加到歌单" v-model:open="addMusicToPlaylistDialogVisible" width="30rem">
     <!--    <Search model-value="" searching=""/>-->
     <a-checkbox-group v-model:value="addMusicForm.playlistIds" name="checkboxgroup" :options="playlistOptions"/>
     <!--      <div class="playlist pointer" v-for="playlist in playlistList">-->
@@ -28,7 +28,8 @@
     <Button @click="addMusicToPlaylistFun" :loading="loading">
       Finish
     </Button>
-  </Dialog>
+    <template #footer/>
+  </a-modal>
 </template>
 
 <script setup lang="ts">
@@ -37,7 +38,6 @@ import { onMounted, ref, watch } from 'vue';
 import { durationFormater } from '@/util/time';
 import router from '@/router';
 import IconButton from '@/components/IconButton.vue';
-import Dialog from '@/components/Dialog.vue';
 import { addMusicToPlaylist, getPlaylist } from '@/api/playlist';
 import type { AddMusicFormType, PlaylistType } from '@/types/playlist';
 import type { MusicItemType } from '@/types/global';
@@ -87,7 +87,7 @@ const openAddMusicToPlaylistDialog = (musicId: string) => {
     });
     addMusicForm.value.musicId = musicId;
   });
-}
+};
 
 const loading = ref(false);
 const addMusicToPlaylistFun = () => {

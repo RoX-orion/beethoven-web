@@ -63,6 +63,7 @@ export const useGlobalStore = defineStore('global', () => {
 		defaultPlaylistCover: undefined,
 		windowWidth: window.innerWidth,
 		videoId: undefined,
+		mobile: false,
 	});
 
 	return {

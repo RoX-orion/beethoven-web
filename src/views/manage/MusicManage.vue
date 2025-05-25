@@ -99,7 +99,7 @@ onMounted(() => {
 });
 
 const musicList = ref<any[]>();
-const activeKey = ref("videoManage");
+const activeKey = ref("musicManage");
 let title = '';
 let searching = ref(false);
 let key = ref('');

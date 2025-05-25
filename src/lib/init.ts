@@ -13,7 +13,7 @@ export async function initApp() {
 export async function initGlobal() {
 	getSetting().then(response => {
 		if (response.data) {
-			setData(PLAYER_SETTING, response.data);
+			setData(PLAYER_SETTING, JSON.stringify(response.data));
 			globalStore.global.player = response.data;
 		}
 	});

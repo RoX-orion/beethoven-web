@@ -202,7 +202,7 @@ onMounted(async () => {
   getSetting().then(response => {
     if (response.data) {
       const music = getData('music');
-      setData(PLAYER_SETTING, response.data);
+      setData(PLAYER_SETTING, JSON.stringify(response.data));
       globalStore.global.player = response.data;
       if (type === 'music' && id) {
         globalStore.global.media.musicId = response.data.musicId;

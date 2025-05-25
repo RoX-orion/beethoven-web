@@ -28,8 +28,6 @@ import { ref, watch } from 'vue';
 import mitt from '@/util/eventBus';
 import { useGlobalStore } from '@/store/global';
 import { debounce } from '@/util/schedulers';
-import { ComponentType } from '@/types/global';
-import { componentState } from '@/store/componentState';
 import router from '@/router';
 import IconButton from '@/components/IconButton.vue';
 
@@ -39,15 +37,15 @@ const globalStore = useGlobalStore();
 const goToHome = () => {
   router.push('/');
 }
-watch(key, debounce(async (newValue, oldValue) => {
+watch(key, debounce((newValue, oldValue) => {
   if (newValue.trim().length > 0 && oldValue.trim() !== newValue.trim()) {
+    router.replace(`/music?search=${newValue}`);
     globalStore.global.searching = true;
     globalStore.global.searchKey = newValue;
-    await router.replace(`/music?search=${newValue}`);
   } else if (newValue.trim().length === 0) {
+    router.replace({ path: '/' });
     globalStore.global.searching = false;
-    await router.replace({path: '/'});
-    componentState.currentMiddleComponent = ComponentType.DEFAULT;
+    globalStore.global.searchKey = '';
   }
 }, 300, false));
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterView, useRoute } from 'vue-router';
-import { watch } from 'vue';
+import { onMounted, watch } from 'vue';
 import { ComponentType } from '@/types/global';
 import { componentState } from '@/store/componentState';
 import { useGlobalStore } from '@/store/global';
@@ -8,18 +8,26 @@ import { useGlobalStore } from '@/store/global';
 const route = useRoute();
 
 watch(() => route?.params?.type, async type => {
+  await setComponent(type as string);
+});
+
+const globalStore = useGlobalStore();
+
+onMounted(async () => {
+  await setComponent(route?.params?.type as string);
+});
+
+const setComponent = async (type: string) => {
   const query = route.query;
-  if (type === 'playlist')
+  if (type === 'playlist') {
     componentState.currentMiddleComponent = ComponentType.PLAYLIST;
-  else if (type === 'music' && query?.hasOwnProperty('search')) {
-    globalStore.global.searchKey = query.search;
+  } else if (route?.params?.type === 'music' && query?.hasOwnProperty('search') && globalStore?.global?.searchKey?.length > 0) {
     componentState.currentMiddleComponent = ComponentType.SEARCH_RESULT;
   } else {
     componentState.currentMiddleComponent = ComponentType.DEFAULT;
   }
-});
+}
 
-const globalStore = useGlobalStore();
 // const accountStore = useAccountStore();
 // watch(() => globalStore.global, global => {
 //   updateSetting({
@@ -34,6 +42,15 @@ const globalStore = useGlobalStore();
 
 window.addEventListener('resize', function () {
   globalStore.global.windowWidth = window.innerWidth;
+  if (window.innerWidth <= 800) {
+    globalStore.global.mobile = true;
+  }
+});
+
+onMounted(() => {
+  if (window.innerWidth <= 800) {
+    globalStore.global.mobile = true;
+  }
 });
 </script>
 
