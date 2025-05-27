@@ -95,7 +95,7 @@ import AlbumManage from '@/views/manage/AlbumManage.vue';
 import VideoManage from '@/views/manage/VideoManage.vue';
 
 onMounted(() => {
-  getManageMusicListFun(undefined);
+  getManageMusicListFun();
 });
 
 const musicList = ref<any[]>();
@@ -111,16 +111,17 @@ const pagination = ref<Pagination>({
 watch(key, debounce(async (newValue, oldValue) => {
   searching.value = true;
   if (newValue.trim().length > 0 && oldValue.trim() !== newValue.trim()) {
-    await getManageMusicListFun(newValue.trim())
+    key.value = newValue.trim();
+    await getManageMusicListFun()
       .finally(() => searching.value = false);
   } else if (newValue?.trim().length === 0) {
-    await getManageMusicListFun(undefined)
+    await getManageMusicListFun()
       .finally(() => searching.value = false);
   }
 }, 300, false));
 
-const getManageMusicListFun = async (key: string | undefined) => {
-  await getManageMusicList({ page: pagination.value.page, size: 10, key }).then(response => {
+const getManageMusicListFun = async () => {
+  await getManageMusicList({ page: pagination.value.page, size: 10, key: key.value }).then(response => {
     const { list, total } = response.data;
     list.forEach((music: any) => {
       music.duration = durationFormater(music.duration);
@@ -264,7 +265,7 @@ const uploadMusicFun = () => {
   musicData.append('album', data.album.trim());
 
   uploadMusic(musicData).then(async () => {
-    await getManageMusicListFun(key.value?.trim());
+    await getManageMusicListFun();
     musicDialogVisible.value = false;
     resetUploadMusicData();
   }).finally(() => {
@@ -290,7 +291,7 @@ const deleteMusicFun = (record: any) => {
     cancelText: '取消',
     async onOk() {
       deleteMusic(record.id).then(() => {
-        getManageMusicListFun(key.value?.trim());
+        getManageMusicListFun();
         notification.success({
           message: '成功',
           description: '删除成功！'
@@ -341,6 +342,7 @@ const updateMusicFun = () => {
   musicData.append('album', data.album?.trim());
 
   updateMusic(musicData).then(() => {
+    getManageMusicListFun();
     musicDialogVisible.value = false;
   }).finally(() => {
     loading.value = false;

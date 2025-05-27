@@ -119,7 +119,7 @@ import { getMusicInfoFromLocal, useGlobalStore } from '@/store/global';
 import { durationFormater } from '@/util/time';
 import IconButton from '@/components/IconButton.vue';
 import Progress from '@/components/Progress.vue';
-import { PLAYER_SETTING } from '@/config';
+import { PLAYER_SETTING, VOLUME_MUSIC } from '@/config';
 import { getData, setData } from '@/util/localStorage';
 import { throttle } from '@/util/schedulers';
 import SvgIcon from '@/components/SvgIcon.vue';
@@ -130,10 +130,9 @@ import { getMusicInfo } from "@/api/music";
 
 const audioPlayer = ref<any>();
 const music: MusicItemType = reactive({
-  id: null,
+  link: '',
   duration: 0,
   mime: '',
-  link: '',
 });
 let shardingSize: number;
 let shardingCount: number;
@@ -144,7 +143,7 @@ const paused = ref(true);
 
 const mobilePlayer = ref(false);
 const openMobilePlayer = (event: MouseEvent) => {
-  if (globalStore.global.windowWidth <= 800) {
+  if (globalStore.global.mobile) {
     event.preventDefault();
     mobilePlayer.value = true;
   }
@@ -196,7 +195,6 @@ onMounted(async () => {
     volume: 0.5
   });
 
-  screenWidth.value = window.innerWidth;
   const { id, type } = route.params;
 
   getSetting().then(response => {
@@ -215,8 +213,12 @@ onMounted(async () => {
       }
     }
   });
-  if (screenWidth.value <= 800) {
+  if (globalStore.global.mobile) {
     setMobileVolume();
+  } else {
+    const localVolume = getData(VOLUME_MUSIC);
+    volume.value = localVolume ? Number.parseInt(localVolume) : 20;
+    await handleEvent('changeVolume', volume.value / 100);
   }
 
   audioPlayer.value.on(Events.TIME_UPDATE, onTimeUpdate);
@@ -384,14 +386,13 @@ const changeMute = () => {
   }
 }
 
-const screenWidth = ref(0);
-
 const setMobileVolume = () => {
   volume.value = 100;
   handleEvent('changeVolume', 1);
 }
 
 watch(volume, (newVolume) => {
+  setData(VOLUME_MUSIC, newVolume);
   handleEvent('changeVolume', newVolume / 100);
 });
 

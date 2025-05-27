@@ -37,13 +37,13 @@ const globalStore = useGlobalStore();
 const goToHome = () => {
   router.push('/');
 }
-watch(key, debounce((newValue, oldValue) => {
+watch(key, debounce(async (newValue, oldValue) => {
   if (newValue.trim().length > 0 && oldValue.trim() !== newValue.trim()) {
-    router.replace(`/music?search=${newValue}`);
+    await router.replace(`/music?search=${newValue}`);
     globalStore.global.searching = true;
     globalStore.global.searchKey = newValue;
   } else if (newValue.trim().length === 0) {
-    router.replace({ path: '/' });
+    await router.replace({ path: '/' });
     globalStore.global.searching = false;
     globalStore.global.searchKey = '';
   }

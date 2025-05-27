@@ -29,8 +29,8 @@ defineProps<{
     height: 100%;
     aspect-ratio: 1 / 1;
     object-fit: cover;
-    max-width: 14.687rem;
-    max-height: 14.687rem;
+    max-width: 12rem;
+    max-height: 12rem;
     border-radius: 10px;
   }
 

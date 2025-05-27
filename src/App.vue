@@ -12,17 +12,21 @@ watch(() => route?.params?.type, async type => {
 });
 
 const globalStore = useGlobalStore();
-
+watch(() => globalStore.global.searchKey, () => {
+  const query = route.query;
+  if (route?.params?.type === 'music' && query?.hasOwnProperty('search') && globalStore?.global?.searchKey?.length > 0) {
+    componentState.currentMiddleComponent = ComponentType.SEARCH_RESULT;
+  } else {
+    componentState.currentMiddleComponent = ComponentType.DEFAULT;
+  }
+});
 onMounted(async () => {
   await setComponent(route?.params?.type as string);
 });
 
 const setComponent = async (type: string) => {
-  const query = route.query;
   if (type === 'playlist') {
     componentState.currentMiddleComponent = ComponentType.PLAYLIST;
-  } else if (route?.params?.type === 'music' && query?.hasOwnProperty('search') && globalStore?.global?.searchKey?.length > 0) {
-    componentState.currentMiddleComponent = ComponentType.SEARCH_RESULT;
   } else {
     componentState.currentMiddleComponent = ComponentType.DEFAULT;
   }

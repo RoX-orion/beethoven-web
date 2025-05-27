@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, reactive, ref} from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import PlayListCard from '@/views/middle/PlayListCard.vue';
 import type { PlayList } from '@/types/global';
 import { getHomePlaylist } from '@/api/playlist';
@@ -59,7 +59,7 @@ const gotoPlayListInfo = (playlistId: string) => {
     gap: 1rem;
 
     .playlist-card {
-      flex: 1 1 30%;
+      min-width: 12rem;
       cursor: pointer;
       margin: .5rem 0;
     }

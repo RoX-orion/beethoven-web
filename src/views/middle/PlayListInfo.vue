@@ -1,7 +1,7 @@
 <template>
   <div id="playlist-info-top" class="flex-row" style="padding: 1rem">
     <a-image
-      style="max-width: 12rem; max-height: 12rem; border-radius: .25rem; box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .5);"
+      style="aspect-ratio: 1 / 1; max-width: 12rem; max-height: 12rem; border-radius: .25rem; box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .5);"
       :src="playlistInfo.cover"/>
     <div style="padding: 0 1rem; display: flex; flex-direction: column; justify-content: end">
       <p class="pointer" style="font-size: clamp(1rem, 4vw, 3rem);" @click="updatePlaylistFun">{{
@@ -123,10 +123,13 @@ const handleUpdatePlaylist = () => {
   playlistData.append('title', updatePlaylistInfo.value.title);
   playlistData.append('introduction', updatePlaylistInfo.value.introduction);
   playlistData.append('accessible', updatePlaylistInfo.value.accessible);
-  playlistData.append('coverFile', uploadFile.value?.file);
+  if (uploadFile.value?.file) {
+    playlistData.append('coverFile', uploadFile.value.file);
+  }
   loading.value = true;
   updatePlaylist(playlistData).then(async response => {
     if (response.code === 200) {
+      eventBus.emit('getPlayListFun', 1);
       await getPlaylistInfoFun(playlistInfo.value.id);
       updatePlaylistDialogVisible.value = false;
       updatePlaylistInfo.value = { id: '', title: '', accessible: true };
