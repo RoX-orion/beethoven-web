@@ -59,7 +59,6 @@ const gotoPlayListInfo = (playlistId: string) => {
     gap: 1rem;
 
     .playlist-card {
-      min-width: 12rem;
       cursor: pointer;
       margin: .5rem 0;
     }

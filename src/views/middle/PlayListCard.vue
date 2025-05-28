@@ -25,13 +25,11 @@ defineProps<{
   aspect-ratio: 1 / 1;
 
   .cover {
-    width: 100%;
-    height: 100%;
     aspect-ratio: 1 / 1;
     object-fit: cover;
     max-width: 12rem;
     max-height: 12rem;
-    border-radius: 10px;
+    border-radius: .625rem;
   }
 
   .playlist-detail {
@@ -43,6 +41,21 @@ defineProps<{
       span {
         color: grey;
       }
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .playlist-card {
+    width: 45%;
+    aspect-ratio: 1 / 1;
+
+    .cover {
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+      border-radius: .625rem;
     }
   }
 }

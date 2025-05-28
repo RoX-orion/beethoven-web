@@ -140,7 +140,7 @@ const handleUpdatePlaylist = () => {
 }
 
 const updatePlaylistFun = () => {
-  updatePlaylistInfo.value = playlistInfo.value;
+  updatePlaylistInfo.value = JSON.parse(JSON.stringify(playlistInfo.value))
   playlistCover.value = playlistInfo.value.cover;
   updatePlaylistDialogVisible.value = true;
 }
@@ -220,6 +220,15 @@ const removeMusicFun = (musicId: string) => {
 @media (max-width: 800px) {
   .mobile {
     display: none;
+  }
+
+  .playlist-dialog {
+    display: flex;
+    flex-direction: column;
+
+    .playlist-cover-edit {
+      margin: auto;
+    }
   }
 }
 </style>
