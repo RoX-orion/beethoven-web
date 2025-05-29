@@ -85,6 +85,8 @@ import { setMusicInfo, useGlobalStore } from '@/store/global';
 import UploadImage from '@/components/UploadImage.vue';
 import { notification } from 'ant-design-vue';
 import eventBus from '@/util/eventBus';
+import { getData } from '@/util/localStorage';
+import { TOKEN } from '@/config';
 
 const route = useRoute();
 const musicList = ref<Array<MusicItemType>>([]);
@@ -121,8 +123,10 @@ const handleUpdatePlaylist = () => {
   const playlistData = new FormData();
   playlistData.append('id', updatePlaylistInfo.value.id);
   playlistData.append('title', updatePlaylistInfo.value.title);
-  playlistData.append('introduction', updatePlaylistInfo.value.introduction);
-  playlistData.append('accessible', updatePlaylistInfo.value.accessible);
+  if (updatePlaylistInfo.value.introduction) {
+    playlistData.append('introduction', updatePlaylistInfo.value.introduction);
+  }
+  playlistData.append('accessible', updatePlaylistInfo.value.accessible.toString());
   if (uploadFile.value?.file) {
     playlistData.append('coverFile', uploadFile.value.file);
   }
@@ -140,6 +144,9 @@ const handleUpdatePlaylist = () => {
 }
 
 const updatePlaylistFun = () => {
+  if (!getData(TOKEN)) {
+    return;
+  }
   updatePlaylistInfo.value = JSON.parse(JSON.stringify(playlistInfo.value))
   playlistCover.value = playlistInfo.value.cover;
   updatePlaylistDialogVisible.value = true;

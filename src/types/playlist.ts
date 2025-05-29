@@ -1,10 +1,10 @@
 export interface PlaylistType {
 	id: string;
 	title: string;
-	musicCount?: number;
-	author?: string;
+	musicCount: number;
+	author: string;
 	cover?: string;
-	coverFile?: any;
+	coverFile?: File;
 	createTime?: string;
 	introduction?: string;
 	accessible: boolean;

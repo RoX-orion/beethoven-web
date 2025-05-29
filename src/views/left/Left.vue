@@ -51,9 +51,7 @@
 
   <a-modal v-model:open="addPlaylistDialogVisible" width="30rem" title="新建歌单">
     <div class="flex-row playlist-dialog">
-      <div class="cover">
-        <img src="/assets/img/playlistCover.png" alt="cover"/>
-      </div>
+      <UploadImage class="upload-img" type="image" v-model="uploadFile"/>
       <div class="playlist-info">
         <InputText class="input-text" placeholder="歌单名" v-model="playlistInfo.title"/>
         <InputText class="input-text" placeholder="简介(可选)" v-model="playlistInfo.introduction"/>
@@ -82,10 +80,12 @@ import router from '@/router';
 import { TOKEN } from '@/config';
 import { getData } from '@/util/localStorage';
 import mitt from '@/util/eventBus';
+import UploadImage from '@/components/UploadImage.vue';
+import type { FileListType } from '@/types/global';
 
 let addPlaylistDialogVisible = ref(false);
 const playlistList = ref<PlaylistType[]>([]);
-const playlistInfo: PlaylistType = reactive({ id: '', title: '', accessible: true });
+const playlistInfo: PlaylistType = reactive({ id: '', title: '', accessible: true, author: '', musicCount: 0 });
 
 onMounted(() => {
   screenWidth.value = window.innerWidth;
@@ -105,11 +105,22 @@ const getPlayListFun = (page: number) => {
 mitt.on('getPlayListFun', getPlayListFun);
 
 const loading = ref(false);
+const uploadFile = ref<FileListType>();
 const addPlaylistFun = () => {
   loading.value = true;
-  addPlaylist(playlistInfo).then(response => {
+  const playlistData = new FormData();
+  if (uploadFile.value?.file) {
+    playlistData.append('coverFile', uploadFile.value.file);
+  }
+  playlistData.append('title', playlistInfo.title);
+  if (playlistInfo.introduction) {
+    playlistData.append('introduction', playlistInfo.introduction);
+  }
+  playlistData.append('accessible', playlistInfo.accessible.toString());
+  addPlaylist(playlistData).then(response => {
     if (response.code === 200) {
       addPlaylistDialogVisible.value = false;
+      uploadFile.value = undefined;
       Object.assign(playlistInfo, { id: '', title: '', introduction: '', accessible: true });
       getPlayListFun(1);
     }
@@ -159,26 +170,29 @@ const onClose = () => {
 
 .playlist-dialog {
   --gap: 1rem;
-
   margin: auto;
-
-  .cover {
-    padding: var(--gap);
-    border-radius: .25rem;
-
-    img {
-      width: 5rem;
-      height: 5rem;
-      //margin: auto;
-    }
-  }
 
   .playlist-info {
     flex-grow: 1;
-    padding: var(--gap);
+    padding: 0 var(--gap);
 
     .input-text {
       margin: .75rem 0;
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .playlist-dialog {
+    display: flex;
+    flex-direction: column;
+
+    .upload-img {
+      margin: auto;
+    }
+
+    .playlist-info {
+      padding: var(--gap) 0;
     }
   }
 }

@@ -1,6 +1,6 @@
 import request from '@/util/request';
 import type { Page, SearchPageParam } from '@/api/params/query';
-import type { AddMusicFormType, PlaylistType } from '@/types/playlist';
+import type { AddMusicFormType } from '@/types/playlist';
 import type { ApiResponse } from '@/types/global';
 
 export async function getPlaylist(params: Page): Promise<any> {
@@ -11,7 +11,7 @@ export async function getPlaylist(params: Page): Promise<any> {
 	});
 }
 
-export async function addPlaylist(playlistInfo: PlaylistType): Promise<any> {
+export async function addPlaylist(playlistInfo: FormData): Promise<any> {
 	return request({
 		url: '/playlist/addPlaylist',
 		method: 'post',
