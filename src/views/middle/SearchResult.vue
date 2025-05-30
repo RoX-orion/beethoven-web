@@ -1,5 +1,5 @@
 <template>
-  <Tag/>
+  <Tag style="margin-bottom: .5rem"/>
   <div class="flex-row pointer music-wrapper" v-for="music in musicList" :key="music.cover">
     <img class="cover" :src="music.cover" :width="64" :height="64" alt=""/>
     <div class="flex-row content-space-between" style="width: 100%; align-items: center" @click="playMusicFun(music)">

@@ -35,6 +35,9 @@ defineProps<{
   .playlist-detail {
     padding: .5rem 0;
     .title {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       display: block;
     }
     div {

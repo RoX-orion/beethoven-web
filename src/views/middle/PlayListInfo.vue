@@ -4,7 +4,7 @@
       style="aspect-ratio: 1 / 1; max-width: 12rem; max-height: 12rem; border-radius: .25rem; box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .5);"
       :src="playlistInfo.cover"/>
     <div style="padding: 0 1rem; display: flex; flex-direction: column; justify-content: end">
-      <p class="pointer" style="font-size: clamp(1rem, 4vw, 3rem);" @click="updatePlaylistFun">{{
+      <p class="pointer" style="font-weight: bold; font-size: clamp(1.125rem, 4vw, 3rem);" @click="updatePlaylistFun">{{
           playlistInfo.title
         }}</p>
       <div style="color: grey">

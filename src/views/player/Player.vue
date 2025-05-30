@@ -66,10 +66,10 @@
       </div>
       <div class="flex-col controls-wrapper">
         <div class="button-group flex-row">
-          <IconButton icon-name="prev"/>
-          <IconButton v-if="paused" icon-name="pause" @click.stop="playOrPause"/>
-          <IconButton v-else icon-name="play" @click.stop="playOrPause"/>
-          <IconButton icon-name="next"/>
+          <IconButton class="prev" icon-name="prev"/>
+          <IconButton class="pause" v-if="paused" icon-name="pause" @click.stop="playOrPause"/>
+          <IconButton class="play" v-else icon-name="play" @click.stop="playOrPause"/>
+          <IconButton class="next" icon-name="next"/>
         </div>
         <div class="progress">
           <!--          <div class="time">{{ durationFormater(Math.floor(currentTime)) }}</div>-->
@@ -475,6 +475,16 @@ const devicesVisible = ref(false);
       width: 4rem;
       height: 4rem;
     }
+
+    .controls-wrapper {
+      width: 30%;
+      .button-group {
+        justify-content: end;
+        .prev, .next {
+          display: none;
+        }
+      }
+    }
   }
 
   .progress {
@@ -487,10 +497,6 @@ const devicesVisible = ref(false);
 
   .base-info {
     width: 70%;
-  }
-
-  .controls-wrapper {
-    width: 30%;
   }
 }
 
