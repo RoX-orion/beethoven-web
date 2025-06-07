@@ -48,8 +48,8 @@ export interface PlayerSetting {
 }
 
 export interface SettingType {
-	userId?: number;
-	musicId: number;
+	userId?: string;
+	musicId?: string;
 	currentTime: number;
 	isMute: boolean;
 	volume: number;

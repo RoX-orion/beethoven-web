@@ -98,8 +98,8 @@ const uploadFile = ref<FileListType>();
 
 const globalStore = useGlobalStore();
 const playMusicFun = (music: MusicItemType) => {
-  // router.push({ path: '/music/' + music.id });
   globalStore.global.media.musicId = music.id;
+  globalStore.global.canPlay = true;
   setMusicInfo(music);
 };
 
@@ -109,7 +109,7 @@ const getPlaylistMusicFun = (playlistId: string) => {
   });
 };
 
-const playlistInfo = ref<PlaylistType>({ id: '', title: '', accessible: true });
+const playlistInfo = ref<PlaylistType>({ id: '', title: '', accessible: true, musicCount: 0, author: '' });
 const getPlaylistInfoFun = async (playlistId: string) => {
   getPlaylistInfo(playlistId).then(response => {
     playlistInfo.value = response.data;
@@ -118,7 +118,7 @@ const getPlaylistInfoFun = async (playlistId: string) => {
 }
 
 let updatePlaylistDialogVisible = ref(false);
-let updatePlaylistInfo = ref<PlaylistType>({ id: '', title: '', accessible: true });
+let updatePlaylistInfo = ref<PlaylistType>({ id: '', title: '', accessible: true, musicCount: 0, author: '' });
 const handleUpdatePlaylist = () => {
   const playlistData = new FormData();
   playlistData.append('id', updatePlaylistInfo.value.id);
@@ -136,7 +136,7 @@ const handleUpdatePlaylist = () => {
       eventBus.emit('getPlayListFun', 1);
       await getPlaylistInfoFun(playlistInfo.value.id);
       updatePlaylistDialogVisible.value = false;
-      updatePlaylistInfo.value = { id: '', title: '', accessible: true };
+      updatePlaylistInfo.value = { id: '', title: '', accessible: true, musicCount: 0, author: '' };
     }
   }).finally(() => {
     loading.value = false;

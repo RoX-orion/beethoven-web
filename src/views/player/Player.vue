@@ -67,8 +67,10 @@
       <div class="flex-col controls-wrapper">
         <div class="button-group flex-row">
           <IconButton class="prev" icon-name="prev"/>
-          <IconButton class="pause" v-if="paused" icon-name="pause" @click.stop="playOrPause"/>
-          <IconButton class="play" v-else icon-name="play" @click.stop="playOrPause"/>
+          <div style="margin: auto">
+            <svg-icon class="pointer" v-if="paused" name="pause" size="2rem" @click.stop="playOrPause"/>
+            <svg-icon class="pointer" v-else name="play" size="2rem" @click.stop="playOrPause"/>
+          </div>
           <IconButton class="next" icon-name="next"/>
         </div>
         <div class="progress">
@@ -112,18 +114,18 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
-import type { MusicItemType, ProgressType } from '@/types/global';
+import type { MusicItemType, ProgressType, SettingType } from '@/types/global';
 import { ComponentType } from '@/types/global';
 import { useRoute } from 'vue-router';
-import { getMusicInfoFromLocal, useGlobalStore } from '@/store/global';
+import { getMusicInfoFromLocal, useAccountStore, useGlobalStore } from '@/store/global';
 import { durationFormater } from '@/util/time';
 import IconButton from '@/components/IconButton.vue';
 import Progress from '@/components/Progress.vue';
-import { PLAYER_SETTING, VOLUME_MUSIC } from '@/config';
+import { PLAYER_SETTING, TOKEN, VOLUME_MUSIC } from '@/config';
 import { getData, setData } from '@/util/localStorage';
 import { throttle } from '@/util/schedulers';
 import SvgIcon from '@/components/SvgIcon.vue';
-import { getSetting } from "@/api/setting";
+import { getSetting, updateSetting } from "@/api/setting";
 import Player, { Events } from "xgplayer";
 import { componentState } from '@/store/componentState';
 import { getMusicInfo } from "@/api/music";
@@ -184,7 +186,7 @@ const openVideoPlayer = () => {
     componentState.currentMiddleComponent = ComponentType.VIDEO_PLAYER;
 }
 const route = useRoute();
-
+const accountStore = useAccountStore();
 onMounted(async () => {
   audioPlayer.value = new Player({
     id: 'audioPlayer',
@@ -197,17 +199,19 @@ onMounted(async () => {
 
   const { id, type } = route.params;
 
-  getSetting().then(response => {
+  await getSetting().then(response => {
     if (response.data) {
+      setting.value = response.data;
       const music = getData('music');
       setData(PLAYER_SETTING, JSON.stringify(response.data));
       globalStore.global.player = response.data;
       if (type === 'music' && id) {
         globalStore.global.media.musicId = response.data.musicId;
       } else if (response.data.musicId) {
-        currentTime.value = globalStore.global.media.currentTime;
+        currentTime.value = response.data.currentTime;
         globalStore.global.media.musicId = response.data.musicId;
         globalStore.global.media.currentTime = response.data.currentTime;
+        changeCurrentTime(null);
       } else if (music) {
         setMusic(JSON.parse(music));
       }
@@ -235,27 +239,21 @@ onUnmounted(() => {
   document.removeEventListener('keydown', handleKeyEvent, false);
 });
 
-let initialized = false;
 watch(() => globalStore.global.media.musicId, async musicId => {
-  if (musicId) {
-    let music = getMusicInfoFromLocal();
-    if (!music) {
-      getMusicInfo(musicId as string).then(async response => {
-        if (response.data) {
-          music = response.data;
-          await setMusic(music);
-        }
-      });
-    } else {
-      await setMusic(music);
-    }
+  let music = getMusicInfoFromLocal();
+  if ((!music || music.id !== musicId) && musicId) {
+    await getMusicInfo(musicId as string).then(async response => {
+      if (response.data) {
+        await setMusic(response.data);
+      }
+    });
+  } else {
+    await setMusic(music);
   }
-
-  if (initialized) {
+  if (globalStore.global.canPlay) {
     currentTime.value = 0;
     await handleEvent('play', null);
   }
-  initialized = true;
 });
 
 const changeCurrentTime = async (e: any) => {
@@ -269,13 +267,16 @@ const updateTime = (e: any) => {
 }
 
 const handleEvent = async (eventName: string, state: any) => {
+  setting.value.currentTime = Math.floor(currentTime.value);
   if (eventName === 'play') {
     paused.value = false;
     audioPlayer.value!.currentTime = currentTime.value;
     await audioPlayer.value!.play();
+    await updateSettingFun();
   } else if (eventName === 'pause') {
     paused.value = true;
     audioPlayer.value!.pause();
+    await updateSettingFun();
   } else if (eventName === 'changeVolume') {
     audioPlayer.value!.volume = state;
     globalStore.global.player.volume = Math.floor(state * 100);
@@ -286,6 +287,7 @@ const handleEvent = async (eventName: string, state: any) => {
     // progressData.percentage = currentPercentage.value;
     // currentTime.value = state / 100 * music.duration;
     audioPlayer.value!.currentTime = currentTime.value;
+    await updateSettingFun();
   } else if (eventName === 'updateTime') {
     currentTime.value = state / 100 * music.duration;
   }
@@ -300,6 +302,8 @@ const setMusic = async (musicInfo: MusicItemType) => {
   }
   Object.assign(music, musicInfo);
   audioPlayer.value!.src = music.link;
+  setting.value.musicId = musicInfo.id;
+  await updateSettingFun();
   // audioPlayer.value!.url = music.link;
 
   // mediaSource = new MediaSource();
@@ -395,6 +399,22 @@ watch(volume, (newVolume) => {
   setData(VOLUME_MUSIC, newVolume);
   handleEvent('changeVolume', newVolume / 100);
 });
+
+const setting = ref<SettingType>(
+  {
+    userId: '',
+    musicId: '',
+    currentTime: 0,
+    isMute: false,
+    volume: 0,
+    playMode: 'random',
+  },
+);
+const updateSettingFun = async () => {
+  if (getData(TOKEN)) {
+    await updateSetting(setting.value);
+  }
+}
 
 const devicesVisible = ref(false);
 

@@ -46,15 +46,11 @@ const setComponent = async (type: string) => {
 
 window.addEventListener('resize', function () {
   globalStore.global.windowWidth = window.innerWidth;
-  if (window.innerWidth <= 800) {
-    globalStore.global.mobile = true;
-  }
+  globalStore.global.mobile = window.innerWidth <= 800;
 });
 
 onMounted(() => {
-  if (window.innerWidth <= 800) {
-    globalStore.global.mobile = true;
-  }
+  globalStore.global.mobile = window.innerWidth <= 800;
 });
 </script>
 

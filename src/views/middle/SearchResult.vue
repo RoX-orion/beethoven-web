@@ -53,6 +53,7 @@ const globalStore = useGlobalStore();
 const playMusicFun = (music: MusicItemType) => {
   router.push({ path: '/music/' + music.id });
   globalStore.global.media.musicId = music.id;
+  globalStore.global.canPlay = true;
   setMusicInfo(music);
 }
 
