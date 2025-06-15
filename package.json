@@ -14,21 +14,22 @@
   "dependencies": {
     "ant-design-vue": "^4.2.6",
     "mitt": "^3.0.1",
-    "pinia": "^3.0.2",
+    "pinia": "^3.0.3",
     "spark-md5": "^3.0.2",
     "vue": "^3.5.16",
     "vue-router": "^4.5.1",
-    "xgplayer": "^3.0.22"
+    "xgplayer": "^3.0.22",
+    "async-mutex": "^0.5.0"
   },
   "devDependencies": {
-    "@tsconfig/node20": "^20.1.5",
-    "@types/node": "^22.15.24",
+    "@tsconfig/node20": "^20.1.6",
+    "@types/node": "^24.0.1",
     "@vitejs/plugin-vue": "^5.2.4",
     "@vue/tsconfig": "^0.7.0",
     "axios": "^1.9.0",
     "fast-glob": "^3.3.3",
     "npm-run-all2": "^8.0.4",
-    "sass": "^1.89.0",
+    "sass": "^1.89.2",
     "sass-loader": "^16.0.5",
     "typescript": "^5.8.3",
     "unplugin-vue-components": "^28.7.0",
