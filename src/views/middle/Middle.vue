@@ -22,6 +22,10 @@ import VideoPlayer from '@/views/player/VideoPlayer.vue';
   width: 100%;
   overflow: hidden;
   overflow-y: scroll;
-  //box-shadow: 0 2px 4px rgba(0, 0, 0, .04), 0 0 6px rgba(0, 0, 0, .04);
+  border: 1px solid var(--surface-border);
+  border-radius: 1rem;
+  background: var(--surface-color);
+  box-shadow: var(--surface-shadow);
+  backdrop-filter: blur(1.25rem);
 }
 </style>

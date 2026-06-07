@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterView, useRoute } from 'vue-router';
-import { onMounted, watch } from 'vue';
+import { onMounted, onUnmounted, watch } from 'vue';
 import { ComponentType } from '@/types/global';
 import { componentState } from '@/store/componentState';
 import { useGlobalStore } from '@/store/global';
@@ -44,13 +44,19 @@ const setComponent = async (type: string) => {
 //   });
 // }, { deep: true });
 
-window.addEventListener('resize', function () {
+const updateWindowState = () => {
   globalStore.global.windowWidth = window.innerWidth;
   globalStore.global.mobile = window.innerWidth <= 800;
-});
+};
+
+window.addEventListener('resize', updateWindowState);
 
 onMounted(() => {
-  globalStore.global.mobile = window.innerWidth <= 800;
+  updateWindowState();
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateWindowState);
 });
 </script>
 

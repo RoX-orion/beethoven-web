@@ -82,7 +82,7 @@
 html,
 body {
   height: 100dvh;
-  background: var(--light-theme);
+  background: var(--background-color-light);
   transition: color 0.5s,
   background-color 0.5s;
   font-family: Noto Sans SC,
@@ -101,6 +101,33 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  overflow: hidden;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+img {
+  display: block;
+}
+
+.custom-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(105, 117, 134, .32) transparent;
+}
+
+.custom-scroll::-webkit-scrollbar {
+  width: .45rem;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(105, 117, 134, .32);
 }
 
 @media (max-width: 800px) {

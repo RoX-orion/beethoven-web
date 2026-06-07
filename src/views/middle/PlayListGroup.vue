@@ -1,11 +1,16 @@
 <template>
   <Tag/>
   <Pinned v-if="pinnedList.length > 0"/>
-  <div class="playlist-group-wrapper" v-for="data in groupPlayList">
-    <span class="playlist-group-title">{{data.groupTitle}}</span>
+  <div class="playlist-group-wrapper" v-for="data in groupPlayList" :key="data.groupTitle">
+    <div class="section-heading">
+      <div>
+        <p>Discover</p>
+        <h2>{{ data.groupTitle }}</h2>
+      </div>
+    </div>
     <div class="flex-row playlist-info-wrapper">
       <PlayListCard class="playlist-card" v-for="playList in data.playlist" :playList="playList"
-                    @click="gotoPlayListInfo(playList.id)"></PlayListCard>
+                    :key="playList.id" @click="gotoPlayListInfo(playList.id)"></PlayListCard>
     </div>
   </div>
 </template>
@@ -44,23 +49,63 @@ const gotoPlayListInfo = (playlistId: string) => {
 
 <style scoped lang="scss">
 .playlist-group-wrapper {
-  padding: var(--base-padding);
+  padding: 1.35rem;
 
-  .playlist-group-title {
-    font-size: 1.375rem;
-    padding: .5rem 0;
-    display: inline-block;
-    text-shadow: 3px 3px 4px rgba(0, 0, 0, 0.25);
+  .section-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    p {
+      color: var(--brand-primary);
+      font-size: .78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      color: var(--text-primary);
+      font-size: 1.65rem;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    span {
+      color: var(--text-secondary);
+      font-size: .9rem;
+    }
   }
 
   .playlist-info-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
     flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 1rem;
+    gap: 1.15rem;
 
     .playlist-card {
       cursor: pointer;
-      margin: .5rem 0;
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .playlist-group-wrapper {
+    padding: 1rem;
+
+    .section-heading {
+      display: block;
+
+      span {
+        display: block;
+        margin-top: .35rem;
+      }
+    }
+
+    .playlist-info-wrapper {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .85rem;
     }
   }
 }

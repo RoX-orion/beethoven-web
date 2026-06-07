@@ -1,7 +1,7 @@
 <template>
-  <div class="flex-row header-wrapper content-space-between">
+  <header class="flex-row header-wrapper content-space-between">
     <IconButton class="menu" icon-name="menu" @click="openLeft"/>
-    <div class="flex-row pointer" style="justify-items: center" @click="goToHome">
+    <div class="flex-row brand-wrapper pointer" @click="goToHome">
       <img class="brand" src="/assets/brand.png" alt="">
       <span class="brand-text">Beethoven Music</span>
     </div>
@@ -17,7 +17,7 @@
       </div>
       <Account/>
     </div>
-  </div>
+  </header>
 </template>
 
 <script setup lang="ts">
@@ -56,22 +56,35 @@ const openLeft = () => {
 
 <style lang="scss" scoped>
 .header-wrapper {
-  padding: 10px;
-  width: 100vw;
+  width: min(100%, 98rem);
+  height: 4.5rem;
+  margin: 0 auto;
+  padding: .55rem .75rem;
+  border: 1px solid var(--surface-border);
+  border-radius: 1rem;
+  background: var(--surface-color);
+  box-shadow: var(--surface-shadow);
+  backdrop-filter: blur(1.25rem);
+
+  .brand-wrapper {
+    align-items: center;
+    min-width: 16rem;
+  }
 
   .brand {
     width: var(--header-item-size);
     height: var(--header-item-size);
-    margin: auto 0 auto 2vw;
+    margin: auto 0;
+    border-radius: .75rem;
+    box-shadow: 0 .4rem 1rem rgba(47, 143, 118, .12);
   }
 
   .brand-text {
-    color: rgba(56, 56, 56, 1);
-    font-size: 1.5rem;
-    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25);
-    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 1.35rem;
+    font-weight: 800;
     line-height: 2.17rem;
-    margin: auto 1rem;
+    margin: auto .85rem;
     width: 12.5rem;
   }
 
@@ -81,11 +94,26 @@ const openLeft = () => {
   }
 
   .header-right {
-    justify-items: center;
+    align-items: center;
 
     .button-group {
       margin: auto;
-      gap: 1rem;
+      gap: .35rem;
+
+      a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.45rem;
+        height: 2.45rem;
+        border-radius: .75rem;
+        transition: background-color .18s ease, transform .18s ease;
+
+        &:hover {
+          background: rgba(64, 158, 255, .1);
+          transform: translateY(-1px);
+        }
+      }
     }
   }
 }
@@ -97,8 +125,23 @@ const openLeft = () => {
 }
 
 @media (max-width: 800px) {
+  .header-wrapper {
+    height: auto;
+    gap: .5rem;
+    padding: .5rem;
+  }
+
+  .brand-wrapper {
+    min-width: auto !important;
+  }
+
   .brand-text {
     display: none;
+  }
+
+  .search-wrapper {
+    flex: 1;
+    min-width: 0;
   }
 
   .button-group {

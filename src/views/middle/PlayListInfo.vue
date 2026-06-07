@@ -1,13 +1,14 @@
 <template>
-  <div id="playlist-info-top" class="flex-row" style="padding: 1rem">
+  <div id="playlist-info-top" class="flex-row playlist-hero">
     <a-image
-      style="aspect-ratio: 1 / 1; max-width: 12rem; max-height: 12rem; border-radius: .25rem; box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .5);"
+      class="playlist-hero-cover"
       :src="playlistInfo.cover"/>
-    <div style="padding: 0 1rem; display: flex; flex-direction: column; justify-content: end">
-      <p class="pointer" style="font-weight: bold; font-size: clamp(1.125rem, 4vw, 3rem);" @click="updatePlaylistFun">{{
+    <div class="playlist-hero-content">
+      <span class="hero-label">Playlist</span>
+      <p class="pointer playlist-title" @click="updatePlaylistFun">{{
           playlistInfo.title
         }}</p>
-      <div style="color: grey">
+      <div class="playlist-meta">
         <span>{{ playlistInfo.author }}</span>
         <span>·</span>
         <span>{{ playlistInfo.musicCount }}首歌曲</span>
@@ -20,9 +21,9 @@
   <div class="flex-row content-space-between playlist-info pointer" v-for="(music, index) in musicList"
        :key="music.id" @click.stop="playMusicFun(music)">
     <div class="flex-row">
-      <div style="margin: auto .5rem auto auto;">{{ index + 1 }}</div>
+      <div class="track-index">{{ index + 1 }}</div>
       <img class="cover" :src="music.cover" :width="64" :height="64" alt=""/>
-      <div style="margin: auto auto auto .5rem;">
+      <div class="track-text">
         <p>{{ music.name }}</p>
         <p class="grey" style="font-size: .85rem">{{ music.singer }}</p>
       </div>
@@ -191,17 +192,94 @@ const removeMusicFun = (musicId: string) => {
 </script>
 
 <style scoped lang="scss">
+.playlist-hero {
+  gap: 1.25rem;
+  padding: 1.35rem;
+  margin: 1rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(47, 143, 118, .16), rgba(64, 158, 255, .1)),
+  rgba(255, 255, 255, .48);
+}
+
+.playlist-hero-cover {
+  aspect-ratio: 1 / 1;
+  width: min(12rem, 32vw);
+  max-width: 12rem;
+  max-height: 12rem;
+  overflow: hidden;
+  border-radius: .9rem;
+  box-shadow: 0 .75rem 1.8rem rgba(32, 53, 77, .18);
+}
+
+.playlist-hero-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  min-width: 0;
+}
+
+.hero-label {
+  color: var(--brand-primary);
+  font-size: .78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.playlist-title {
+  margin: .35rem 0 .6rem;
+  color: var(--text-primary);
+  font-size: clamp(1.45rem, 4vw, 3rem);
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.playlist-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  color: var(--text-secondary);
+}
+
 .playlist-info {
   width: 100%;
-  padding: .5rem 1rem;
-  border-radius: .25rem;
+  padding: .7rem 1.25rem;
+  border-radius: .85rem;
+  transition: background-color .18s ease, transform .18s ease;
 
   &:hover {
-    background-color: rgba(0, 0, 0, .1);
+    background-color: rgba(255, 255, 255, .62);
+    transform: translateX(2px);
   }
 
   div {
     margin: auto 0;
+  }
+
+  .cover {
+    border-radius: .65rem;
+    object-fit: cover;
+    box-shadow: 0 .35rem .8rem rgba(32, 53, 77, .1);
+  }
+}
+
+.track-index {
+  width: 1.8rem;
+  margin: auto .5rem auto auto;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.track-text {
+  min-width: 0;
+  margin: auto auto auto .7rem !important;
+
+  p {
+    overflow: hidden;
+    max-width: 18rem;
+    color: var(--text-primary);
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
@@ -225,6 +303,26 @@ const removeMusicFun = (musicId: string) => {
 }
 
 @media (max-width: 800px) {
+  .playlist-hero {
+    flex-direction: column;
+    margin: .75rem;
+    padding: 1rem;
+  }
+
+  .playlist-hero-cover {
+    width: 100%;
+    max-width: none;
+    max-height: none;
+  }
+
+  .playlist-info {
+    padding: .65rem .85rem;
+  }
+
+  .track-text p {
+    max-width: 12rem;
+  }
+
   .mobile {
     display: none;
   }

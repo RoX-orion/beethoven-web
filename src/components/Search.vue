@@ -6,7 +6,7 @@
     </div>
     <input
       class="search"
-      placeholder="Search"
+      placeholder="搜索歌曲、歌单"
       v-model="search"/>
     <IconButton
       icon-name="close"
@@ -44,14 +44,17 @@ const resetSearch = () => {
   height: var(--header-item-size);
   justify-content: space-between;
   border-radius: 2rem;
-  padding: 5px 10px;
+  padding: 5px .65rem;
   outline: none;
-  border: rgba(0, 0, 0, .05) solid 2px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, .04), 0 0 6px rgba(0, 0, 0, .04);
+  border: rgba(32, 53, 77, .08) solid 1px;
+  background: rgba(255, 255, 255, .72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .85);
+  transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
 
-  &:focus {
-    outline: none;
-    border: #3390ec solid 2px;
+  &:focus-within {
+    border-color: rgba(64, 158, 255, .5);
+    background: rgba(255, 255, 255, .95);
+    box-shadow: 0 0 0 .25rem rgba(64, 158, 255, .1);
   }
 }
 .search {
@@ -59,7 +62,11 @@ const resetSearch = () => {
   outline: none;
   border: none;
   font-size: 1rem;
+  color: var(--text-primary);
   background-color: inherit;
-  //box-shadow: 0 0 .625rem 0 var(--color-default-shadow);
+
+  &::placeholder {
+    color: var(--text-secondary);
+  }
 }
 </style>

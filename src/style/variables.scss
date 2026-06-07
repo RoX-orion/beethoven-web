@@ -12,9 +12,19 @@
   --svg-button-shadow: rgba(0, 0, 0, .05);
 
   --base-shadow: rgba(0, 0, 0, .05);
+  --surface-color: rgba(255, 255, 255, .72);
+  --surface-color-strong: rgba(255, 255, 255, .88);
+  --surface-border: rgba(32, 53, 77, .08);
+  --surface-shadow: 0 .75rem 2rem rgba(32, 53, 77, .1);
+  --text-primary: #18212f;
+  --text-secondary: #697586;
+  --brand-primary: #2f8f76;
+  --brand-accent: #409eff;
 
   //--background-color-light: linear-gradient(0deg, rgba(243, 231, 233, 1) 0%, rgba(227, 238, 255, 1) 99%, rgba(227, 238, 255, 1) 100%);
-  --background-color-light: linear-gradient(to top, #fff1eb 0%, #ace0f9 100%);
+  --background-color-light: radial-gradient(circle at 12% 10%, rgba(93, 202, 255, .28), transparent 24rem),
+  radial-gradient(circle at 86% 12%, rgba(91, 231, 196, .22), transparent 24rem),
+  linear-gradient(135deg, #f7fbff 0%, #eef6f0 48%, #fff7ee 100%);
   --light-theme: linear-gradient(0deg, rgba(243, 231, 233, 1) 0%, rgba(227, 238, 255, 1) 99%, rgba(227, 238, 255, 1) 100%);
   --dark-theme: #212121;
 

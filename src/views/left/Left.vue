@@ -163,15 +163,25 @@ const onClose = () => {
   width: var(--left-width);
   margin-right: 1rem;
   padding: var(--base-padding);
-  border-radius: .25rem;
+  border: 1px solid var(--surface-border);
+  border-radius: 1rem;
   overflow: hidden;
   overflow-y: scroll;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, .04), 0 0 6px rgba(0, 0, 0, .04);
+  background: var(--surface-color);
+  box-shadow: var(--surface-shadow);
+  backdrop-filter: blur(1.25rem);
 
   .left-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
     justify-content: space-between;
     align-items: center;
     line-height: 1.2;
+    margin: -.25rem -.25rem .5rem;
+    padding: .25rem;
+    border-radius: .75rem;
+    background: rgba(255, 255, 255, .52);
   }
 }
 
@@ -190,6 +200,11 @@ const onClose = () => {
 }
 
 @media (max-width: 800px) {
+  .left-wrapper {
+    margin-right: 0;
+    border-radius: 0 1rem 1rem 0;
+  }
+
   .playlist-dialog {
     display: flex;
     flex-direction: column;

@@ -1,10 +1,12 @@
 <template>
-  <Header/>
-  <div class="flex-row left-right">
-    <Left v-if="getData(TOKEN)"/>
-    <Middle/>
+  <div class="home-page">
+    <Header/>
+    <main class="flex-row left-right">
+      <Left v-if="getData(TOKEN)"/>
+      <Middle/>
+    </main>
+    <Player/>
   </div>
-  <Player/>
 </template>
 
 <script setup lang="ts">
@@ -42,15 +44,27 @@ const setStyle = () => {
 </script>
 
 <style lang="scss" scoped>
+.home-page {
+  min-height: 100dvh;
+  padding: .85rem 1rem 7rem;
+}
+
 .left-right {
+  gap: 1rem;
   justify-content: space-between;
-  height: calc(100vh - 11rem);
-  //margin: 0 1rem;
+  height: calc(100dvh - 14rem);
+  width: min(100%, 98rem);
+  margin: .85rem auto 0;
 }
 
 @media (max-width: 800px) {
+  .home-page {
+    padding: .55rem .55rem 6.75rem;
+  }
+
   .left-right {
-    height: calc(100dvh - 12rem);
+    height: calc(100dvh - 13rem);
+    margin-top: .65rem;
   }
 }
 </style>
