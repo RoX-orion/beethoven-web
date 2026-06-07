@@ -36,8 +36,10 @@ const updateMusicConfigFun = () => {
     return;
   }
   const musicConfigData = new FormData();
-  musicConfigData.append('defaultMusicCoverFile', defaultMusicCover.value?.file);
-  musicConfigData.append('shardingSize', musicConfig.shardingSize);
+  if (defaultMusicCover.value?.file) {
+    musicConfigData.append('defaultMusicCoverFile', defaultMusicCover.value.file);
+  }
+  musicConfigData.append('shardingSize', String(musicConfig.shardingSize));
   loading.value = true;
   updateMusicConfig(musicConfigData)
     .finally(() => {

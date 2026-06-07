@@ -1,6 +1,6 @@
 <template>
   <Tag style="margin-bottom: .5rem"/>
-  <div class="flex-row pointer music-wrapper" v-for="music in musicList" :key="music.cover">
+  <div class="flex-row pointer music-wrapper" v-for="music in musicList" :key="music.id">
     <img class="cover" :src="music.cover" :width="64" :height="64" alt=""/>
     <div class="flex-row content-space-between" style="width: 100%; align-items: center" @click="playMusicFun(music)">
       <div class="music-info">
@@ -9,7 +9,7 @@
       </div>
       <div class="flex-row">
         <div style="margin: auto 0; line-height: 1rem">{{ durationFormater(music.duration) }}</div>
-        <IconButton icon-name="add-circle" size="1.25rem" icon-color="rgba(0, 0, 0, .5)"
+        <IconButton v-if="music.id" icon-name="add-circle" size="1.25rem" icon-color="rgba(0, 0, 0, .5)"
                     @click.stop="openAddMusicToPlaylistDialog(music.id)"/>
       </div>
     </div>
@@ -35,6 +35,7 @@
 <script setup lang="ts">
 import eventBus from '@/util/eventBus';
 import { onMounted, ref, watch } from 'vue';
+import type { CheckboxOptionType } from 'ant-design-vue';
 import { durationFormater } from '@/util/time';
 import router from '@/router';
 import IconButton from '@/components/IconButton.vue';
@@ -51,6 +52,9 @@ const defaultCover = '../../src/assets/img/playlistCover.png';
 
 const globalStore = useGlobalStore();
 const playMusicFun = (music: MusicItemType) => {
+  if (!music.id) {
+    return;
+  }
   router.push({ path: '/music/' + music.id });
   globalStore.global.media.musicId = music.id;
   globalStore.global.canPlay = true;
@@ -59,7 +63,7 @@ const playMusicFun = (music: MusicItemType) => {
 
 const searchMediaFun = (key: string) => {
   searchMusic({ page: 1, size: 100, key }).then(response => {
-    response.data.forEach(e => e.cover = e.cover ? e.cover : defaultCover);
+    response.data.forEach((e: MusicItemType) => e.cover = e.cover ? e.cover : defaultCover);
     musicList.value = response.data;
   }).finally(() => {
     globalStore.global.searching = false;
@@ -71,19 +75,18 @@ onMounted(() => {
 });
 
 watch(() => globalStore.global.searchKey, newValue => {
-  searchMediaFun(newValue.trim());
+  searchMediaFun((newValue ?? '').trim());
 });
 
 let addMusicToPlaylistDialogVisible = ref(false);
-const playlistList = ref<PlaylistType[]>([]);
-const playlistOptions = ref<any[]>([]);
-let addMusicForm = ref<AddMusicFormType>({});
+const playlistOptions = ref<CheckboxOptionType[]>([]);
+let addMusicForm = ref<AddMusicFormType>({ musicId: '', playlistIds: [] });
 const openAddMusicToPlaylistDialog = (musicId: string) => {
   addMusicToPlaylistDialogVisible.value = true;
   getPlaylist({ page: 1, size: 10 }).then(response => {
     const { data } = response;
     playlistOptions.value = [];
-    data.forEach(e => {
+    data.forEach((e: PlaylistType) => {
       playlistOptions.value.push({ 'label': e.title, 'value': e.id });
     });
     addMusicForm.value.musicId = musicId;
@@ -92,6 +95,9 @@ const openAddMusicToPlaylistDialog = (musicId: string) => {
 
 const loading = ref(false);
 const addMusicToPlaylistFun = () => {
+  if (!addMusicForm.value.musicId || addMusicForm.value.playlistIds.length === 0) {
+    return;
+  }
   loading.value = true;
   addMusicToPlaylist(addMusicForm.value).then(() => {
     addMusicToPlaylistDialogVisible.value = false;

@@ -1,5 +1,5 @@
 import request from '@/util/request';
-import type { OAuth2LoginType } from '@/types/global';
+import type { ApiResponse, OAuth2LoginType } from '@/types/global';
 
 export function getOAuth2Info(type: string) {
 	return request({
@@ -11,12 +11,12 @@ export function getOAuth2Info(type: string) {
 	});
 }
 
-export function handleOAuth2Login(data: OAuth2LoginType) {
+export function handleOAuth2Login(data: OAuth2LoginType): Promise<ApiResponse> {
 	return request({
 		url: '/auth/oauth2/login',
 		method: 'post',
 		data,
-	});
+	}) as unknown as Promise<ApiResponse>;
 }
 
 export function logout() {

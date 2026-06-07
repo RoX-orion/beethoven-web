@@ -11,11 +11,12 @@
 import Header from './header/Header.vue';
 import Left from './left/Left.vue';
 import Middle from '@/views/middle/Middle.vue'
-import Player from './player/Player.vue';
 import { useGlobalStore, useRouteStore } from '@/store/global';
-import { onMounted } from 'vue';
+import { defineAsyncComponent, onMounted } from 'vue';
 import { getData } from "@/util/localStorage";
 import { TOKEN } from "@/config";
+
+const Player = defineAsyncComponent(() => import('./player/Player.vue'));
 
 const props = defineProps({
   type: String,

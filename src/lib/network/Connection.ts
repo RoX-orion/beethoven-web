@@ -33,25 +33,34 @@ export class Connection {
 
 	recvQueue: AsyncQueue<object | undefined>;
 
+	_sendTask?: Promise<void>;
+
+	_recvTask?: Promise<void>;
+
 	_log: Logger;
 
 	// _pendingState: PendingState;
 
 	socket: PromisedWebSockets;
 
+	startUpdateLoop = false;
+
 	constructor(ip: string, port: number, log: Logger) {
 		this._ip = ip;
 		this._port = port;
 		this._connected = false;
 		this.isReconnecting = false;
-		this.sendQueue = new AsyncQueue<Buffer>();
-		this.recvQueue = new AsyncQueue<Buffer>();
+		this.sendQueue = new AsyncQueue<any>();
+		this.recvQueue = new AsyncQueue<any>();
+		this._sendTask = undefined;
+		this._recvTask = undefined;
 		this._log = log;
 		// this._pendingState =
 		this.socket = new PromisedWebSockets(this.disconnectCallback.bind(this));
 	}
 
 	async connect() {
+		console.log('this._connected', this._connected);
 		while (!this._connected) {
 			try {
 				await this.socket.connect(this._port, this._ip);
@@ -61,13 +70,19 @@ export class Connection {
 				this._log.error('Connect error, try reconnect!');
 			}
 		}
-		this._sendLoop();
-		this._recvLoop();
-		this.updateLoop();
+		if (!this._sendTask) {
+			this._sendTask = this._sendLoop();
+		}
+		if (!this._recvTask) {
+			this._recvTask = this._recvLoop();
+		}
+		if (!this.startUpdateLoop) {
+			this.updateLoop();
+			this.startUpdateLoop = true;
+		}
 	}
 
 	async send(data: any) {
-		console.log('this._connected', this._connected);
 		if (!this._connected) {
 			throw new Error('Not connected');
 		}
@@ -108,6 +123,8 @@ export class Connection {
 		} catch (e) {
 			this._log.info('The server closed the connection while sending');
 		}
+
+		this._sendTask = undefined;
 	}
 
 	async _recvLoop() {
@@ -120,13 +137,14 @@ export class Connection {
 				}
 			} catch (e) {
 				this._log.info('connection closed');
-				// await this._recvArray.push()
 
 				this.disconnect();
 				return;
 			}
 			await this.recvQueue.push(data);
 		}
+
+		this._recvTask = undefined;
 	}
 
 	async disconnectCallback() {
@@ -147,9 +165,8 @@ export class Connection {
 
 	async updateLoop() {
 		let lastPongAt;
-		console.log(this._connected);
 
-		while (this._connected) {
+		while (true) {
 			await sleep(3000);
 
 			try {
@@ -157,8 +174,7 @@ export class Connection {
 					// if (this._destroyed) {
 					// 	return undefined;
 					// }
-
-					this.send(JSON.stringify({ pingId: Date.now() }));
+					return this.send(JSON.stringify({ pingId: Date.now() }));
 					// return sender.send(new Api.PingDelayDisconnect({
 					// 	pingId: bigInt(getRandomInt(Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER))
 					// }));
@@ -171,7 +187,6 @@ export class Connection {
 					await attempts(() => timeout(ping, PING_TIMEOUT), PING_FAIL_ATTEMPTS, PING_FAIL_INTERVAL);
 				} else {
 					let wakeUpWarningTimeout: TimeoutId | undefined = setTimeout(() => {
-						console.log('disConnected');
 						wakeUpWarningTimeout = undefined;
 					}, PING_WAKE_UP_WARNING_TIMEOUT);
 
@@ -191,11 +206,11 @@ export class Connection {
 				console.warn(err);
 
 				lastPongAt = undefined;
-
 				if (this.isReconnecting) {
 					continue;
 				}
 
+				this._connected = false;
 				this.reconnect();
 			}
 
@@ -228,7 +243,7 @@ export class Connection {
 	async _reconnect() {
 		// this.sendQueue.append(undefined);
 		// this._state.reset();
-
+		console.log('reconnectServer');
 		await this.connect();
 
 		this.isReconnecting = false;

@@ -1,3 +1,8 @@
 import mitt from 'mitt'
 
-export default mitt();
+type Events = {
+	getPlayListFun: number;
+	showDrawer: void;
+};
+
+export default mitt<Events>();

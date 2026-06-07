@@ -70,7 +70,7 @@
 
 <script setup lang="ts">
 import PlayList from './PlayList.vue';
-import { onMounted, reactive, ref } from 'vue';
+import { onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import IconButton from '@/components/IconButton.vue';
 import InputText from '@/components/InputText.vue';
 import Button from '@/components/Button.vue';
@@ -136,15 +136,22 @@ const gotoPlayListInfo = (playlistId: string) => {
 }
 
 const screenWidth = ref(0);
-window.addEventListener('resize', function () {
+const handleResize = () => {
   screenWidth.value = window.innerWidth;
-});
+};
+window.addEventListener('resize', handleResize);
 
 const showDrawer = () => {
   open.value = true;
 };
 
 mitt.on('showDrawer', showDrawer);
+
+onBeforeUnmount(() => {
+  mitt.off('getPlayListFun', getPlayListFun);
+  mitt.off('showDrawer', showDrawer);
+  window.removeEventListener('resize', handleResize);
+});
 
 const onClose = () => {
   open.value = false;

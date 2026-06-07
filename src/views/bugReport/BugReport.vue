@@ -20,7 +20,7 @@
       <div
         class="bug"
         v-for="bug in list"
-        :key="bug.date">
+        :key="bug.date.getTime()">
         <BugItem
             :data="bug"/>
       </div>

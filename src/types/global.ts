@@ -9,6 +9,7 @@ export interface ApiResponse {
 
 export type UploadType = 'image' | 'file';
 export interface PlayList {
+	id: string;
 	cover: string;
 	title: string;
 	singers: Array<string>;
