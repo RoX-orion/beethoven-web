@@ -25,7 +25,7 @@ export async function initGlobal() {
 async function initAppConfig() {
 	getAppConfig().then(response => response.data)
 		.then(data => {
-			setData(SHARDING_SIZE, data.shardingSize ? data.shardingSize : 1024 * 512);
+			setData(SHARDING_SIZE, String(data.shardingSize ? data.shardingSize : 1024 * 512));
 			globalStore.global.defaultMusicCover = data.defaultMusicCover;
 		});
 }

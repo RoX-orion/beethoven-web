@@ -43,7 +43,32 @@ export const useRouteStore = defineStore('route', () => {
 });
 
 export const useGlobalStore = defineStore('global', () => {
-	const global = reactive<any>({
+	interface GlobalMedia {
+		musicId?: string;
+		volume: number;
+		currentTime: number;
+	}
+	interface GlobalPlayer {
+		isMute: boolean;
+		volume: number;
+		playMode?: string;
+		defaultSound: number;
+		defaultPlayMode: string;
+	}
+	interface GlobalState {
+		media: GlobalMedia;
+		player: GlobalPlayer;
+		music?: MusicItemType;
+		searchKey: string;
+		searching: boolean;
+		defaultMusicCover?: string;
+		defaultPlaylistCover?: string;
+		windowWidth: number;
+		videoId?: string;
+		mobile: boolean;
+		canPlay: boolean;
+	}
+	const global = reactive<GlobalState>({
 		media: {
 			musicId: undefined,
 			volume: 0,
@@ -85,6 +110,8 @@ export function setMusicInfo(music: MusicItemType) {
 	setData('music', JSON.stringify(music));
 }
 
-export function getMusicInfoFromLocal(): MusicItemType {
-	return JSON.parse(getData('music') as string);
+export function getMusicInfoFromLocal(): MusicItemType | undefined {
+	const raw = getData('music');
+	if (!raw) return undefined;
+	return JSON.parse(raw);
 }

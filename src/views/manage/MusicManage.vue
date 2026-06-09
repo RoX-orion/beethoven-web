@@ -101,8 +101,8 @@ onMounted(() => {
 const musicList = ref<any[]>();
 const activeKey = ref("musicManage");
 let title = '';
-let searching = ref(false);
-let key = ref('');
+const searching = ref(false);
+const key = ref('');
 const pagination = ref<Pagination>({
   page: 1,
   total: 0,
@@ -210,7 +210,7 @@ const columns = [
   },
 ];
 
-let loading = ref(false);
+const loading = ref(false);
 
 const resetUploadMusicData = () => {
   uploadMusicFile.value = undefined;

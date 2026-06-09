@@ -30,7 +30,7 @@ watch(() => globalStore.global.videoId, videoId => {
   }
 });
 
-const getVideoInfoFun = (videoId: number) => {
+const getVideoInfoFun = (videoId: number | string) => {
   getVideoInfo(videoId).then(response => {
     if (response.data.link)
       player.value.switchURL(response.data.link);

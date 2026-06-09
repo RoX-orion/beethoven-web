@@ -23,8 +23,7 @@ service.interceptors.request.use(
 		return config
 	},
 	error => {
-		// do something with request error
-		console.log(error) // for debug
+		console.error('[Request] interceptor error:', error)
 		return Promise.reject(error)
 	}
 )
@@ -34,8 +33,7 @@ service.interceptors.response.use(
 	async response => {
 		const res = response.data
 
-		if (res.code !== 200) {
-			console.log(res.msg || 'Error');
+	if (res.code !== 200) {
 			if (res.code === 400) {
 				notification.warning({
 					message: '失败',
@@ -57,7 +55,11 @@ service.interceptors.response.use(
 		}
 	},
 	error => {
-		console.log('err' + error) // for debug
+		if (error.response) {
+			console.error('[Response] error:', error.response.status, error.response.data)
+		} else {
+			console.error('[Response] error:', error.message)
+		}
 		return Promise.reject(error)
 	}
 )

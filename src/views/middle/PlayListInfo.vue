@@ -13,7 +13,7 @@
         <span>·</span>
         <span>{{ playlistInfo.musicCount }}首歌曲</span>
         <span>·</span>
-        <span>{{ formatTime(playlistInfo.createTime, '{y}-{m}-{d} {h}:{i}') }}</span>
+<span>{{ playlistInfo.createTime ? formatTime(playlistInfo.createTime, '{y}-{m}-{d} {h}:{i}') : '' }}</span>
       </div>
     </div>
   </div>

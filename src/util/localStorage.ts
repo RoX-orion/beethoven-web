@@ -1,4 +1,4 @@
-export function setData(key: string, value: any) {
+export function setData(key: string, value: string) {
 	localStorage.setItem(key, value);
 }
 

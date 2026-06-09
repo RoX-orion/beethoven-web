@@ -1,5 +1,5 @@
 // 日期格式化
-export function formatTime(time: any, pattern: any) {
+export function formatTime(time: string | number | Date, pattern?: string) {
   if (arguments.length === 0 || !time) {
     return null
   }
@@ -18,7 +18,7 @@ export function formatTime(time: any, pattern: any) {
     }
     date = new Date(time)
   }
-  const formatObj: any = {
+  const formatObj: Record<string, number> = {
     y: date.getFullYear(),
     m: date.getMonth() + 1,
     d: date.getDate(),
@@ -27,16 +27,16 @@ export function formatTime(time: any, pattern: any) {
     s: date.getSeconds(),
     a: date.getDay(),
   }
-  return format.replace(/{([ymdhisa])+}/g, (result: any, key: any) => {
+  return format.replace(/{([ymdhisa])+}/g, (result: string, key: string): string => {
     let value = formatObj[key]
     // Note: getDay() returns 0 on Sunday
     if (key === 'a') {
       return ['日', '一', '二', '三', '四', '五', '六'][value]
     }
-    if (result.length > 0 && value < 10) {
+    if (value < 10) {
       value = '0' + value
     }
-    return value || 0
+    return String(value || 0)
   });
 }
 

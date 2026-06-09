@@ -60,7 +60,7 @@ export class Connection {
 	}
 
 	async connect() {
-		console.log('this._connected', this._connected);
+		this._log.info('connect called, connected=' + this._connected);
 		while (!this._connected) {
 			try {
 				await this.socket.connect(this._port, this._ip);
@@ -241,9 +241,7 @@ export class Connection {
 	}
 
 	async _reconnect() {
-		// this.sendQueue.append(undefined);
-		// this._state.reset();
-		console.log('reconnectServer');
+		this._log.info('reconnecting...');
 		await this.connect();
 
 		this.isReconnecting = false;

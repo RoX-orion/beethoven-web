@@ -240,14 +240,14 @@ onUnmounted(() => {
 });
 
 watch(() => globalStore.global.media.musicId, async musicId => {
-  let music = getMusicInfoFromLocal();
+  const music = getMusicInfoFromLocal();
   if ((!music || music.id !== musicId) && musicId) {
     await getMusicInfo(musicId as string).then(async response => {
       if (response.data) {
         await setMusic(response.data);
       }
     });
-  } else {
+  } else if (music) {
     await setMusic(music);
   }
   if (globalStore.global.canPlay) {
@@ -396,7 +396,7 @@ const setMobileVolume = () => {
 }
 
 watch(volume, (newVolume) => {
-  setData(VOLUME_MUSIC, newVolume);
+  setData(VOLUME_MUSIC, String(newVolume));
   handleEvent('changeVolume', newVolume / 100);
 });
 

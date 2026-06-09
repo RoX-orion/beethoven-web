@@ -84,8 +84,8 @@ const getManageAlbumListFun = () => {
   getManageAlbumList({ page: pagination.value.page, size: 10, key: key.value?.trim() }).then(response => {
     const { list, total } = response.data;
     list.forEach((album: AlbumType) => {
-      album.createTime = formatTime(album.createTime, '{y}-{m}-{d} {h}:{i}');
-      album.updateTime = formatTime(album.updateTime, '{y}-{m}-{d} {h}:{i}');
+      album.createTime = formatTime(album.createTime, '{y}-{m}-{d} {h}:{i}') ?? '';
+      album.updateTime = formatTime(album.updateTime, '{y}-{m}-{d} {h}:{i}') ?? '';
     });
     pagination.value.total = total;
     albumList.value = list;
