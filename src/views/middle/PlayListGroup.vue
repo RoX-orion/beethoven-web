@@ -80,7 +80,7 @@ const gotoPlayListInfo = (playlistId: string) => {
 
   .playlist-info-wrapper {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
     flex-wrap: wrap;
     gap: 1.15rem;
 
