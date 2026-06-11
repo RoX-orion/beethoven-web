@@ -181,7 +181,7 @@ const handleKeyEvent = (e: KeyboardEvent) => {
 }
 
 const openVideoPlayer = () => {
-  globalStore.global.videoId = music.videoId;
+  globalStore.global.videoId = music.videoId != null ? String(music.videoId) : undefined;
   if (music.videoId)
     componentState.currentMiddleComponent = ComponentType.VIDEO_PLAYER;
 }

@@ -18,21 +18,20 @@
     </div>
   </div>
 
-  <div class="flex-row content-space-between playlist-info pointer" v-for="(music, index) in musicList"
+  <div class="track-row playlist-info pointer" v-for="(music, index) in musicList"
        :key="music.id" @click.stop="playMusicFun(music)">
-    <div class="flex-row">
+    <div class="track-main">
       <div class="track-index">{{ index + 1 }}</div>
-      <img class="cover" :src="music.cover" :width="64" :height="64" alt=""/>
+      <img class="cover" :src="music.cover" :width="48" :height="48" alt=""/>
       <div class="track-text">
         <p>{{ music.name }}</p>
-        <p class="grey" style="font-size: .85rem">{{ music.singer }}</p>
+        <p class="grey" style="font-size: .8rem">{{ music.singer }}</p>
       </div>
     </div>
-
-    <div class="mobile">{{ music.album }}</div>
-    <div class="mobile">{{ sizeFormater(music.size) }}</div>
-    <div class="flex-row">
-      <p style="margin: 0 .25rem">{{ durationFormater(music.duration) }}</p>
+    <div class="track-col track-album">{{ music.album }}</div>
+    <div class="track-col track-size">{{ sizeFormater(music.size) }}</div>
+    <div class="track-col track-duration">
+      {{ durationFormater(music.duration) }}
       <!--      <a-dropdown :trigger="['click']">-->
       <!--        <svg-icon name="more" color="black"/>-->
       <!--        <template #overlay>-->
@@ -203,9 +202,9 @@ const removeMusicFun = (musicId: string) => {
 
 .playlist-hero-cover {
   aspect-ratio: 1 / 1;
-  width: min(12rem, 32vw);
-  max-width: 12rem;
-  max-height: 12rem;
+  width: min(5.5rem, 16vw);
+  max-width: 5.5rem;
+  max-height: 5.5rem;
   overflow: hidden;
   border-radius: .9rem;
   box-shadow: 0 .75rem 1.8rem rgba(32, 53, 77, .18);
@@ -240,9 +239,12 @@ const removeMusicFun = (musicId: string) => {
   color: var(--text-secondary);
 }
 
-.playlist-info {
+.track-row {
+  display: grid;
+  grid-template-columns: 1fr 10rem 5.5rem 4.5rem;
+  align-items: center;
   width: 100%;
-  padding: .7rem 1.25rem;
+  padding: .55rem 1.25rem;
   border-radius: .85rem;
   transition: background-color .18s ease, transform .18s ease;
 
@@ -250,13 +252,17 @@ const removeMusicFun = (musicId: string) => {
     background-color: rgba(255, 255, 255, .62);
     transform: translateX(2px);
   }
+}
 
-  div {
-    margin: auto 0;
-  }
+.track-main {
+  display: flex;
+  align-items: center;
+  min-width: 0;
 
   .cover {
-    border-radius: .65rem;
+    width: 48px;
+    height: 48px;
+    border-radius: .5rem;
     object-fit: cover;
     box-shadow: 0 .35rem .8rem rgba(32, 53, 77, .1);
   }
@@ -264,23 +270,45 @@ const removeMusicFun = (musicId: string) => {
 
 .track-index {
   width: 1.8rem;
-  margin: auto .5rem auto auto;
+  flex-shrink: 0;
+  margin-right: .5rem;
   color: var(--text-secondary);
   text-align: right;
 }
 
 .track-text {
   min-width: 0;
-  margin: auto auto auto .7rem !important;
+  margin-left: .7rem;
 
   p {
     overflow: hidden;
-    max-width: 18rem;
+    max-width: 20rem;
     color: var(--text-primary);
     font-weight: 700;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+}
+
+.track-col {
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: .85rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.track-album {
+  padding-right: 1.5rem;
+}
+
+.track-size {
+  text-align: right;
+  padding-right: 1.5rem;
+}
+
+.track-duration {
+  text-align: right;
 }
 
 .playlist-dialog {
@@ -315,15 +343,17 @@ const removeMusicFun = (musicId: string) => {
     max-height: none;
   }
 
-  .playlist-info {
+  .track-row {
     padding: .65rem .85rem;
+    grid-template-columns: 1fr 4rem;
   }
 
   .track-text p {
     max-width: 12rem;
   }
 
-  .mobile {
+  .track-album,
+  .track-size {
     display: none;
   }
 

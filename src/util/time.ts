@@ -33,8 +33,8 @@ export function formatTime(time: string | number | Date, pattern?: string) {
     if (key === 'a') {
       return ['日', '一', '二', '三', '四', '五', '六'][value]
     }
-    if (value < 10) {
-      value = '0' + value
+    if (value < 10 && key !== 'a') {
+      return '0' + value
     }
     return String(value || 0)
   });

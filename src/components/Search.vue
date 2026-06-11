@@ -1,6 +1,6 @@
 <template>
   <div class="search-wrapper">
-    <div style="margin: auto; width: 2.5rem">
+    <div class="search-icon">
       <Loading v-if="searching"/>
       <svg-icon v-else size="1.5rem" name="search" color="#1296db"/>
     </div>
@@ -57,6 +57,15 @@ const resetSearch = () => {
     box-shadow: 0 0 0 .25rem rgba(64, 158, 255, .1);
   }
 }
+
+.search-icon {
+  display: flex;
+  flex: 0 0 2.25rem;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
 .search {
   width: 100%;
   outline: none;
