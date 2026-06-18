@@ -23,8 +23,15 @@
           <div class="flex-row mobile-button-group content-space-between">
             <svg-icon class="pointer" name="loop"/>
             <svg-icon class="pointer" name="prev"/>
-            <svg-icon class="pointer" v-if="paused" name="pause" size="2rem" @click.stop="playOrPause"/>
-            <svg-icon class="pointer" v-else name="play" size="2rem" @click.stop="playOrPause"/>
+            <button
+              :class="['play-button', { 'is-loading': loading }]"
+              type="button"
+              @click.stop="playOrPause"
+              :disabled="loading"
+              :aria-busy="loading">
+              <svg-icon v-if="paused" name="pause" size="2rem"/>
+              <svg-icon v-else name="play" size="2rem"/>
+            </button>
             <svg-icon class="pointer" name="next"/>
             <svg-icon class="pointer" name="menu"/>
           </div>
@@ -68,8 +75,15 @@
         <div class="button-group flex-row">
           <IconButton class="prev" icon-name="prev"/>
           <div style="margin: auto">
-            <svg-icon class="pointer" v-if="paused" name="pause" size="2rem" @click.stop="playOrPause"/>
-            <svg-icon class="pointer" v-else name="play" size="2rem" @click.stop="playOrPause"/>
+            <button
+              :class="['play-button', { 'is-loading': loading }]"
+              type="button"
+              @click.stop="playOrPause"
+              :disabled="loading"
+              :aria-busy="loading">
+              <svg-icon v-if="paused" name="pause" size="2rem"/>
+              <svg-icon v-else name="play" size="2rem"/>
+            </button>
           </div>
           <IconButton class="next" icon-name="next"/>
         </div>
@@ -142,6 +156,18 @@ let seeking = false;
 const globalStore = useGlobalStore();
 const currentPercentage = ref(0);
 const paused = ref(true);
+const loading = ref(false);
+
+const getMediaElement = (): HTMLMediaElement | undefined => {
+  return audioPlayer.value?.media ?? audioPlayer.value?.video;
+};
+
+const setMetadataPreload = () => {
+  const media = getMediaElement();
+  if (media) {
+    media.preload = 'metadata';
+  }
+};
 
 const mobilePlayer = ref(false);
 const openMobilePlayer = (event: MouseEvent) => {
@@ -152,13 +178,13 @@ const openMobilePlayer = (event: MouseEvent) => {
 };
 
 const handleSeek = async (forward: number) => {
-  currentTime.value = forward === -1 ? currentTime.value - 15 : currentTime.value + 15;
+  let targetTime = forward === -1 ? currentTime.value - 15 : currentTime.value + 15;
   if (forward === -1) {
-    currentTime.value = currentTime.value < 0 ? 0 : currentTime.value;
+    targetTime = targetTime < 0 ? 0 : targetTime;
   } else {
-    currentTime.value = currentTime.value > music.duration ? music.duration : currentTime.value;
+    targetTime = targetTime > music.duration ? music.duration : targetTime;
   }
-  await changeCurrentTime(currentTime.value);
+  await seekToTime(targetTime);
   await onTimeUpdate();
 }
 
@@ -192,10 +218,30 @@ onMounted(async () => {
     id: 'audioPlayer',
     mediaType: 'audio',
     url: '',
+    videoAttributes: {
+      preload: 'metadata'
+    },
     height: '100%',
     width: '100%',
     volume: 0.5
   });
+  setMetadataPreload();
+
+  audioPlayer.value.on(Events.TIME_UPDATE, onTimeUpdate);
+  audioPlayer.value.on(Events.PLAY, () => paused.value = false);
+  audioPlayer.value.on(Events.PAUSE, () => paused.value = true);
+  audioPlayer.value.on(Events.LOAD_START, () => loading.value = true);
+  audioPlayer.value.on(Events.WAITING, () => loading.value = true);
+  audioPlayer.value.on(Events.SEEKING, () => loading.value = true);
+  audioPlayer.value.on(Events.LOADED_METADATA, () => {
+    if (paused.value) {
+      loading.value = false;
+    }
+  });
+  audioPlayer.value.on(Events.CANPLAY, () => loading.value = false);
+  audioPlayer.value.on(Events.PLAYING, () => loading.value = false);
+  audioPlayer.value.on(Events.SEEKED, () => loading.value = false);
+  audioPlayer.value.on(Events.ERROR, () => loading.value = false);
 
   const { id, type } = route.params;
 
@@ -225,13 +271,6 @@ onMounted(async () => {
     await handleEvent('changeVolume', volume.value / 100);
   }
 
-  audioPlayer.value.on(Events.TIME_UPDATE, onTimeUpdate);
-  audioPlayer.value.on(Events.PLAY, () => paused.value = false);
-  audioPlayer.value.on(Events.PAUSE, () => paused.value = true);
-  audioPlayer.value.on(Events.WAITING, () => console.log('waiting'));
-  audioPlayer.value.on(Events.CANPLAY, () => console.log('canplay'));
-  audioPlayer.value.on(Events.CANPLAY_THROUGH, () => console.log('canplay through'));
-
   document.addEventListener('keydown', handleKeyEvent, false);
 });
 
@@ -258,8 +297,22 @@ watch(() => globalStore.global.media.musicId, async musicId => {
 
 const changeCurrentTime = async (e: any) => {
   seeking = false;
-  await handleEvent('changeCurrentTime', e);
+  const percentage = Number(e);
+  if (!Number.isFinite(percentage) || !music.duration) {
+    return;
+  }
+  currentPercentage.value = Math.min(Math.max(percentage, 0), 100);
+  await seekToTime(currentPercentage.value / 100 * music.duration);
 }
+
+const seekToTime = async (targetTime: number) => {
+  if (!Number.isFinite(targetTime)) {
+    return;
+  }
+  currentTime.value = Math.min(Math.max(targetTime, 0), music.duration);
+  currentPercentage.value = music.duration ? currentTime.value / music.duration * 100 : 0;
+  await handleEvent('changeCurrentTime', currentPercentage.value);
+};
 
 const updateTime = (e: any) => {
   seeking = true;
@@ -281,11 +334,8 @@ const handleEvent = async (eventName: string, state: any) => {
     audioPlayer.value!.volume = state;
     globalStore.global.player.volume = Math.floor(state * 100);
   } else if (eventName === 'changeCurrentTime') {
-    // const offset = state.offsetX;
-    // const total = state.target.getBoundingClientRect().width;
-    // currentPercentage.value = Math.min(offset / total * 100, 100);
-    // progressData.percentage = currentPercentage.value;
-    // currentTime.value = state / 100 * music.duration;
+    loading.value = !paused.value;
+    progressData.percentage = Number(state);
     audioPlayer.value!.currentTime = currentTime.value;
     await updateSettingFun();
   } else if (eventName === 'updateTime') {
@@ -300,8 +350,16 @@ const setMusic = async (musicInfo: MusicItemType) => {
   if (!musicInfo || (music && musicInfo.id === music.id)) {
     return;
   }
+  const nextCurrentTime = setting.value.musicId === musicInfo.id
+    ? Math.min(currentTime.value, musicInfo.duration)
+    : 0;
   Object.assign(music, musicInfo);
+  loading.value = true;
+  currentTime.value = nextCurrentTime;
+  progressData.percentage = music.duration ? currentTime.value / music.duration * 100 : 0;
   audioPlayer.value!.src = music.link;
+  setMetadataPreload();
+  audioPlayer.value!.currentTime = currentTime.value;
   setting.value.musicId = musicInfo.id;
   await updateSettingFun();
   // audioPlayer.value!.url = music.link;
@@ -354,7 +412,7 @@ const getCover = computed(() => {
 });
 
 const playOrPause = () => {
-  if (music.id === null) {
+  if (!music.id || loading.value) {
     return;
   }
   updateCurrentTime(audioPlayer.value!.currentTime);
@@ -429,7 +487,81 @@ const devicesVisible = ref(false);
   z-index: 10;
   padding: 0 1rem 1rem;
   pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
 }
+
+.play-button {
+  position: relative;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: .35rem;
+  border: 0;
+  border-radius: 50%;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  appearance: none;
+
+  &:hover {
+    background: var(--svg-button-shadow);
+  }
+
+  svg {
+    position: relative;
+    z-index: 1;
+  }
+
+  &.is-loading {
+    background: transparent;
+  }
+
+  &.is-loading::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, rgba(51, 144, 236, .16), rgba(51, 144, 236, 1), rgba(51, 144, 236, .16));
+    animation: play-ring-spin .9s linear infinite;
+    mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+  }
+
+  &:active,
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.pointer,
+.player-wrapper,
+.progress-mobile,
+.mobile-player {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pointer:focus,
+.player-wrapper:focus,
+.progress-mobile:focus {
+  outline: none;
+}
+
+@keyframes play-ring-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .player-wrapper {
   width: min(100%, 98rem);
   min-height: 5.5rem;
