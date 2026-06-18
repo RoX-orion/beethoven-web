@@ -1,8 +1,8 @@
 <template>
   <div class="tag-wrapper flex-row">
-    <div v-for="tag in TagList" class="tag pointer" @click="">
+    <button v-for="tag in TagList" :key="tag.key" class="tag pointer" type="button">
       <span class="tag-text">{{tag.label}}</span>
-    </div>
+    </button>
   </div>
 </template>
 
@@ -16,21 +16,35 @@ const TagList = [
 
 <style scoped lang="scss">
 .tag-wrapper {
-  padding: 0 var(--base-padding);
-  gap: 1rem;
+  padding: 1rem 1rem 0;
+  gap: .55rem;
 
   .tag {
-    width: 4rem;
-    height: 2.3rem;
-    border-radius: .5rem;
-    background: white;
+    min-width: 4.2rem;
+    height: 2.25rem;
+    padding: 0 .85rem;
+    border: 1px solid var(--surface-border);
+    border-radius: 999px;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, .58);
     position: relative;
+    cursor: pointer;
+    transition: border-color .18s ease, background-color .18s ease, color .18s ease, transform .18s ease;
+
+    &:first-child {
+      color: var(--brand-primary);
+      border-color: rgba(47, 143, 118, .24);
+      background: var(--surface-active);
+    }
+
+    &:hover {
+      color: var(--text-primary);
+      background: var(--surface-hover);
+      transform: translateY(-1px);
+    }
 
     .tag-text {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      font-weight: 800;
     }
   }
 }

@@ -24,7 +24,7 @@ defineProps<{
   min-width: 0;
   padding: 0;
   border: 1px solid transparent;
-  border-radius: .9rem;
+  border-radius: var(--radius-card);
   aspect-ratio: 1 / 1;
   position: relative;
   overflow: hidden;
@@ -33,9 +33,9 @@ defineProps<{
   transition: transform .18s ease, background-color .18s ease, border-color .18s ease, box-shadow .18s ease;
 
   &:hover {
-    transform: translateY(-3px);
-    border-color: rgba(32, 53, 77, .08);
-    box-shadow: 0 .9rem 1.8rem rgba(32, 53, 77, .12);
+    transform: translateY(-2px);
+    border-color: var(--surface-border);
+    box-shadow: var(--surface-shadow-strong);
     &::after {
       opacity: 1;
     }
@@ -58,7 +58,7 @@ defineProps<{
     left: 0;
     right: 0;
     padding: 1.8rem .75rem .55rem;
-    background: linear-gradient(to top, rgba(0, 0, 0, .55) 0%, transparent 100%);
+    background: linear-gradient(to top, rgba(0, 0, 0, .62) 0%, rgba(0, 0, 0, .18) 58%, transparent 100%);
     .title {
       white-space: nowrap;
       overflow: hidden;

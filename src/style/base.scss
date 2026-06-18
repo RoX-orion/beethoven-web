@@ -105,11 +105,22 @@ body {
 
 body {
   overflow: hidden;
+  color: var(--text-primary);
 }
 
 button,
 input {
   font: inherit;
+}
+
+button,
+a,
+.pointer {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  color: inherit;
 }
 
 img {
@@ -128,6 +139,40 @@ img {
 .custom-scroll::-webkit-scrollbar-thumb {
   border-radius: 999px;
   background: rgba(105, 117, 134, .32);
+}
+
+.ant-modal .ant-modal-content,
+.ant-drawer .ant-drawer-content {
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-panel);
+  background: var(--surface-color-strong);
+  box-shadow: var(--surface-shadow-strong);
+  backdrop-filter: blur(1.25rem);
+}
+
+.ant-modal .ant-modal-header {
+  background: transparent;
+}
+
+.ant-modal .ant-modal-title {
+  color: var(--text-primary);
+  font-weight: 800;
+}
+
+.ant-drawer .ant-drawer-body {
+  background: transparent;
+}
+
+.ant-checkbox-wrapper {
+  color: var(--text-primary);
+}
+
+.ant-slider .ant-slider-track {
+  background-color: var(--brand-primary);
+}
+
+.ant-slider .ant-slider-handle::after {
+  box-shadow: 0 0 0 2px var(--brand-primary);
 }
 
 @media (max-width: 800px) {

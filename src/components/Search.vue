@@ -2,7 +2,7 @@
   <div class="search-wrapper">
     <div class="search-icon">
       <Loading v-if="searching"/>
-      <svg-icon v-else size="1.5rem" name="search" color="#1296db"/>
+      <svg-icon v-else size="1.4rem" name="search" color="var(--brand-primary)"/>
     </div>
     <input
       class="search"
@@ -43,18 +43,18 @@ const resetSearch = () => {
   align-items: center;
   height: var(--header-item-size);
   justify-content: space-between;
-  border-radius: 2rem;
+  border-radius: 999px;
   padding: 5px .65rem;
   outline: none;
-  border: rgba(32, 53, 77, .08) solid 1px;
+  border: 1px solid var(--surface-border);
   background: rgba(255, 255, 255, .72);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .85);
   transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
 
   &:focus-within {
-    border-color: rgba(64, 158, 255, .5);
+    border-color: rgba(55, 125, 255, .52);
     background: rgba(255, 255, 255, .95);
-    box-shadow: 0 0 0 .25rem rgba(64, 158, 255, .1);
+    box-shadow: 0 0 0 .25rem var(--focus-ring);
   }
 }
 
@@ -75,7 +75,7 @@ const resetSearch = () => {
   background-color: inherit;
 
   &::placeholder {
-    color: var(--text-secondary);
+    color: var(--text-tertiary);
   }
 }
 </style>

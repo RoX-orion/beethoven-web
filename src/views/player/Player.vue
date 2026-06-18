@@ -569,9 +569,9 @@ const devicesVisible = ref(false);
   padding: .75rem 1rem;
   justify-content: space-between;
   border: 1px solid var(--surface-border);
-  border-radius: 1.15rem;
+  border-radius: var(--radius-panel);
   background: var(--surface-color-strong);
-  box-shadow: 0 1rem 2.5rem rgba(32, 53, 77, .18);
+  box-shadow: var(--surface-shadow-strong);
   backdrop-filter: blur(1.25rem);
   pointer-events: auto;
 
@@ -583,7 +583,7 @@ const devicesVisible = ref(false);
       width: 4.25rem;
       height: 4.25rem;
       aspect-ratio: 1 / 1;
-      border-radius: .8rem;
+      border-radius: var(--radius-card);
       object-fit: cover;
       box-shadow: 0 .55rem 1.2rem rgba(32, 53, 77, .16);
     }
@@ -640,7 +640,7 @@ const devicesVisible = ref(false);
     line-height: 1rem;
     padding: .5rem 0;
     font-size: .85rem;
-    color: rgba(56, 56, 56, 1);
+    color: var(--text-secondary);
   }
 }
 
@@ -731,7 +731,7 @@ const devicesVisible = ref(false);
     width: 80%;
     aspect-ratio: 1 / 1;
     object-fit: cover;
-    border-radius: 1.25rem;
+    border-radius: var(--radius-panel);
     position: absolute;
     top: 4rem;
     left: 50%;
@@ -744,8 +744,8 @@ const devicesVisible = ref(false);
     position: fixed;
     bottom: 0;
     width: 100%;
-    border-radius: 1.25rem 1.25rem 0 0;
-    background: rgba(255, 255, 255, .72);
+    border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+    background: var(--surface-color-strong);
     box-shadow: 0 -1rem 2.5rem rgba(32, 53, 77, .12);
     backdrop-filter: blur(1.25rem);
   }

@@ -1,5 +1,5 @@
 <template>
-  <button class="button-wrapper">
+  <button class="button-wrapper" :disabled="loading">
     <Loading color="white" v-if="loading"/>
     <label v-else>{{ label }}</label>
     <slot></slot>
@@ -17,26 +17,46 @@ defineProps<{
 
 <style lang="scss" scoped>
 .button-wrapper {
-  outline: none !important;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 3.5rem;
+  min-height: 3rem;
   border: 0;
-  border-radius: 0.75rem;
-  //background-color: transparent;
-  background-color: #409eff;
-  background-size: cover;
-  padding: 0.625rem;
+  border-radius: var(--radius-control);
+  background: linear-gradient(135deg, var(--brand-primary), #37a789);
+  padding: 0.625rem 1rem;
   color: white;
+  font-weight: 800;
   line-height: 1.2;
   cursor: pointer;
   flex-shrink: 0;
   position: relative;
   overflow: hidden;
-  transition: background-color 0.15s, color 0.15s;
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
   text-decoration: none !important;
-  text-transform: uppercase;
+  box-shadow: 0 .7rem 1.25rem rgba(47, 143, 118, .18);
+
+  &:hover {
+    filter: brightness(1.02);
+    transform: translateY(-1px);
+    box-shadow: 0 .85rem 1.5rem rgba(47, 143, 118, .22);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 .25rem var(--focus-ring), 0 .85rem 1.5rem rgba(47, 143, 118, .22);
+  }
+
+  &:disabled {
+    cursor: default;
+    filter: grayscale(.2);
+    opacity: .72;
+    transform: none;
+  }
 }
 </style>

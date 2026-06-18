@@ -59,9 +59,9 @@ const openLeft = () => {
   width: min(100%, 98rem);
   height: 4.5rem;
   margin: 0 auto;
-  padding: .55rem .75rem;
+  padding: .55rem .7rem;
   border: 1px solid var(--surface-border);
-  border-radius: 1rem;
+  border-radius: var(--radius-panel);
   background: var(--surface-color);
   box-shadow: var(--surface-shadow);
   backdrop-filter: blur(1.25rem);
@@ -75,7 +75,7 @@ const openLeft = () => {
     width: var(--header-item-size);
     height: var(--header-item-size);
     margin: auto 0;
-    border-radius: .75rem;
+    border-radius: var(--radius-card);
     box-shadow: 0 .4rem 1rem rgba(47, 143, 118, .12);
   }
 
@@ -86,6 +86,7 @@ const openLeft = () => {
     line-height: 2.17rem;
     margin: auto .85rem;
     width: 12.5rem;
+    letter-spacing: 0;
   }
 
   .search-wrapper {
@@ -106,11 +107,11 @@ const openLeft = () => {
         justify-content: center;
         width: 2.45rem;
         height: 2.45rem;
-        border-radius: .75rem;
+        border-radius: var(--radius-control);
         transition: background-color .18s ease, transform .18s ease;
 
         &:hover {
-          background: rgba(64, 158, 255, .1);
+          background: var(--svg-button-shadow);
           transform: translateY(-1px);
         }
       }
@@ -129,6 +130,7 @@ const openLeft = () => {
     height: auto;
     gap: .5rem;
     padding: .5rem;
+    border-radius: var(--radius-panel);
   }
 
   .brand-wrapper {

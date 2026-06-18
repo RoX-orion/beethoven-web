@@ -9,22 +9,33 @@
   --spinner-yellow-data: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEwLjggMjIuNEM2IDIxLjkgMi4xIDE4IDEuNiAxMy4yLjkgNy4xIDUuNCAxLjkgMTEuMyAxLjVjLjQgMCAuNy0uMy43LS43IDAtLjQtLjQtLjgtLjgtLjhDNC44LjQtLjIgNS45IDAgMTIuNS4yIDE4LjYgNS40IDIzLjggMTEuNSAyNGM2LjYuMiAxMi00LjggMTIuNC0xMS4yIDAtLjQtLjMtLjgtLjgtLjgtLjQgMC0uNy4zLS43LjctLjMgNS45LTUuNSAxMC40LTExLjYgOS43eiIgZmlsbD0iI0ZERDc2NCIvPjwvc3ZnPg==);
 
   --svg-button-color: rgba(0, 0, 0, .5);
-  --svg-button-shadow: rgba(0, 0, 0, .05);
+  --svg-button-shadow: rgba(47, 143, 118, .1);
 
   --base-shadow: rgba(0, 0, 0, .05);
-  --surface-color: rgba(255, 255, 255, .72);
-  --surface-color-strong: rgba(255, 255, 255, .88);
-  --surface-border: rgba(32, 53, 77, .08);
-  --surface-shadow: 0 .75rem 2rem rgba(32, 53, 77, .1);
+  --surface-color: rgba(255, 255, 255, .76);
+  --surface-color-strong: rgba(255, 255, 255, .94);
+  --surface-color-muted: rgba(245, 248, 250, .78);
+  --surface-hover: rgba(255, 255, 255, .86);
+  --surface-active: rgba(47, 143, 118, .12);
+  --surface-border: rgba(24, 33, 47, .09);
+  --surface-border-strong: rgba(24, 33, 47, .16);
+  --surface-shadow: 0 .75rem 2rem rgba(32, 53, 77, .08);
+  --surface-shadow-strong: 0 1rem 2.5rem rgba(32, 53, 77, .14);
   --text-primary: #18212f;
-  --text-secondary: #697586;
+  --text-secondary: #657386;
+  --text-tertiary: #8a95a3;
   --brand-primary: #2f8f76;
-  --brand-accent: #409eff;
+  --brand-primary-hover: #287c68;
+  --brand-accent: #377dff;
+  --brand-warm: #f5a524;
+  --focus-ring: rgba(55, 125, 255, .16);
+  --danger: #d94a4a;
+  --radius-control: .5rem;
+  --radius-card: .5rem;
+  --radius-panel: .75rem;
 
   //--background-color-light: linear-gradient(0deg, rgba(243, 231, 233, 1) 0%, rgba(227, 238, 255, 1) 99%, rgba(227, 238, 255, 1) 100%);
-  --background-color-light: radial-gradient(circle at 12% 10%, rgba(93, 202, 255, .28), transparent 24rem),
-  radial-gradient(circle at 86% 12%, rgba(91, 231, 196, .22), transparent 24rem),
-  linear-gradient(135deg, #f7fbff 0%, #eef6f0 48%, #fff7ee 100%);
+  --background-color-light: linear-gradient(135deg, #f5f8fb 0%, #edf5f1 48%, #fff8ef 100%);
   --light-theme: linear-gradient(0deg, rgba(243, 231, 233, 1) 0%, rgba(227, 238, 255, 1) 99%, rgba(227, 238, 255, 1) 100%);
   --dark-theme: #212121;
 

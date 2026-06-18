@@ -13,11 +13,14 @@
         <span>·</span>
         <span>{{ playlistInfo.musicCount }}首歌曲</span>
         <span>·</span>
-<span>{{ playlistInfo.createTime ? formatTime(playlistInfo.createTime, '{y}-{m}-{d} {h}:{i}') : '' }}</span>
+        <span>{{ playlistInfo.createTime ? formatTime(playlistInfo.createTime, '{y}-{m}-{d} {h}:{i}') : '' }}</span>
       </div>
     </div>
   </div>
 
+  <div v-if="musicList.length === 0" class="empty-state">
+    这个歌单还没有歌曲
+  </div>
   <div class="track-row playlist-info pointer" v-for="(music, index) in musicList"
        :key="music.id" @click.stop="playMusicFun(music)">
     <div class="track-main">
@@ -195,9 +198,11 @@ const removeMusicFun = (musicId: string) => {
   gap: 1.25rem;
   padding: 1.35rem;
   margin: 1rem;
-  border-radius: 1rem;
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-panel);
   background: linear-gradient(135deg, rgba(47, 143, 118, .16), rgba(64, 158, 255, .1)),
   rgba(255, 255, 255, .48);
+  box-shadow: 0 .7rem 1.6rem rgba(32, 53, 77, .07);
 }
 
 .playlist-hero-cover {
@@ -206,7 +211,7 @@ const removeMusicFun = (musicId: string) => {
   max-width: 5.5rem;
   max-height: 5.5rem;
   overflow: hidden;
-  border-radius: .9rem;
+  border-radius: var(--radius-card);
   box-shadow: 0 .75rem 1.8rem rgba(32, 53, 77, .18);
 }
 
@@ -230,6 +235,7 @@ const removeMusicFun = (musicId: string) => {
   font-size: clamp(1.45rem, 4vw, 3rem);
   font-weight: 900;
   line-height: 1.1;
+  letter-spacing: 0;
 }
 
 .playlist-meta {
@@ -244,12 +250,15 @@ const removeMusicFun = (musicId: string) => {
   grid-template-columns: 1fr 10rem 5.5rem 4.5rem;
   align-items: center;
   width: 100%;
-  padding: .55rem 1.25rem;
-  border-radius: .85rem;
-  transition: background-color .18s ease, transform .18s ease;
+  margin: 0 .75rem;
+  padding: .55rem .75rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-card);
+  transition: background-color .18s ease, border-color .18s ease, transform .18s ease;
 
   &:hover {
-    background-color: rgba(255, 255, 255, .62);
+    border-color: var(--surface-border);
+    background-color: var(--surface-hover);
     transform: translateX(2px);
   }
 }
@@ -262,7 +271,7 @@ const removeMusicFun = (musicId: string) => {
   .cover {
     width: 48px;
     height: 48px;
-    border-radius: .5rem;
+    border-radius: var(--radius-card);
     object-fit: cover;
     box-shadow: 0 .35rem .8rem rgba(32, 53, 77, .1);
   }
@@ -288,6 +297,16 @@ const removeMusicFun = (musicId: string) => {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+}
+
+.empty-state {
+  margin: 1rem;
+  padding: 3rem 1rem;
+  color: var(--text-secondary);
+  text-align: center;
+  border: 1px dashed var(--surface-border-strong);
+  border-radius: var(--radius-card);
+  background: rgba(255, 255, 255, .36);
 }
 
 .track-col {
@@ -344,7 +363,8 @@ const removeMusicFun = (musicId: string) => {
   }
 
   .track-row {
-    padding: .65rem .85rem;
+    margin: 0 .5rem;
+    padding: .65rem .6rem;
     grid-template-columns: 1fr 4rem;
   }
 

@@ -32,9 +32,15 @@ defineProps({
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: background-color .18s ease, transform .18s ease;
 
   &:hover {
     background-color: var(--svg-button-shadow);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 }
 </style>

@@ -46,15 +46,15 @@ const setStyle = () => {
 <style lang="scss" scoped>
 .home-page {
   min-height: 100dvh;
-  padding: .85rem 1rem 7rem;
+  padding: .9rem 1rem 7rem;
 }
 
 .left-right {
-  gap: 1rem;
+  gap: .9rem;
   justify-content: space-between;
-  height: calc(100dvh - 14rem);
+  height: calc(100dvh - 13.8rem);
   width: min(100%, 98rem);
-  margin: .85rem auto 0;
+  margin: .9rem auto 0;
 }
 
 @media (max-width: 800px) {
@@ -65,6 +65,7 @@ const setStyle = () => {
   .left-right {
     height: calc(100dvh - 13rem);
     margin-top: .65rem;
+    gap: 0;
   }
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div v-if="screenWidth > 800" class="left-wrapper custom-scroll">
     <div class="flex-row left-header">
-      <div style="font-size: 1.2rem; padding: .5rem; margin: auto 0">
+      <div class="section-title">
         歌单
       </div>
       <IconButton
@@ -9,6 +9,9 @@
         icon-name="add"
         icon-color="rgba(0, 0, 0, .5)"
         @click="addPlaylistDialogVisible = !addPlaylistDialogVisible"/>
+    </div>
+    <div v-if="playlistList.length === 0" class="empty-state">
+      还没有歌单
     </div>
     <PlayList
       v-for="(playlist) in playlistList"
@@ -30,7 +33,7 @@
     @close="onClose"
   >
     <div class="flex-row left-header">
-      <div style="font-size: 1.2rem; padding: .5rem; margin: auto 0">
+      <div class="section-title">
         歌单
       </div>
       <IconButton
@@ -38,6 +41,9 @@
         icon-name="add"
         icon-color="rgba(0, 0, 0, .5)"
         @click="addPlaylistDialogVisible = !addPlaylistDialogVisible; open = false"/>
+    </div>
+    <div v-if="playlistList.length === 0" class="empty-state">
+      还没有歌单
     </div>
     <PlayList
       v-for="(playlist) in playlistList"
@@ -61,7 +67,7 @@
     </div>
     <div style="padding: 1rem 0">
       <Button @click="addPlaylistFun" :loading="loading">
-        FINISH
+        创建歌单
       </Button>
     </div>
     <template #footer/>
@@ -107,6 +113,9 @@ mitt.on('getPlayListFun', getPlayListFun);
 const loading = ref(false);
 const uploadFile = ref<FileListType>();
 const addPlaylistFun = () => {
+  if (!playlistInfo.title?.trim()) {
+    return;
+  }
   loading.value = true;
   const playlistData = new FormData();
   if (uploadFile.value?.file) {
@@ -162,9 +171,9 @@ const onClose = () => {
 .left-wrapper {
   width: var(--left-width);
   margin-right: 1rem;
-  padding: var(--base-padding);
+  padding: .85rem;
   border: 1px solid var(--surface-border);
-  border-radius: 1rem;
+  border-radius: var(--radius-panel);
   overflow: hidden;
   overflow-y: scroll;
   background: var(--surface-color);
@@ -179,9 +188,27 @@ const onClose = () => {
     align-items: center;
     line-height: 1.2;
     margin: -.25rem -.25rem .5rem;
-    padding: .25rem;
-    border-radius: .75rem;
-    background: rgba(255, 255, 255, .52);
+    padding: .2rem .25rem .45rem;
+    border-radius: var(--radius-card);
+    background: rgba(255, 255, 255, .58);
+    backdrop-filter: blur(1rem);
+  }
+
+  .section-title {
+    margin: auto 0;
+    padding: .5rem;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 900;
+  }
+
+  .empty-state {
+    padding: 2.25rem 1rem;
+    color: var(--text-secondary);
+    text-align: center;
+    border: 1px dashed var(--surface-border-strong);
+    border-radius: var(--radius-card);
+    background: rgba(255, 255, 255, .34);
   }
 }
 
@@ -202,7 +229,7 @@ const onClose = () => {
 @media (max-width: 800px) {
   .left-wrapper {
     margin-right: 0;
-    border-radius: 0 1rem 1rem 0;
+    border-radius: 0 var(--radius-panel) var(--radius-panel) 0;
   }
 
   .playlist-dialog {

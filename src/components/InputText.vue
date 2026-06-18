@@ -5,7 +5,13 @@
       v-model="text"
       :placeholder="props.placeholder"
       @input="updateText"/>
-    <IconButton class="clear" icon-name="close" size=".85rem" @click="text = ''" icon-color="rgba(0, 0, 0, .5)"/>
+    <IconButton
+      v-show="String(text ?? '').length > 0"
+      class="clear"
+      icon-name="close"
+      size=".85rem"
+      @click="text = ''"
+      icon-color="rgba(0, 0, 0, .5)"/>
   </div>
 </template>
 <script setup lang="ts">
@@ -46,11 +52,23 @@ const updateText = (event: any) => {
   .input {
     width: 100%;
     outline: none;
-    height: 3.2rem;
-    padding: .25rem .5rem;
-    border: solid .1rem rgba(0, 0, 0, .1);
-    border-radius: .3rem;
-    background-color: inherit;
+    height: 3rem;
+    padding: .25rem 2.75rem .25rem .85rem;
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-control);
+    color: var(--text-primary);
+    background-color: rgba(255, 255, 255, .7);
+    transition: border-color .18s ease, background-color .18s ease, box-shadow .18s ease;
+
+    &::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    &:focus {
+      border-color: rgba(55, 125, 255, .52);
+      background-color: rgba(255, 255, 255, .95);
+      box-shadow: 0 0 0 .25rem var(--focus-ring);
+    }
   }
 
   .label {
@@ -69,7 +87,7 @@ const updateText = (event: any) => {
   .clear {
     position: absolute;
     top: 50%;
-    right: 1%;
+    right: .35rem;
     cursor: pointer;
     transform: translateY(-50%);
   }

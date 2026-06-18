@@ -23,7 +23,7 @@ import VideoPlayer from '@/views/player/VideoPlayer.vue';
   overflow: hidden;
   overflow-y: scroll;
   border: 1px solid var(--surface-border);
-  border-radius: 1rem;
+  border-radius: var(--radius-panel);
   background: var(--surface-color);
   box-shadow: var(--surface-shadow);
   backdrop-filter: blur(1.25rem);
