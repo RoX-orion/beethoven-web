@@ -1,23 +1,42 @@
 <template>
   <Tag style="margin-bottom: .5rem"/>
-  <div v-if="musicList.length === 0 && !globalStore.global.searching" class="empty-state">
-    没有找到相关音乐
-  </div>
-  <div class="flex-row pointer music-wrapper" v-for="music in musicList" :key="music.id">
-    <img class="cover" :src="music.cover" :width="64" :height="64" alt=""/>
-    <div class="flex-row content-space-between music-content" @click="playMusicFun(music)">
-      <div class="music-info">
-        <p>{{ music.name }}</p>
-        <p class="grey">{{ music.singer }}</p>
-      </div>
-      <div class="flex-row music-actions">
-        <div class="duration">{{ durationFormater(music.duration) }}</div>
-        <IconButton v-if="music.id" icon-name="add-circle" size="1.25rem" icon-color="rgba(0, 0, 0, .5)"
-                    @click.stop="openAddMusicToPlaylistDialog(music.id)"/>
+  <div v-if="searchLoading" class="search-skeleton-list">
+    <div class="flex-row music-wrapper search-skeleton" v-for="index in 6" :key="`search-skeleton-${index}`">
+      <span class="skeleton-block cover skeleton-cover"/>
+      <div class="flex-row content-space-between skeleton-content">
+        <div class="music-info skeleton-music-info">
+          <span class="skeleton-block skeleton-title"/>
+          <span class="skeleton-block skeleton-subtitle"/>
+        </div>
+        <div class="flex-row skeleton-actions">
+          <span class="skeleton-block skeleton-duration"/>
+          <span class="skeleton-block skeleton-action"/>
+        </div>
       </div>
     </div>
   </div>
-
+  <div v-else-if="hasSearched && musicList.length === 0" class="empty-state">
+    没有找到相关音乐
+  </div>
+  <div v-else-if="!hasSearched" class="empty-state">
+    暂无搜索内容
+  </div>
+  <template v-else>
+    <div class="flex-row pointer music-wrapper" v-for="music in musicList" :key="music.id">
+      <img class="cover" :src="music.cover" :width="64" :height="64" alt=""/>
+      <div class="flex-row content-space-between" style="width: 100%; align-items: center" @click="playMusicFun(music)">
+        <div class="music-info">
+          <p>{{ music.name }}</p>
+          <p class="grey">{{ music.singer }}</p>
+        </div>
+        <div class="flex-row">
+          <div style="margin: auto 0; line-height: 1rem">{{ durationFormater(music.duration) }}</div>
+          <IconButton v-if="music.id" icon-name="add-circle" size="1.25rem" icon-color="rgba(0, 0, 0, .5)"
+                      @click.stop="openAddMusicToPlaylistDialog(music.id)"/>
+        </div>
+      </div>
+    </div>
+  </template>
   <a-modal title="添加到歌单" v-model:open="addMusicToPlaylistDialogVisible" width="30rem">
     <!--    <Search model-value="" searching=""/>-->
     <a-checkbox-group v-model:value="addMusicForm.playlistIds" name="checkboxgroup" :options="playlistOptions"/>
@@ -29,7 +48,7 @@
     <!--          </div>-->
     <!--      </div>-->
     <Button @click="addMusicToPlaylistFun" :loading="loading">
-      添加
+      Finish
     </Button>
     <template #footer/>
   </a-modal>
@@ -51,7 +70,9 @@ import { searchMusic } from "@/api/music";
 import { setMusicInfo, useGlobalStore } from "@/store/global";
 
 const musicList = ref<Array<MusicItemType>>([]);
-const defaultCover = '../../src/assets/img/playlistCover.png';
+const searchLoading = ref(false);
+const hasSearched = ref(false);
+const defaultCover = '/assets/img/playlistCover.png';
 
 const globalStore = useGlobalStore();
 const playMusicFun = (music: MusicItemType) => {
@@ -65,22 +86,31 @@ const playMusicFun = (music: MusicItemType) => {
 }
 
 const searchMediaFun = (key: string) => {
-  if (!key) {
+  const searchKey = (key ?? '').trim();
+  if (!searchKey) {
     musicList.value = [];
+    hasSearched.value = false;
+    searchLoading.value = false;
     globalStore.global.searching = false;
-    return;
+    return Promise.resolve();
   }
-  searchMusic({ page: 1, size: 100, key }).then(response => {
+
+  hasSearched.value = true;
+  searchLoading.value = true;
+  return searchMusic({ page: 1, size: 100, key: searchKey }).then(response => {
     response.data.forEach((e: MusicItemType) => e.cover = e.cover ? e.cover : defaultCover);
     musicList.value = response.data;
   }).finally(() => {
+    searchLoading.value = false;
     globalStore.global.searching = false;
   });
 }
 
+
 onMounted(() => {
   searchMediaFun(globalStore.global.searchKey);
 });
+
 
 watch(() => globalStore.global.searchKey, newValue => {
   searchMediaFun((newValue ?? '').trim());
@@ -118,72 +148,16 @@ const addMusicToPlaylistFun = () => {
 
 <style scoped lang="scss">
 .music-wrapper {
-  align-items: center;
-  margin: 0 .75rem;
-  padding: .65rem .75rem;
-  border: 1px solid transparent;
-  border-radius: var(--radius-card);
-  transition: background-color .18s ease, border-color .18s ease, transform .18s ease;
+  padding: var(--base-padding);
+  border-radius: .5rem;
 
   &:hover {
-    border-color: var(--surface-border);
-    background-color: var(--surface-hover);
-    transform: translateX(2px);
-  }
-
-  .cover {
-    border-radius: var(--radius-card);
-    box-shadow: 0 .35rem .8rem rgba(32, 53, 77, .1);
-  }
-
-  .music-content {
-    width: 100%;
-    min-width: 0;
-    align-items: center;
+    background-color: var(--base-shadow);
   }
 
   .music-info {
-    min-width: 0;
-    margin: 0 .75rem;
-
-    p {
-      overflow: hidden;
-      color: var(--text-primary);
-      font-weight: 800;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .grey {
-      color: var(--text-secondary);
-      font-size: .86rem;
-      font-weight: 400;
-    }
+    margin: 0 .5rem;
   }
-
-  .music-actions {
-    flex-shrink: 0;
-    align-items: center;
-    gap: .5rem;
-    color: var(--text-secondary);
-  }
-
-  .duration {
-    min-width: 3.5rem;
-    text-align: right;
-    line-height: 1rem;
-    font-size: .86rem;
-  }
-}
-
-.empty-state {
-  margin: 1rem;
-  padding: 3rem 1rem;
-  color: var(--text-secondary);
-  text-align: center;
-  border: 1px dashed var(--surface-border-strong);
-  border-radius: var(--radius-card);
-  background: rgba(255, 255, 255, .36);
 }
 
 .playlist {
@@ -195,14 +169,69 @@ const addMusicToPlaylistFun = () => {
   }
 }
 
-@media (max-width: 800px) {
-  .music-wrapper {
-    margin: 0 .5rem;
-    padding: .6rem;
-  }
+.search-skeleton-list {
+  display: grid;
+  gap: .1rem;
+}
 
-  .duration {
-    display: none;
-  }
+.search-skeleton {
+  pointer-events: none;
+}
+
+.skeleton-cover {
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
+  border-radius: .5rem;
+}
+
+.skeleton-content {
+  align-items: center;
+  width: 100%;
+}
+
+.skeleton-music-info {
+  display: grid;
+  flex: 1;
+  max-width: 22rem;
+  gap: .6rem;
+}
+
+.skeleton-title {
+  width: 72%;
+  height: .95rem;
+}
+
+.skeleton-subtitle {
+  width: 46%;
+  height: .75rem;
+  opacity: .78;
+}
+
+.skeleton-actions {
+  align-items: center;
+  gap: .75rem;
+}
+
+.skeleton-duration {
+  width: 2.8rem;
+  height: .85rem;
+}
+
+.skeleton-action {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+}
+
+.empty-state {
+  margin: 1rem 0;
+  padding: 1.5rem 1rem;
+  border: 1px dashed rgba(105, 117, 134, .28);
+  border-radius: .8rem;
+  color: var(--text-secondary);
+  font-size: .9rem;
+  text-align: center;
+  background: rgba(255, 255, 255, .36);
 }
 </style>

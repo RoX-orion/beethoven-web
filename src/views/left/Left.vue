@@ -1,7 +1,7 @@
 <template>
   <div v-if="screenWidth > 800" class="left-wrapper custom-scroll">
     <div class="flex-row left-header">
-      <div class="section-title">
+      <div style="font-size: 1.2rem; padding: .5rem; margin: auto 0">
         歌单
       </div>
       <IconButton
@@ -10,10 +10,20 @@
         icon-color="rgba(0, 0, 0, .5)"
         @click="addPlaylistDialogVisible = !addPlaylistDialogVisible"/>
     </div>
-    <div v-if="playlistList.length === 0" class="empty-state">
-      还没有歌单
+    <div v-if="playlistLoading" class="playlist-skeleton-list">
+      <div class="playlist-skeleton" v-for="index in 6" :key="`playlist-skeleton-${index}`">
+        <span class="skeleton-block skeleton-cover"/>
+        <span class="skeleton-copy">
+          <span class="skeleton-block skeleton-title"/>
+          <span class="skeleton-block skeleton-meta"/>
+        </span>
+      </div>
+    </div>
+    <div v-else-if="playlistList.length === 0" class="empty-state">
+      暂无歌单
     </div>
     <PlayList
+      v-else
       v-for="(playlist) in playlistList"
       :title="playlist.title"
       :musicCount="playlist.musicCount"
@@ -33,7 +43,7 @@
     @close="onClose"
   >
     <div class="flex-row left-header">
-      <div class="section-title">
+      <div style="font-size: 1.2rem; padding: .5rem; margin: auto 0">
         歌单
       </div>
       <IconButton
@@ -42,10 +52,20 @@
         icon-color="rgba(0, 0, 0, .5)"
         @click="addPlaylistDialogVisible = !addPlaylistDialogVisible; open = false"/>
     </div>
-    <div v-if="playlistList.length === 0" class="empty-state">
-      还没有歌单
+    <div v-if="playlistLoading" class="playlist-skeleton-list">
+      <div class="playlist-skeleton" v-for="index in 6" :key="`playlist-skeleton-${index}`">
+        <span class="skeleton-block skeleton-cover"/>
+        <span class="skeleton-copy">
+          <span class="skeleton-block skeleton-title"/>
+          <span class="skeleton-block skeleton-meta"/>
+        </span>
+      </div>
+    </div>
+    <div v-else-if="playlistList.length === 0" class="empty-state">
+      暂无歌单
     </div>
     <PlayList
+      v-else
       v-for="(playlist) in playlistList"
       :title="playlist.title"
       :musicCount="playlist.musicCount"
@@ -67,7 +87,7 @@
     </div>
     <div style="padding: 1rem 0">
       <Button @click="addPlaylistFun" :loading="loading">
-        创建歌单
+        FINISH
       </Button>
     </div>
     <template #footer/>
@@ -91,6 +111,7 @@ import type { FileListType } from '@/types/global';
 
 let addPlaylistDialogVisible = ref(false);
 const playlistList = ref<PlaylistType[]>([]);
+const playlistLoading = ref(false);
 const playlistInfo: PlaylistType = reactive({ id: '', title: '', accessible: true, author: '', musicCount: 0 });
 
 onMounted(() => {
@@ -101,10 +122,13 @@ onMounted(() => {
 });
 
 const getPlayListFun = (page: number) => {
+  playlistLoading.value = true;
   getPlaylist({ page, size: 10 }).then(response => {
     const {data} = response;
     playlistList.value = data;
     playlistList.value.forEach(e => e.cover = e.cover ? e.cover : '/assets/img/playlistCover.png');
+  }).finally(() => {
+    playlistLoading.value = false;
   });
 }
 
@@ -113,9 +137,6 @@ mitt.on('getPlayListFun', getPlayListFun);
 const loading = ref(false);
 const uploadFile = ref<FileListType>();
 const addPlaylistFun = () => {
-  if (!playlistInfo.title?.trim()) {
-    return;
-  }
   loading.value = true;
   const playlistData = new FormData();
   if (uploadFile.value?.file) {
@@ -171,9 +192,9 @@ const onClose = () => {
 .left-wrapper {
   width: var(--left-width);
   margin-right: 1rem;
-  padding: .85rem;
+  padding: var(--base-padding);
   border: 1px solid var(--surface-border);
-  border-radius: var(--radius-panel);
+  border-radius: 1rem;
   overflow: hidden;
   overflow-y: scroll;
   background: var(--surface-color);
@@ -188,28 +209,59 @@ const onClose = () => {
     align-items: center;
     line-height: 1.2;
     margin: -.25rem -.25rem .5rem;
-    padding: .2rem .25rem .45rem;
-    border-radius: var(--radius-card);
-    background: rgba(255, 255, 255, .58);
-    backdrop-filter: blur(1rem);
+    padding: .25rem;
+    border-radius: .75rem;
+    background: rgba(255, 255, 255, .52);
   }
+}
 
-  .section-title {
-    margin: auto 0;
-    padding: .5rem;
-    color: var(--text-primary);
-    font-size: 1rem;
-    font-weight: 900;
-  }
+.playlist-skeleton-list {
+  display: grid;
+  gap: .15rem;
+}
 
-  .empty-state {
-    padding: 2.25rem 1rem;
-    color: var(--text-secondary);
-    text-align: center;
-    border: 1px dashed var(--surface-border-strong);
-    border-radius: var(--radius-card);
-    background: rgba(255, 255, 255, .34);
-  }
+.playlist-skeleton {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  padding: .55rem;
+  border-radius: .75rem;
+}
+
+.skeleton-cover {
+  width: 3.5rem;
+  height: 3.5rem;
+  flex: 0 0 3.5rem;
+  border-radius: .6rem;
+}
+
+.skeleton-copy {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: .55rem;
+}
+
+.skeleton-title {
+  width: 72%;
+  height: .95rem;
+}
+
+.skeleton-meta {
+  width: 48%;
+  height: .75rem;
+  opacity: .78;
+}
+
+.empty-state {
+  margin: 1.25rem .35rem 0;
+  padding: 1.4rem 1rem;
+  border: 1px dashed rgba(105, 117, 134, .28);
+  border-radius: .8rem;
+  color: var(--text-secondary);
+  font-size: .9rem;
+  text-align: center;
+  background: rgba(255, 255, 255, .36);
 }
 
 .playlist-dialog {
@@ -229,7 +281,7 @@ const onClose = () => {
 @media (max-width: 800px) {
   .left-wrapper {
     margin-right: 0;
-    border-radius: 0 var(--radius-panel) var(--radius-panel) 0;
+    border-radius: 0 1rem 1rem 0;
   }
 
   .playlist-dialog {

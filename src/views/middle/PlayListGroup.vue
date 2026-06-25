@@ -21,8 +21,8 @@ import PlayListCard from '@/views/middle/PlayListCard.vue';
 import type { PlayList } from '@/types/global';
 import { getHomePlaylist } from '@/api/playlist';
 import router from '@/router';
-import Pinned from "@/views/middle/Pinned.vue";
-import Tag from "@/views/middle/Tag.vue";
+import Pinned from '@/views/middle/Pinned.vue';
+import Tag from '@/views/middle/Tag.vue';
 
 interface GroupPlayListArray {
   groupTitle: string,
@@ -31,16 +31,23 @@ interface GroupPlayListArray {
 
 const groupPlayList: GroupPlayListArray[] = reactive([]);
 const pinnedList = ref<any[]>([]);
-onMounted(() => {
+
+const loadHomePlaylist = () => {
   const params = {
     page: 1,
     size: 15,
     key: '',
-  }
-  getHomePlaylist(params).then(response => {
+  };
+  return getHomePlaylist(params).then(response => {
     groupPlayList[0] = { playlist: response.data, groupTitle: '热门歌单' };
   });
+};
+
+
+onMounted(() => {
+  loadHomePlaylist();
 });
+
 
 const gotoPlayListInfo = (playlistId: string) => {
   router.push({ path: `/playlist/${playlistId}` });

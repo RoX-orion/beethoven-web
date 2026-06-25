@@ -1,8 +1,9 @@
 <template>
   <div id="playlist-info-top" class="flex-row playlist-hero">
-    <a-image
-      class="playlist-hero-cover"
-      :src="playlistInfo.cover"/>
+    <div class="playlist-hero-cover">
+      <ImagePreview :src="playlistInfo.cover ?? ''"/>
+    </div>
+
     <div class="playlist-hero-content">
       <span class="hero-label">Playlist</span>
       <p class="pointer playlist-title" @click="updatePlaylistFun">{{
@@ -18,41 +19,56 @@
     </div>
   </div>
 
-  <div v-if="musicList.length === 0" class="empty-state">
-    这个歌单还没有歌曲
+  <div v-if="musicLoading" class="playlist-track-skeleton-list">
+    <div class="track-row track-skeleton" v-for="index in 5" :key="`track-skeleton-${index}`">
+      <div class="track-main">
+        <span class="skeleton-block cover skeleton-track-cover"/>
+        <div class="track-text skeleton-track-text">
+          <span class="skeleton-block skeleton-track-title"/>
+          <span class="skeleton-block skeleton-track-subtitle"/>
+        </div>
+      </div>
+      <span class="skeleton-block track-col skeleton-track-album"/>
+      <span class="skeleton-block track-col skeleton-track-size"/>
+      <span class="skeleton-block track-col skeleton-track-duration"/>
+    </div>
   </div>
-  <div class="track-row playlist-info pointer" v-for="(music, index) in musicList"
-       :key="music.id" @click.stop="playMusicFun(music)">
-    <div class="track-main">
-      <div class="track-index">{{ index + 1 }}</div>
-      <img class="cover" :src="music.cover" :width="48" :height="48" alt=""/>
-      <div class="track-text">
-        <p>{{ music.name }}</p>
-        <p class="grey" style="font-size: .8rem">{{ music.singer }}</p>
+  <div v-else-if="musicList.length === 0" class="empty-state playlist-empty">
+    歌单还没有歌曲
+  </div>
+  <template v-else>
+    <div class="track-row playlist-info pointer" v-for="music in musicList"
+         :key="music.id" @click.stop="playMusicFun(music)">
+      <div class="track-main">
+        <img class="cover" :src="music.cover" :width="56" :height="56" alt=""/>
+        <div class="track-text">
+          <p>{{ music.name }}</p>
+          <p class="grey" style="font-size: .8rem">{{ music.singer }}</p>
+        </div>
+      </div>
+      <div class="track-col track-album">{{ music.album }}</div>
+      <div class="track-col track-size">{{ sizeFormater(music.size) }}</div>
+      <div class="track-col track-duration">
+        {{ durationFormater(music.duration) }}
+        <!--      <a-dropdown :trigger="['click']">-->
+        <!--        <svg-icon name="more" color="black"/>-->
+        <!--        <template #overlay>-->
+        <!--          <a-menu>-->
+        <!--            <a-menu-item key="0">-->
+        <!--              加入歌单-->
+        <!--            </a-menu-item>-->
+        <!--            <a-menu-item key="1" @click="removeMusicFun(music.id)">-->
+        <!--              从此歌单中删除-->
+        <!--            </a-menu-item>-->
+        <!--            <a-menu-item key="3">-->
+        <!--              分享-->
+        <!--            </a-menu-item>-->
+        <!--          </a-menu>-->
+        <!--        </template>-->
+        <!--      </a-dropdown>-->
       </div>
     </div>
-    <div class="track-col track-album">{{ music.album }}</div>
-    <div class="track-col track-size">{{ sizeFormater(music.size) }}</div>
-    <div class="track-col track-duration">
-      {{ durationFormater(music.duration) }}
-      <!--      <a-dropdown :trigger="['click']">-->
-      <!--        <svg-icon name="more" color="black"/>-->
-      <!--        <template #overlay>-->
-      <!--          <a-menu>-->
-      <!--            <a-menu-item key="0">-->
-      <!--              加入歌单-->
-      <!--            </a-menu-item>-->
-      <!--            <a-menu-item key="1" @click="removeMusicFun(music.id)">-->
-      <!--              从此歌单中删除-->
-      <!--            </a-menu-item>-->
-      <!--            <a-menu-item key="3">-->
-      <!--              分享-->
-      <!--            </a-menu-item>-->
-      <!--          </a-menu>-->
-      <!--        </template>-->
-      <!--      </a-dropdown>-->
-    </div>
-  </div>
+  </template>
   <a-modal title="编辑歌单" width="30rem" v-model:open="updatePlaylistDialogVisible">
     <div class="flex-row playlist-dialog">
       <div class="playlist-cover-edit">
@@ -86,6 +102,7 @@ import Button from '@/components/Button.vue';
 import InputText from '@/components/InputText.vue';
 import { setMusicInfo, useGlobalStore } from '@/store/global';
 import UploadImage from '@/components/UploadImage.vue';
+import ImagePreview from '@/components/ImagePreview.vue';
 import { notification } from 'ant-design-vue';
 import eventBus from '@/util/eventBus';
 import { getData } from '@/util/localStorage';
@@ -93,8 +110,10 @@ import { TOKEN } from '@/config';
 
 const route = useRoute();
 const musicList = ref<Array<MusicItemType>>([]);
+const musicLoading = ref(false);
 const playlistCover = ref();
 const loading = ref(false);
+const defaultCover = '/assets/img/playlistCover.png';
 let playlistId: string;
 
 const uploadFile = ref<FileListType>();
@@ -107,15 +126,28 @@ const playMusicFun = (music: MusicItemType) => {
 };
 
 const getPlaylistMusicFun = (playlistId: string) => {
-  getPlaylistMusic(playlistId).then(response => {
+  if (!playlistId) {
+    return Promise.resolve();
+  }
+
+  musicLoading.value = true;
+  return getPlaylistMusic(playlistId).then(response => {
     musicList.value = response.data;
+    musicList.value.forEach(music => music.cover = music.cover ? music.cover : defaultCover);
+  }).finally(() => {
+    musicLoading.value = false;
   });
 };
 
 const playlistInfo = ref<PlaylistType>({ id: '', title: '', accessible: true, musicCount: 0, author: '' });
-const getPlaylistInfoFun = async (playlistId: string) => {
-  getPlaylistInfo(playlistId).then(response => {
+const getPlaylistInfoFun = (playlistId: string) => {
+  if (!playlistId) {
+    return Promise.resolve();
+  }
+
+  return getPlaylistInfo(playlistId).then(response => {
     playlistInfo.value = response.data;
+    playlistInfo.value.cover = playlistInfo.value.cover ? playlistInfo.value.cover : defaultCover;
     uploadFile.value = { url: response.data.cover };
   });
 }
@@ -155,6 +187,7 @@ const updatePlaylistFun = () => {
   updatePlaylistDialogVisible.value = true;
 }
 
+
 onMounted(() => {
   if (route.params.id) {
     playlistId = route.params.id as string;
@@ -163,6 +196,7 @@ onMounted(() => {
   }
   changeScreenWidth(globalStore.global.mobile);
 });
+
 
 watch(() => route.params.id, id => {
   playlistId = id as string;
@@ -198,21 +232,16 @@ const removeMusicFun = (musicId: string) => {
   gap: 1.25rem;
   padding: 1.35rem;
   margin: 1rem;
-  border: 1px solid var(--surface-border);
-  border-radius: var(--radius-panel);
+  border-radius: 1rem;
   background: linear-gradient(135deg, rgba(47, 143, 118, .16), rgba(64, 158, 255, .1)),
   rgba(255, 255, 255, .48);
-  box-shadow: 0 .7rem 1.6rem rgba(32, 53, 77, .07);
 }
 
 .playlist-hero-cover {
-  aspect-ratio: 1 / 1;
-  width: min(5.5rem, 16vw);
-  max-width: 5.5rem;
-  max-height: 5.5rem;
-  overflow: hidden;
-  border-radius: var(--radius-card);
+  width: 16rem;
+  height: 16rem;
   box-shadow: 0 .75rem 1.8rem rgba(32, 53, 77, .18);
+  overflow: hidden;
 }
 
 .playlist-hero-content {
@@ -235,7 +264,6 @@ const removeMusicFun = (musicId: string) => {
   font-size: clamp(1.45rem, 4vw, 3rem);
   font-weight: 900;
   line-height: 1.1;
-  letter-spacing: 0;
 }
 
 .playlist-meta {
@@ -250,15 +278,12 @@ const removeMusicFun = (musicId: string) => {
   grid-template-columns: 1fr 10rem 5.5rem 4.5rem;
   align-items: center;
   width: 100%;
-  margin: 0 .75rem;
-  padding: .55rem .75rem;
-  border: 1px solid transparent;
-  border-radius: var(--radius-card);
-  transition: background-color .18s ease, border-color .18s ease, transform .18s ease;
+  padding: .55rem 1.25rem;
+  border-radius: .85rem;
+  transition: background-color .18s ease, transform .18s ease;
 
   &:hover {
-    border-color: var(--surface-border);
-    background-color: var(--surface-hover);
+    background-color: rgba(255, 255, 255, .62);
     transform: translateX(2px);
   }
 }
@@ -269,20 +294,12 @@ const removeMusicFun = (musicId: string) => {
   min-width: 0;
 
   .cover {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius-card);
+    width: 56px;
+    height: 56px;
+    border-radius: .5rem;
     object-fit: cover;
     box-shadow: 0 .35rem .8rem rgba(32, 53, 77, .1);
   }
-}
-
-.track-index {
-  width: 1.8rem;
-  flex-shrink: 0;
-  margin-right: .5rem;
-  color: var(--text-secondary);
-  text-align: right;
 }
 
 .track-text {
@@ -297,16 +314,6 @@ const removeMusicFun = (musicId: string) => {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-}
-
-.empty-state {
-  margin: 1rem;
-  padding: 3rem 1rem;
-  color: var(--text-secondary);
-  text-align: center;
-  border: 1px dashed var(--surface-border-strong);
-  border-radius: var(--radius-card);
-  background: rgba(255, 255, 255, .36);
 }
 
 .track-col {
@@ -328,6 +335,68 @@ const removeMusicFun = (musicId: string) => {
 
 .track-duration {
   text-align: right;
+}
+
+.playlist-track-skeleton-list {
+  margin-top: .15rem;
+}
+
+.track-skeleton {
+  pointer-events: none;
+}
+
+.skeleton-track-cover {
+  flex: 0 0 56px;
+  border-radius: .5rem;
+  box-shadow: none;
+}
+
+.skeleton-track-text {
+  display: grid;
+  gap: .55rem;
+  width: min(20rem, 100%);
+}
+
+.skeleton-track-title {
+  width: 70%;
+  height: .95rem;
+}
+
+.skeleton-track-subtitle {
+  width: 42%;
+  height: .72rem;
+  opacity: .78;
+}
+
+.skeleton-track-album,
+.skeleton-track-size,
+.skeleton-track-duration {
+  height: .82rem;
+  justify-self: end;
+}
+
+.skeleton-track-album {
+  width: 7rem;
+  justify-self: start;
+}
+
+.skeleton-track-size {
+  width: 3.4rem;
+}
+
+.skeleton-track-duration {
+  width: 2.6rem;
+}
+
+.empty-state {
+  margin: 1.25rem;
+  padding: 1.5rem 1rem;
+  border: 1px dashed rgba(105, 117, 134, .28);
+  border-radius: .8rem;
+  color: var(--text-secondary);
+  font-size: .9rem;
+  text-align: center;
+  background: rgba(255, 255, 255, .36);
 }
 
 .playlist-dialog {
@@ -358,13 +427,13 @@ const removeMusicFun = (musicId: string) => {
 
   .playlist-hero-cover {
     width: 100%;
-    max-width: none;
-    max-height: none;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    border-radius: .6rem;
   }
 
   .track-row {
-    margin: 0 .5rem;
-    padding: .65rem .6rem;
+    padding: .65rem .85rem;
     grid-template-columns: 1fr 4rem;
   }
 
