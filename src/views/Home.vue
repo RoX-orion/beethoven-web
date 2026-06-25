@@ -45,25 +45,32 @@ const setStyle = () => {
 
 <style lang="scss" scoped>
 .home-page {
+  --player-safe-space: 8.25rem;
+  --content-player-gap: 1.25rem;
+
   min-height: 100dvh;
-  padding: .9rem 1rem 7rem;
+  padding: .9rem 1rem calc(var(--player-safe-space) + var(--content-player-gap));
 }
 
 .left-right {
   gap: .9rem;
   justify-content: space-between;
-  height: calc(100dvh - 13.8rem);
+  height: calc(100dvh - 4.5rem - .9rem - var(--player-safe-space) - var(--content-player-gap));
+  min-height: 0;
   width: min(100%, 98rem);
   margin: .9rem auto 0;
 }
 
 @media (max-width: 800px) {
   .home-page {
-    padding: .55rem .55rem 6.75rem;
+    --player-safe-space: 7.4rem;
+    --content-player-gap: 1rem;
+
+    padding: .55rem .55rem calc(var(--player-safe-space) + var(--content-player-gap));
   }
 
   .left-right {
-    height: calc(100dvh - 13rem);
+    height: calc(100dvh - 3.9rem - .65rem - var(--player-safe-space) - var(--content-player-gap));
     margin-top: .65rem;
     gap: 0;
   }

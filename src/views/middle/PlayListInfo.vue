@@ -232,9 +232,11 @@ const removeMusicFun = (musicId: string) => {
   gap: 1.25rem;
   padding: 1.35rem;
   margin: 1rem;
+  border: 1px solid rgba(55, 125, 255, .1);
   border-radius: 1rem;
-  background: linear-gradient(135deg, rgba(47, 143, 118, .16), rgba(64, 158, 255, .1)),
+  background: linear-gradient(135deg, rgba(55, 125, 255, .16), rgba(106, 168, 255, .1)),
   rgba(255, 255, 255, .48);
+  box-shadow: 0 .9rem 2rem rgba(49, 92, 166, .08);
 }
 
 .playlist-hero-cover {

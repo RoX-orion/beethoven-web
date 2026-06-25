@@ -38,15 +38,19 @@
     </div>
   </template>
   <a-modal title="添加到歌单" v-model:open="addMusicToPlaylistDialogVisible" width="30rem">
-    <!--    <Search model-value="" searching=""/>-->
-    <a-checkbox-group v-model:value="addMusicForm.playlistIds" name="checkboxgroup" :options="playlistOptions"/>
-    <!--      <div class="playlist pointer" v-for="playlist in playlistList">-->
-    <!--          <div class="flex-row">-->
-    <!--            <div>-->
-    <!--              {{playlist.title}}-->
-    <!--            </div>-->
-    <!--          </div>-->
-    <!--      </div>-->
+    <div v-if="playlistOptions.length === 0" class="playlist-empty">
+      暂无可添加的歌单
+    </div>
+    <a-checkbox-group v-else v-model:value="addMusicForm.playlistIds" name="checkboxgroup" class="playlist-selector">
+      <a-checkbox
+        v-for="playlist in playlistOptions"
+        :key="String(playlist.value)"
+        class="playlist-option"
+        :value="playlist.value"
+      >
+        <span class="playlist-option-title">{{ playlist.label }}</span>
+      </a-checkbox>
+    </a-checkbox-group>
     <Button @click="addMusicToPlaylistFun" :loading="loading">
       Finish
     </Button>
@@ -160,13 +164,52 @@ const addMusicToPlaylistFun = () => {
   }
 }
 
-.playlist {
-  padding: .5rem;
-  border-radius: .5rem;
+.playlist-selector {
+  display: grid;
+  gap: .45rem;
+  max-height: min(42vh, 22rem);
+  margin-bottom: 1rem;
+  overflow-y: auto;
+}
+
+.playlist-option {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  min-height: 3rem;
+  padding: .75rem .85rem;
+  border: 1px solid var(--surface-border);
+  border-radius: .75rem;
+  background: rgba(255, 255, 255, .52);
+  cursor: pointer;
+  transition: border-color .18s ease, background-color .18s ease, transform .18s ease;
 
   &:hover {
-    background-color: var(--default-background-color);
+    border-color: rgba(55, 125, 255, .2);
+    background-color: rgba(255, 255, 255, .82);
+    transform: translateY(-1px);
   }
+}
+
+.playlist-option-title {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-weight: 700;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.playlist-empty {
+  margin-bottom: 1rem;
+  padding: 1.25rem 1rem;
+  border: 1px dashed rgba(105, 117, 134, .28);
+  border-radius: .8rem;
+  color: var(--text-secondary);
+  font-size: .9rem;
+  text-align: center;
+  background: rgba(255, 255, 255, .36);
 }
 
 .search-skeleton-list {
@@ -233,5 +276,18 @@ const addMusicToPlaylistFun = () => {
   font-size: .9rem;
   text-align: center;
   background: rgba(255, 255, 255, .36);
+}
+
+@media (max-width: 800px) {
+  .playlist-selector {
+    max-height: 50dvh;
+    gap: .5rem;
+  }
+
+  .playlist-option {
+    min-height: 3.25rem;
+    padding: .85rem;
+    border-radius: .8rem;
+  }
 }
 </style>

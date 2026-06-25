@@ -28,9 +28,10 @@
               type="button"
               @click.stop="playOrPause"
               :disabled="loading"
+              :aria-label="paused ? '播放' : '暂停'"
               :aria-busy="loading">
-              <svg-icon v-if="paused" name="pause" size="2rem"/>
-              <svg-icon v-else name="play" size="2rem"/>
+              <svg-icon v-if="paused" name="play" size="2rem"/>
+              <svg-icon v-else name="pause" size="2rem"/>
             </button>
             <svg-icon class="pointer" name="next"/>
             <svg-icon class="pointer" name="menu"/>
@@ -80,9 +81,10 @@
               type="button"
               @click.stop="playOrPause"
               :disabled="loading"
+              :aria-label="paused ? '播放' : '暂停'"
               :aria-busy="loading">
-              <svg-icon v-if="paused" name="pause" size="2rem"/>
-              <svg-icon v-else name="play" size="2rem"/>
+              <svg-icon v-if="paused" name="play" size="2rem"/>
+              <svg-icon v-else name="pause" size="2rem"/>
             </button>
           </div>
           <IconButton class="next" icon-name="next"/>
@@ -485,7 +487,8 @@ const devicesVisible = ref(false);
   left: 0;
   right: 0;
   z-index: 10;
-  padding: 0 1rem 1rem;
+  padding: .95rem 1rem 1rem;
+  background: linear-gradient(180deg, rgba(245, 248, 251, 0), rgba(245, 248, 251, .86) 52%, rgba(245, 248, 251, .96));
   pointer-events: none;
   -webkit-tap-highlight-color: transparent;
 }
@@ -564,12 +567,14 @@ const devicesVisible = ref(false);
 
 .player-wrapper {
   width: min(100%, 98rem);
-  min-height: 5.5rem;
+  min-height: 5.85rem;
   margin: 0 auto;
-  padding: .75rem 1rem;
+  padding: .8rem 1.1rem;
+  align-items: center;
+  gap: 1rem;
   justify-content: space-between;
   border: 1px solid var(--surface-border);
-  border-radius: var(--radius-panel);
+  border-radius: 1rem;
   background: var(--surface-color-strong);
   box-shadow: var(--surface-shadow-strong);
   backdrop-filter: blur(1.25rem);
@@ -610,10 +615,12 @@ const devicesVisible = ref(false);
   .controls-wrapper {
     margin: auto;
     width: 40%;
+    min-width: 16rem;
   }
 
   .panel-wrapper {
     width: 30%;
+    min-width: 13rem;
     justify-content: flex-end;
   }
 
@@ -646,21 +653,22 @@ const devicesVisible = ref(false);
 
 @media (max-width: 800px) {
   .player {
-    padding: 0 .55rem .55rem;
+    padding: .75rem .55rem .55rem;
   }
 
   .progress-mobile {
     width: min(100%, 98rem);
-    margin: 0 auto .35rem;
-    padding: 0 .75rem;
+    margin: .75rem auto .25rem;
+    padding: .2rem .85rem .05rem;
     color: var(--text-secondary);
     font-size: .75rem;
     pointer-events: auto;
   }
 
   .player-wrapper {
-    min-height: 4.75rem;
-    padding: .55rem .75rem;
+    min-height: 5rem;
+    padding: .6rem .8rem;
+    border-radius: 1rem;
 
     .cover {
       width: 4rem;
@@ -669,6 +677,7 @@ const devicesVisible = ref(false);
 
     .controls-wrapper {
       width: 30%;
+      min-width: 3.5rem;
       .button-group {
         width: 100%;
         justify-content: end;
@@ -728,12 +737,12 @@ const devicesVisible = ref(false);
   z-index: 20;
 
   .mobile-cover {
-    width: 80%;
+    width: min(72vw, 22rem);
     aspect-ratio: 1 / 1;
     object-fit: cover;
     border-radius: var(--radius-panel);
     position: absolute;
-    top: 4rem;
+    top: clamp(2.5rem, 8vh, 4rem);
     left: 50%;
     transform: translateX(-50%);
     box-shadow: 0 1.25rem 3rem rgba(32, 53, 77, .2);
@@ -744,6 +753,8 @@ const devicesVisible = ref(false);
     position: fixed;
     bottom: 0;
     width: 100%;
+    max-height: 48dvh;
+    overflow-y: auto;
     border-radius: var(--radius-panel) var(--radius-panel) 0 0;
     background: var(--surface-color-strong);
     box-shadow: 0 -1rem 2.5rem rgba(32, 53, 77, .12);

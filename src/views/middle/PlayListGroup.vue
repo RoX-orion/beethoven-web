@@ -4,7 +4,6 @@
   <div class="playlist-group-wrapper" v-for="data in groupPlayList" :key="data.groupTitle">
     <div class="section-heading">
       <div>
-        <p>Discover</p>
         <h2>{{ data.groupTitle }}</h2>
       </div>
     </div>

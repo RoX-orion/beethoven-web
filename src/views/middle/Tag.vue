@@ -33,7 +33,7 @@ const TagList = [
 
     &:first-child {
       color: var(--brand-primary);
-      border-color: rgba(47, 143, 118, .24);
+      border-color: rgba(55, 125, 255, .24);
       background: var(--surface-active);
     }
 

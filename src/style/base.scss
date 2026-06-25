@@ -171,7 +171,19 @@ img {
   background-color: var(--brand-primary);
 }
 
+.ant-slider:hover .ant-slider-track,
+.ant-slider:focus-within .ant-slider-track {
+  background-color: var(--brand-primary);
+}
+
 .ant-slider .ant-slider-handle::after {
+  box-shadow: 0 0 0 2px var(--brand-primary);
+}
+
+.ant-slider:hover .ant-slider-handle::after,
+.ant-slider:focus-within .ant-slider-handle::after,
+.ant-slider .ant-slider-handle:hover::after,
+.ant-slider .ant-slider-handle:focus::after {
   box-shadow: 0 0 0 2px var(--brand-primary);
 }
 

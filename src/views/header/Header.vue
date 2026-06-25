@@ -76,7 +76,7 @@ const openLeft = () => {
     height: var(--header-item-size);
     margin: auto 0;
     border-radius: var(--radius-card);
-    box-shadow: 0 .4rem 1rem rgba(47, 143, 118, .12);
+    box-shadow: 0 .4rem 1rem rgba(55, 125, 255, .12);
   }
 
   .brand-text {

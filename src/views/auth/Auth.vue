@@ -204,8 +204,8 @@ const handleAuth = async () => {
     flex: 1;
     min-width: .35rem;
     border-radius: 999px;
-    background: linear-gradient(180deg, #f6d27f, #5be7c4);
-    box-shadow: 0 0 1rem rgba(91, 231, 196, .28);
+    background: linear-gradient(180deg, #a8c7ff, #6aa8ff);
+    box-shadow: 0 0 1rem rgba(106, 168, 255, .28);
   }
 }
 
@@ -253,7 +253,7 @@ const handleAuth = async () => {
   margin-bottom: 2rem;
 
   p {
-    color: #2f8f76;
+    color: var(--brand-primary);
     font-size: .9rem;
     font-weight: 800;
   }
@@ -328,10 +328,10 @@ const handleAuth = async () => {
   align-items: center;
   gap: .65rem;
   padding: .9rem 1rem;
-  border: 1px solid rgba(47, 143, 118, .16);
+  border: 1px solid rgba(55, 125, 255, .16);
   border-radius: .75rem;
   color: #516071;
-  background: rgba(47, 143, 118, .08);
+  background: rgba(55, 125, 255, .08);
 
   p {
     line-height: 1.55;
@@ -346,7 +346,7 @@ const handleAuth = async () => {
   height: 1.35rem;
   border-radius: 50%;
   color: white;
-  background: #2f8f76;
+  background: var(--brand-primary);
   flex-shrink: 0;
 }
 
