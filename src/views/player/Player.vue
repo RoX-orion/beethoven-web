@@ -28,10 +28,10 @@
               type="button"
               @click.stop="playOrPause"
               :disabled="loading"
-              :aria-label="paused ? '播放' : '暂停'"
+              aria-label="播放或暂停"
               :aria-busy="loading">
-              <svg-icon v-if="paused" name="play" size="2rem"/>
-              <svg-icon v-else name="pause" size="2rem"/>
+              <svg-icon v-if="paused" name="pause" size="2rem"/>
+              <svg-icon v-else name="play" size="2rem"/>
             </button>
             <svg-icon class="pointer" name="next"/>
             <svg-icon class="pointer" name="menu"/>
@@ -81,13 +81,14 @@
               type="button"
               @click.stop="playOrPause"
               :disabled="loading"
-              :aria-label="paused ? '播放' : '暂停'"
+              aria-label="播放或暂停"
               :aria-busy="loading">
-              <svg-icon v-if="paused" name="play" size="2rem"/>
-              <svg-icon v-else name="pause" size="2rem"/>
+              <svg-icon v-if="paused" name="pause" size="2rem"/>
+              <svg-icon v-else name="play" size="2rem"/>
             </button>
           </div>
           <IconButton class="next" icon-name="next"/>
+
         </div>
         <div class="progress">
           <!--          <div class="time">{{ durationFormater(Math.floor(currentTime)) }}</div>-->

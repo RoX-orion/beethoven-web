@@ -1,4 +1,4 @@
-export type AnyToVoidFunction = (...args: any[]) => void;
+﻿export type AnyToVoidFunction = (...args: any[]) => void;
 export type NoneToVoidFunction = () => void;
 
 export interface ApiResponse {
@@ -99,12 +99,15 @@ export enum ComponentType {
 
 export interface Pagination {
 	page: number;
+	size?: number;
 	total: number;
 }
 
 export interface AlbumType {
+	creator?: string;
 	cover?: string;
 	name: string;
 	createTime: string;
 	updateTime: string;
 }
+
