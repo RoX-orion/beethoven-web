@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="manage-layout">
     <Sidebar class="desktop-sidebar"/>
     <a-drawer
@@ -46,12 +46,12 @@ const currentTitle = computed(() => String(route.meta?.title ?? '后台管理'))
 
 <style scoped lang="scss">
 .manage-layout {
-  min-height: 100dvh;
+  height: 100dvh;
 }
 
 .manage-main {
   margin-left: var(--sidebar-width);
-  min-height: 100dvh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
 }
@@ -120,6 +120,7 @@ const currentTitle = computed(() => String(route.meta?.title ?? '后台管理'))
 
 .right-container {
   flex: 1;
+  min-height: 0;
   padding: 1rem 1.25rem 1.5rem;
   overflow: auto !important;
 }

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <aside class="sidebar-wrapper custom-scroll" :class="{ mobile }">
     <div class="logo-wrapper pointer" @click="gotoHome">
       <img src="/assets/brand.png" alt="brand">
@@ -14,10 +14,6 @@
         :menu="menu"
         @click="changeRoute(menu)"
       />
-    </div>
-    <div class="sidebar-footer">
-      <p class="footer-title">设计目标</p>
-      <p class="footer-text">让音乐、专辑、视频和系统设置都能在同一套清晰流程中维护。</p>
     </div>
   </aside>
 </template>
@@ -64,17 +60,13 @@ const gotoHome = () => {
     display: flex;
     align-items: center;
     gap: .85rem;
-    background: rgba(255, 255, 255, .09);
-    border: 1px solid rgba(255, 255, 255, .08);
-    border-radius: 1rem;
-    padding: .9rem;
+    padding: .6rem .4rem;
 
     img {
       width: 3.2rem;
       height: 3.2rem;
       border-radius: .9rem;
-      background: rgba(255, 255, 255, .9);
-      padding: .35rem;
+
     }
 
     .brand-copy {
@@ -97,29 +89,6 @@ const gotoHome = () => {
     display: flex;
     flex-direction: column;
     gap: .35rem;
-  }
-
-  .footer-title {
-    padding: 0 .3rem;
-    font-size: .78rem;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, .52);
-  }
-
-  .sidebar-footer {
-    margin-top: auto;
-    padding: .9rem;
-    border-radius: 1rem;
-    background: rgba(255, 255, 255, .08);
-    color: white;
-  }
-
-  .footer-text {
-    margin-top: .45rem;
-    font-size: .82rem;
-    line-height: 1.55;
-    color: rgba(255, 255, 255, .72);
   }
 }
 

@@ -489,7 +489,7 @@ const devicesVisible = ref(false);
   right: 0;
   z-index: 10;
   padding: .95rem 1rem 1rem;
-  background: linear-gradient(180deg, rgba(245, 248, 251, 0), rgba(245, 248, 251, .86) 52%, rgba(245, 248, 251, .96));
+  background: transparent;
   pointer-events: none;
   -webkit-tap-highlight-color: transparent;
 }

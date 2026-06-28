@@ -5,7 +5,6 @@
     </div>
 
     <div class="playlist-hero-content">
-      <span class="hero-label">Playlist</span>
       <p class="pointer playlist-title" @click="updatePlaylistFun">{{
           playlistInfo.title
         }}</p>
@@ -251,13 +250,6 @@ const removeMusicFun = (musicId: string) => {
   flex-direction: column;
   justify-content: end;
   min-width: 0;
-}
-
-.hero-label {
-  color: var(--brand-primary);
-  font-size: .78rem;
-  font-weight: 800;
-  text-transform: uppercase;
 }
 
 .playlist-title {

@@ -16,7 +16,7 @@
       </div>
     </div>
 
-    <a-tabs v-model:activeKey="activeKey" class="media-tabs">
+    <a-tabs v-model:activeKey="activeKey" class="media-tabs" :animated="false">
       <a-tab-pane key="musicManage" tab="歌曲管理">
         <section class="module-page">
           <div class="module-toolbar">
