@@ -1,16 +1,25 @@
 <template>
   <div class="manage-layout">
-    <Sidebar class="desktop-sidebar"/>
+    <!-- Desktop sidebar with collapse support -->
+    <Sidebar
+      class="desktop-sidebar"
+      :collapsed="collapsed"
+      @update:collapsed="collapsed = $event"
+    />
+
+    <!-- Mobile drawer sidebar -->
     <a-drawer
       v-model:open="drawerOpen"
       placement="left"
-      :width="280"
+      :width="260"
       class="mobile-drawer"
       :body-style="{ padding: '0' }"
     >
       <Sidebar mobile @navigate="drawerOpen = false"/>
     </a-drawer>
-    <div class="manage-main">
+
+    <!-- Main content area -->
+    <div class="manage-main" :class="{ collapsed: collapsed }">
       <header class="manage-header">
         <div class="header-content">
           <button class="menu-button pointer" type="button" @click="drawerOpen = true">
@@ -40,6 +49,7 @@ import SvgIcon from '@/components/SvgIcon.vue';
 const route = useRoute();
 const router = useRouter();
 const drawerOpen = ref(false);
+const collapsed = ref(false);
 
 const currentTitle = computed(() => String(route.meta?.title ?? '后台管理'));
 </script>
@@ -54,6 +64,11 @@ const currentTitle = computed(() => String(route.meta?.title ?? '后台管理'))
   height: 100dvh;
   display: flex;
   flex-direction: column;
+  transition: margin-left .25s cubic-bezier(.4, 0, .2, 1);
+
+  &.collapsed {
+    margin-left: var(--sidebar-width-collapsed);
+  }
 }
 
 .manage-header {
@@ -74,15 +89,6 @@ const currentTitle = computed(() => String(route.meta?.title ?? '后台管理'))
   display: flex;
   align-items: center;
   gap: .9rem;
-
-  .eyebrow {
-    font-size: .78rem;
-    font-weight: 700;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    color: var(--brand-primary);
-    margin-bottom: .2rem;
-  }
 
   h1 {
     font-size: clamp(1.25rem, 2vw, 1.9rem);
@@ -136,6 +142,10 @@ const currentTitle = computed(() => String(route.meta?.title ?? '后台管理'))
 
   .manage-main {
     margin-left: 0;
+
+    &.collapsed {
+      margin-left: 0;
+    }
   }
 
   .menu-button {
@@ -152,4 +162,3 @@ const currentTitle = computed(() => String(route.meta?.title ?? '后台管理'))
   }
 }
 </style>
-

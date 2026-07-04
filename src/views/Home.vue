@@ -26,6 +26,7 @@ const props = defineProps({
 });
 const routeStore = useRouteStore();
 onMounted(() => {
+  console.log('token', getData(TOKEN));
   routeStore.id = props.id;
   routeStore.type = props.type;
 });

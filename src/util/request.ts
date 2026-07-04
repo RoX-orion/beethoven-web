@@ -33,7 +33,16 @@ service.interceptors.response.use(
 	async response => {
 		const res = response.data
 
-	if (res.code !== 200) {
+		if (res.code !== 200) {
+			if (res.code === 401) {
+				deleteData(TOKEN);
+				notification.warning({
+					message: '登录已过期',
+					description: res.msg || '请重新登录',
+				});
+				await router.push('/auth');
+				return Promise.reject(new Error(res.msg || '未授权'));
+			}
 			if (res.code === 400) {
 				notification.warning({
 					message: '失败',
@@ -45,10 +54,6 @@ service.interceptors.response.use(
 					description: res.msg,
 				});
 			}
-			if (res.code === 401) {
-				deleteData(TOKEN);
-				await router.push('/auth');
-			}
 			return Promise.reject(new Error(res.msg || 'Error'));
 		} else {
 			return res;
@@ -56,7 +61,16 @@ service.interceptors.response.use(
 	},
 	error => {
 		if (error.response) {
-			console.error('[Response] error:', error.response.status, error.response.data)
+			const status = error.response.status;
+			console.error('[Response] error:', status, error.response.data);
+			if (status === 401) {
+				deleteData(TOKEN);
+				notification.warning({
+					message: '登录已过期',
+					description: '请重新登录',
+				});
+				router.push('/auth');
+			}
 		} else {
 			console.error('[Response] error:', error.message)
 		}

@@ -62,18 +62,56 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { notification } from 'ant-design-vue';
-import { getOAuth2Info } from '@/api/auth';
+import { getOAuth2Info, handleOAuth2Login } from '@/api/auth';
+import { useAccountStore } from '@/store/global';
+import { setData } from '@/util/localStorage';
+import { TOKEN } from '@/config';
 
 const bars = [34, 58, 82, 46, 72, 95, 56, 68, 40, 76, 62, 88, 52, 70];
 const loading = ref(false);
+const router = useRouter();
+const accountStore = useAccountStore();
+
+onMounted(async () => {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+
+  if (code) {
+    await handleOAuthCallback(code);
+  }
+});
+
+const handleOAuthCallback = async (code: string) => {
+  loading.value = true;
+  try {
+    const response = await handleOAuth2Login({ code, type: 'GITHUB' });
+    const accountData = response.data;
+
+    setData(TOKEN, accountData.token);
+    accountStore.account.id = accountData.id;
+    accountStore.account.username = accountData.username;
+    accountStore.account.avatar = accountData.avatar;
+    accountStore.account.token = accountData.token;
+
+    window.history.replaceState({}, '', '/auth');
+    await router.replace('/');
+  } catch (error) {
+    window.history.replaceState({}, '', '/auth');
+    loading.value = false;
+    notification.error({
+      message: '登录失败',
+      description: 'GitHub 授权验证失败，请重试。',
+    });
+  }
+};
 
 const handleAuth = async () => {
   if (loading.value) {
     return;
   }
-
   loading.value = true;
   try {
     const response = await getOAuth2Info('GITHUB');
