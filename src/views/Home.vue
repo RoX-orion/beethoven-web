@@ -5,7 +5,6 @@
       <Left v-if="getData(TOKEN)"/>
       <Middle/>
     </main>
-    <Player/>
   </div>
 </template>
 
@@ -13,35 +12,21 @@
 import Header from './header/Header.vue';
 import Left from './left/Left.vue';
 import Middle from '@/views/middle/Middle.vue'
-import { useGlobalStore, useRouteStore } from '@/store/global';
-import { defineAsyncComponent, onMounted } from 'vue';
+import { useGlobalStore } from '@/store/global';
+import { onMounted } from 'vue';
 import { getData } from "@/util/localStorage";
 import { TOKEN } from "@/config";
-
-const Player = defineAsyncComponent(() => import('./player/Player.vue'));
 
 const props = defineProps({
   type: String,
   id: String,
 });
-const routeStore = useRouteStore();
+
 onMounted(() => {
   console.log('token', getData(TOKEN));
-  routeStore.id = props.id;
-  routeStore.type = props.type;
 });
 
 const globalStore = useGlobalStore();
-// watch(() => globalStore.global.windowWidth, windowWidth => {
-//   if (windowWidth <= 800) {
-//     let dom = document.getElementsByClassName("left-right");
-//     console.log(dom);
-//   }
-// });
-
-const setStyle = () => {
-
-}
 </script>
 
 <style lang="scss" scoped>

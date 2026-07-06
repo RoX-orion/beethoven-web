@@ -122,7 +122,7 @@
         </div>
       </div>
       <!--      <Panel @update="handleEvent"/>-->
-      <div class="media-player" id="audioPlayer"></div>
+      <div class="media-player"></div>
 <!--      <audio class="player" ref="audioPlayer" controls></audio>-->
     </div>
   </div>
@@ -130,47 +130,36 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
-import type { MusicItemType, ProgressType, SettingType } from '@/types/global';
+
+import { onMounted, onUnmounted, ref } from 'vue';
 import { ComponentType } from '@/types/global';
-import { useRoute } from 'vue-router';
-import { getMusicInfoFromLocal, useAccountStore, useGlobalStore } from '@/store/global';
+import { useGlobalStore } from '@/store/global';
 import { durationFormater } from '@/util/time';
 import IconButton from '@/components/IconButton.vue';
 import Progress from '@/components/Progress.vue';
-import { PLAYER_SETTING, TOKEN, VOLUME_MUSIC } from '@/config';
-import { getData, setData } from '@/util/localStorage';
-import { throttle } from '@/util/schedulers';
 import SvgIcon from '@/components/SvgIcon.vue';
-import { getSetting, updateSetting } from "@/api/setting";
-import Player, { Events } from "xgplayer";
 import { componentState } from '@/store/componentState';
-import { getMusicInfo } from "@/api/music";
+import { useAudioPlayer } from '@/composables/useAudioPlayer';
 
-const audioPlayer = ref<any>();
-const music: MusicItemType = reactive({
-  link: '',
-  duration: 0,
-  mime: '',
-});
-let shardingSize: number;
-let shardingCount: number;
-let seeking = false;
+const {
+  paused,
+  loading,
+  currentTime,
+  volume,
+  music,
+  progressData,
+  cover,
+  playOrPause,
+  changeCurrentTime,
+  updateTime,
+  changeMute,
+  handleSeek,
+  init,
+} = useAudioPlayer();
+
 const globalStore = useGlobalStore();
-const currentPercentage = ref(0);
-const paused = ref(true);
-const loading = ref(false);
 
-const getMediaElement = (): HTMLMediaElement | undefined => {
-  return audioPlayer.value?.media ?? audioPlayer.value?.video;
-};
-
-const setMetadataPreload = () => {
-  const media = getMediaElement();
-  if (media) {
-    media.preload = 'metadata';
-  }
-};
+const getCover = cover;
 
 const mobilePlayer = ref(false);
 const openMobilePlayer = (event: MouseEvent) => {
@@ -180,305 +169,20 @@ const openMobilePlayer = (event: MouseEvent) => {
   }
 };
 
-const handleSeek = async (forward: number) => {
-  let targetTime = forward === -1 ? currentTime.value - 15 : currentTime.value + 15;
-  if (forward === -1) {
-    targetTime = targetTime < 0 ? 0 : targetTime;
-  } else {
-    targetTime = targetTime > music.duration ? music.duration : targetTime;
-  }
-  await seekToTime(targetTime);
-  await onTimeUpdate();
-}
-
-const handleKeyEvent = (e: KeyboardEvent) => {
-  switch (e.key) {
-    case ' ':
-    case 'Enter':
-      e.preventDefault();
-      playOrPause();
-      break;
-    case 'Left':
-    case 'ArrowLeft':
-      handleSeek(-1);
-      break;
-    case 'Right':
-    case 'ArrowRight':
-      handleSeek(1);
-      break;
-  }
-}
-
 const openVideoPlayer = () => {
   globalStore.global.videoId = music.videoId != null ? String(music.videoId) : undefined;
   if (music.videoId)
     componentState.currentMiddleComponent = ComponentType.VIDEO_PLAYER;
-}
-const route = useRoute();
-const accountStore = useAccountStore();
+};
+
 onMounted(async () => {
-  audioPlayer.value = new Player({
-    id: 'audioPlayer',
-    mediaType: 'audio',
-    url: '',
-    videoAttributes: {
-      preload: 'metadata'
-    },
-    height: '100%',
-    width: '100%',
-    volume: 0.5
-  });
-  setMetadataPreload();
-
-  audioPlayer.value.on(Events.TIME_UPDATE, onTimeUpdate);
-  audioPlayer.value.on(Events.PLAY, () => paused.value = false);
-  audioPlayer.value.on(Events.PAUSE, () => paused.value = true);
-  audioPlayer.value.on(Events.LOAD_START, () => loading.value = true);
-  audioPlayer.value.on(Events.WAITING, () => loading.value = true);
-  audioPlayer.value.on(Events.SEEKING, () => loading.value = true);
-  audioPlayer.value.on(Events.LOADED_METADATA, () => {
-    if (paused.value) {
-      loading.value = false;
-    }
-  });
-  audioPlayer.value.on(Events.CANPLAY, () => loading.value = false);
-  audioPlayer.value.on(Events.PLAYING, () => loading.value = false);
-  audioPlayer.value.on(Events.SEEKED, () => loading.value = false);
-  audioPlayer.value.on(Events.ERROR, () => loading.value = false);
-
-  const { id, type } = route.params;
-
-  await getSetting().then(response => {
-    if (response.data) {
-      setting.value = response.data;
-      const music = getData('music');
-      setData(PLAYER_SETTING, JSON.stringify(response.data));
-      globalStore.global.player = response.data;
-      if (type === 'music' && id) {
-        globalStore.global.media.musicId = response.data.musicId;
-      } else if (response.data.musicId) {
-        currentTime.value = response.data.currentTime;
-        globalStore.global.media.musicId = response.data.musicId;
-        globalStore.global.media.currentTime = response.data.currentTime;
-        changeCurrentTime(null);
-      } else if (music) {
-        setMusic(JSON.parse(music));
-      }
-    }
-  });
-  if (globalStore.global.mobile) {
-    setMobileVolume();
-  } else {
-    const localVolume = getData(VOLUME_MUSIC);
-    volume.value = localVolume ? Number.parseInt(localVolume) : 20;
-    await handleEvent('changeVolume', volume.value / 100);
-  }
-
-  document.addEventListener('keydown', handleKeyEvent, false);
+  await init();
 });
 
 onUnmounted(() => {
-  document.removeEventListener('keydown', handleKeyEvent, false);
 });
-
-watch(() => globalStore.global.media.musicId, async musicId => {
-  const music = getMusicInfoFromLocal();
-  if ((!music || music.id !== musicId) && musicId) {
-    await getMusicInfo(musicId as string).then(async response => {
-      if (response.data) {
-        await setMusic(response.data);
-      }
-    });
-  } else if (music) {
-    await setMusic(music);
-  }
-  if (globalStore.global.canPlay) {
-    currentTime.value = 0;
-    await handleEvent('play', null);
-  }
-});
-
-const changeCurrentTime = async (e: any) => {
-  seeking = false;
-  const percentage = Number(e);
-  if (!Number.isFinite(percentage) || !music.duration) {
-    return;
-  }
-  currentPercentage.value = Math.min(Math.max(percentage, 0), 100);
-  await seekToTime(currentPercentage.value / 100 * music.duration);
-}
-
-const seekToTime = async (targetTime: number) => {
-  if (!Number.isFinite(targetTime)) {
-    return;
-  }
-  currentTime.value = Math.min(Math.max(targetTime, 0), music.duration);
-  currentPercentage.value = music.duration ? currentTime.value / music.duration * 100 : 0;
-  await handleEvent('changeCurrentTime', currentPercentage.value);
-};
-
-const updateTime = (e: any) => {
-  seeking = true;
-  handleEvent('updateTime', e);
-}
-
-const handleEvent = async (eventName: string, state: any) => {
-  setting.value.currentTime = Math.floor(currentTime.value);
-  if (eventName === 'play') {
-    paused.value = false;
-    audioPlayer.value!.currentTime = currentTime.value;
-    await audioPlayer.value!.play();
-    await updateSettingFun();
-  } else if (eventName === 'pause') {
-    paused.value = true;
-    audioPlayer.value!.pause();
-    await updateSettingFun();
-  } else if (eventName === 'changeVolume') {
-    audioPlayer.value!.volume = state;
-    globalStore.global.player.volume = Math.floor(state * 100);
-  } else if (eventName === 'changeCurrentTime') {
-    loading.value = !paused.value;
-    progressData.percentage = Number(state);
-    audioPlayer.value!.currentTime = currentTime.value;
-    await updateSettingFun();
-  } else if (eventName === 'updateTime') {
-    currentTime.value = state / 100 * music.duration;
-  }
-};
-
-let mediaSource: MediaSource;
-let sourceBuffer: SourceBuffer;
-let currentShard = 0;
-const setMusic = async (musicInfo: MusicItemType) => {
-  if (!musicInfo || (music && musicInfo.id === music.id)) {
-    return;
-  }
-  const nextCurrentTime = setting.value.musicId === musicInfo.id
-    ? Math.min(currentTime.value, musicInfo.duration)
-    : 0;
-  Object.assign(music, musicInfo);
-  loading.value = true;
-  currentTime.value = nextCurrentTime;
-  progressData.percentage = music.duration ? currentTime.value / music.duration * 100 : 0;
-  audioPlayer.value!.src = music.link;
-  setMetadataPreload();
-  audioPlayer.value!.currentTime = currentTime.value;
-  setting.value.musicId = musicInfo.id;
-  await updateSettingFun();
-  // audioPlayer.value!.url = music.link;
-
-  // mediaSource = new MediaSource();
-  // audioPlayer.value!.src = URL.createObjectURL(mediaSource);
-  // mediaSource.addEventListener('sourceopen', async () => {
-  //   await fetchMusic(musicInfo?.link!, 0, shardingSize);
-  // });
-};
-// const fetchMusic = async (fileName: string, start: number, end: number) => {
-//   if (start === 0) {
-//     if (sourceBuffer) {
-//       mediaSource.removeSourceBuffer(sourceBuffer);
-//     }
-//     sourceBuffer = mediaSource.addSourceBuffer(music.mime);
-//   }
-//   await fetch(`http://localhost:45678/music/fetchMusic?fileName=${fileName}`, {
-//     method: 'get',
-//     headers: {
-//       'Range': `bytes=${start}-${end}`,
-//     },
-//   }).then(response => response.arrayBuffer())
-//     .then(buffer => {
-//       sourceBuffer.appendBuffer(buffer);
-//       currentShard++;
-//     });
-// }
-
-let currentTime = ref<number>(0);
-const updateCurrentTime = throttle((currentTime) => {
-  globalStore.global.media.currentTime = currentTime;
-}, 15 * 1000, false);
-
-const onTimeUpdate = async () => {
-  // const buffered = audioPlayer.value!.buffered;
-  if (!seeking) {
-    currentTime.value = audioPlayer.value!.currentTime;
-    progressData.percentage = Math.min(currentTime.value / music.duration * 100, 100);
-  }
-  updateCurrentTime(audioPlayer.value!.currentTime);
-  // const bufferedEnd = buffered.length ? buffered.end(buffered.length - 1) : 0;
-  // if (bufferedEnd - currentTime.value <= 30 && currentShard + 1 < shardingCount) {
-  //   fetchMusic(music.link, currentShard * shardingSize, (currentShard + 1) * shardingSize);
-  // }
-};
-
-const getCover = computed(() => {
-  return music?.cover ? music.cover : globalStore.global.defaultMusicCover;
-});
-
-const playOrPause = () => {
-  if (!music.id || loading.value) {
-    return;
-  }
-  updateCurrentTime(audioPlayer.value!.currentTime);
-  if (paused.value) {
-    handleEvent('play', undefined);
-  } else {
-    handleEvent('pause', undefined);
-  }
-}
-
-const progressData: ProgressType = reactive({
-  width: '100%',
-  height: '5px',
-  radius: '0.156rem',
-  percentage: 0,
-});
-
-const volumeProgressData: ProgressType = reactive({
-  width: '10rem',
-  height: '5px',
-  radius: '0.556rem',
-  percentage: 10,
-});
-
-let volume = ref(10);
-
-const changeMute = () => {
-  if (volume.value === 0) {
-    volume.value = globalStore.global.player.volume;
-  } else {
-    globalStore.global.player.volume = volume.value;
-    volume.value = 0;
-  }
-}
-
-const setMobileVolume = () => {
-  volume.value = 100;
-  handleEvent('changeVolume', 1);
-}
-
-watch(volume, (newVolume) => {
-  setData(VOLUME_MUSIC, String(newVolume));
-  handleEvent('changeVolume', newVolume / 100);
-});
-
-const setting = ref<SettingType>(
-  {
-    userId: '',
-    musicId: '',
-    currentTime: 0,
-    isMute: false,
-    volume: 0,
-    playMode: 'random',
-  },
-);
-const updateSettingFun = async () => {
-  if (getData(TOKEN)) {
-    await updateSetting(setting.value);
-  }
-}
 
 const devicesVisible = ref(false);
-
 </script>
 
 <style lang="scss" scoped>

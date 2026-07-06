@@ -1,11 +1,22 @@
 <script setup lang="ts">
 import { RouterView, useRoute } from 'vue-router';
-import { onMounted, onUnmounted, watch } from 'vue';
+import { computed, defineAsyncComponent, onMounted, onUnmounted, watch } from 'vue';
 import { ComponentType } from '@/types/global';
 import { componentState } from '@/store/componentState';
 import { useGlobalStore } from '@/store/global';
+import { useAudioPlayer } from '@/composables/useAudioPlayer';
+
+const Player = defineAsyncComponent(() => import('@/views/player/Player.vue'));
+const MiniPlayer = defineAsyncComponent(() => import('@/views/player/MiniPlayer.vue'));
 
 const route = useRoute();
+const isHome = computed(() => String(route.name ?? '') === 'Home');
+const showMiniPlayer = computed(() => {
+  const name = String(route.name ?? '');
+  return name === 'BugReport' || route.path.startsWith('/manage') || name === 'Manage';
+});
+
+const { init, destroy } = useAudioPlayer();
 
 watch(() => route?.params?.type, async type => {
   await setComponent(type as string);
@@ -20,9 +31,6 @@ watch(() => globalStore.global.searchKey, () => {
     componentState.currentMiddleComponent = ComponentType.DEFAULT;
   }
 });
-onMounted(async () => {
-  await setComponent(route?.params?.type as string);
-});
 
 const setComponent = async (type: string) => {
   if (type === 'playlist') {
@@ -32,18 +40,6 @@ const setComponent = async (type: string) => {
   }
 }
 
-// const accountStore = useAccountStore();
-// watch(() => globalStore.global, global => {
-//   updateSetting({
-//     userId: accountStore.account.id,
-//     musicId: global.media.musicId,
-//     currentTime: global.media.currentTime,
-//     isMute: global.player.isMute,
-//     volume: global.player.volume,
-//     playMode: global.player.playMode,
-//   });
-// }, { deep: true });
-
 const updateWindowState = () => {
   globalStore.global.windowWidth = window.innerWidth;
   globalStore.global.mobile = window.innerWidth <= 800;
@@ -51,17 +47,23 @@ const updateWindowState = () => {
 
 window.addEventListener('resize', updateWindowState);
 
-onMounted(() => {
+onMounted(async () => {
   updateWindowState();
+  await init();
+  await setComponent(route?.params?.type as string);
 });
 
 onUnmounted(() => {
+  destroy();
   window.removeEventListener('resize', updateWindowState);
 });
 </script>
 
 <template>
+  <div id="audioPlayer" style="display: none"></div>
   <RouterView />
+  <Player v-if="isHome"/>
+  <MiniPlayer v-else-if="showMiniPlayer"/>
 </template>
 
 <style scoped>
