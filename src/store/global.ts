@@ -67,6 +67,7 @@ export const useGlobalStore = defineStore('global', () => {
 		videoId?: string;
 		mobile: boolean;
 		canPlay: boolean;
+		showQueue: boolean;
 	}
 	const global = reactive<GlobalState>({
 		media: {
@@ -90,6 +91,7 @@ export const useGlobalStore = defineStore('global', () => {
 		videoId: undefined,
 		mobile: false,
 		canPlay: false,
+		showQueue: true,
 	});
 
 	return {

@@ -191,7 +191,6 @@ const onClose = () => {
 <style lang="scss" scoped>
 .left-wrapper {
   width: var(--left-width);
-  margin-right: 1rem;
   padding: var(--base-padding);
   border: 1px solid var(--surface-border);
   border-radius: 1rem;

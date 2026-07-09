@@ -56,7 +56,7 @@ const openLeft = () => {
 
 <style lang="scss" scoped>
 .header-wrapper {
-  width: min(100%, 98rem);
+  width: 100%;
   height: 4.5rem;
   margin: 0 auto;
   padding: .55rem .7rem;

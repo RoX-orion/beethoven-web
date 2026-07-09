@@ -1,7 +1,7 @@
 <template>
   <Transition name="slide">
     <div v-if="mobilePlayer" class="mobile-player">
-      <img class="mobile-cover" :src="getCover" alt=""/>
+      <img class="mobile-cover" :src="getCover || fallbackCover" alt="" @error="useFallbackCover"/>
 
       <div class="mobile-player-panel">
         <div class="flex-row content-space-between" style="padding: 1rem 0">
@@ -21,8 +21,8 @@
 
         <div class="">
           <div class="flex-row mobile-button-group content-space-between">
-            <svg-icon class="pointer" name="loop"/>
-            <svg-icon class="pointer" name="prev"/>
+            <svg-icon class="pointer" name="loop" :title="playModeTitle" @click.stop="cyclePlayMode"/>
+            <svg-icon class="pointer" name="prev" @click.stop="playPrev"/>
             <button
               :class="['play-button', { 'is-loading': loading }]"
               type="button"
@@ -33,8 +33,8 @@
               <svg-icon v-if="paused" name="pause" size="2rem"/>
               <svg-icon v-else name="play" size="2rem"/>
             </button>
-            <svg-icon class="pointer" name="next"/>
-            <svg-icon class="pointer" name="menu"/>
+            <svg-icon class="pointer" name="next" @click.stop="playNext"/>
+            <svg-icon class="pointer" name="menu" @click.stop="toggleQueuePanel"/>
           </div>
           <div class="flex-row content-space-between">
             <svg-icon style="margin: .5rem 0" class="pointer" name="devices" @click="devicesVisible = true"/>
@@ -66,7 +66,7 @@
 
     <div class="player-wrapper flex-row ">
       <div class="flex-row pointer base-info">
-        <img class="cover" :src="getCover" alt="cover">
+        <img class="cover" :src="getCover || fallbackCover" alt="cover" @error="useFallbackCover">
         <div class="music-info">
           <span class="music-name">{{ music.name }}</span>
           <span class="grey">{{ music.singer }}</span>
@@ -74,7 +74,7 @@
       </div>
       <div class="flex-col controls-wrapper">
         <div class="button-group flex-row">
-          <IconButton class="prev" icon-name="prev"/>
+          <IconButton class="prev" icon-name="prev" @click.stop="playPrev"/>
           <div style="margin: auto">
             <button
               :class="['play-button', { 'is-loading': loading }]"
@@ -87,7 +87,7 @@
               <svg-icon v-else name="play" size="2rem"/>
             </button>
           </div>
-          <IconButton class="next" icon-name="next"/>
+          <IconButton class="next" icon-name="next" @click.stop="playNext"/>
 
         </div>
         <div class="progress">
@@ -105,8 +105,9 @@
       <div class="flex-row panel-wrapper">
         <div class="flex-row">
           <svg-icon class="button pointer" name="video" @click.stop="openVideoPlayer"/>
-          <svg-icon class="button pointer" name="loop" size="1.5rem"/>
-          <svg-icon class="button pointer" name="queue" size="1.5rem"/>
+          <svg-icon class="button pointer" name="loop" size="1.5rem" :title="playModeTitle"
+                    @click.stop="cyclePlayMode"/>
+          <svg-icon class="button pointer" name="queue" size="1.5rem" @click.stop="toggleQueuePanel"/>
         </div>
         <div class="flex-row sound-wrapper">
           <svg-icon class="pointer" v-if="volume === 0" name="volume-off" size="1.5rem"
@@ -126,12 +127,23 @@
 <!--      <audio class="player" ref="audioPlayer" controls></audio>-->
     </div>
   </div>
+  <!--<aside v-if="queueVisible && !globalStore.global.mobile" class="desktop-queue-panel">-->
+  <!--  <QueuePanel show-close @close="queueVisible = false"/>-->
+  <!--</aside>-->
+  <a-drawer
+    v-if="globalStore.global.mobile"
+    title="正在播放"
+    placement="bottom"
+    :open="localQueueVisible"
+    @close="localQueueVisible = false">
+    <QueuePanel show-close @close="localQueueVisible = false"/>
+  </a-drawer>
 
 </template>
 
 <script setup lang="ts">
 
-import { onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { ComponentType } from '@/types/global';
 import { useGlobalStore } from '@/store/global';
 import { durationFormater } from '@/util/time';
@@ -140,6 +152,7 @@ import Progress from '@/components/Progress.vue';
 import SvgIcon from '@/components/SvgIcon.vue';
 import { componentState } from '@/store/componentState';
 import { useAudioPlayer } from '@/composables/useAudioPlayer';
+import QueuePanel from '@/views/player/QueuePanel.vue';
 
 const {
   paused,
@@ -154,12 +167,17 @@ const {
   updateTime,
   changeMute,
   handleSeek,
+  playNext,
+  playPrev,
+  playModeTitle,
+  cyclePlayMode,
   init,
 } = useAudioPlayer();
 
 const globalStore = useGlobalStore();
 
 const getCover = cover;
+const fallbackCover = '/assets/img/playlistCover.png';
 
 const mobilePlayer = ref(false);
 const openMobilePlayer = (event: MouseEvent) => {
@@ -183,6 +201,22 @@ onUnmounted(() => {
 });
 
 const devicesVisible = ref(false);
+const queueVisible = computed(() => globalStore.global.mobile ? localQueueVisible.value : globalStore.global.showQueue);
+const localQueueVisible = ref(false);
+
+const toggleQueuePanel = () => {
+  if (globalStore.global.mobile) {
+    localQueueVisible.value = !localQueueVisible.value;
+  } else {
+    globalStore.global.showQueue = !globalStore.global.showQueue;
+  }
+};
+
+const useFallbackCover = (event: Event) => {
+  const image = event.target as HTMLImageElement;
+  if (image.src.endsWith(fallbackCover)) return;
+  image.src = fallbackCover;
+};
 </script>
 
 <style lang="scss" scoped>
@@ -271,7 +305,7 @@ const devicesVisible = ref(false);
 }
 
 .player-wrapper {
-  width: min(100%, 98rem);
+  width: 100%;
   min-height: 5.85rem;
   margin: 0 auto;
   padding: .8rem 1.1rem;
@@ -362,7 +396,7 @@ const devicesVisible = ref(false);
   }
 
   .progress-mobile {
-    width: min(100%, 98rem);
+    width: 100%;
     margin: .75rem auto .25rem;
     padding: .2rem .85rem .05rem;
     color: var(--text-secondary);
@@ -476,6 +510,23 @@ const devicesVisible = ref(false);
     position: absolute;
     bottom: 1rem;
   }
+}
+
+.desktop-queue-panel {
+  position: fixed;
+  top: 6rem;
+  right: 1rem;
+  bottom: 7.25rem;
+  z-index: 12;
+  width: min(24rem, calc(100vw - 2rem));
+  padding: 1rem;
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-panel);
+  background: var(--surface-color-strong);
+  box-shadow: var(--surface-shadow-strong);
+  backdrop-filter: blur(1.25rem);
+  pointer-events: auto;
+  overflow: hidden;
 }
 
 .slide-enter-active {

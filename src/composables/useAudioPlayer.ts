@@ -1,6 +1,6 @@
 import { computed, reactive, ref, shallowRef, watch } from 'vue';
 import type { MusicItemType, ProgressType, SettingType } from '@/types/global';
-import { getMusicInfoFromLocal, useGlobalStore } from '@/store/global';
+import { getMusicInfoFromLocal, setMusicInfo, useGlobalStore } from '@/store/global';
 import { PLAYER_SETTING, TOKEN, VOLUME_MUSIC } from '@/config';
 import { getData, setData } from '@/util/localStorage';
 import { throttle } from '@/util/schedulers';
@@ -8,6 +8,7 @@ import { getSetting, updateSetting } from '@/api/setting';
 import Player, { Events } from 'xgplayer';
 import { getMusicInfo } from '@/api/music';
 import { useRoute } from 'vue-router';
+import { usePlayQueueStore } from '@/store/playQueue';
 
 const playerInstance = shallowRef<any>(null);
 let initPromise: Promise<void> | null = null;
@@ -17,7 +18,7 @@ let watchersInitialized = false;
 const paused = ref(true);
 const loading = ref(false);
 const currentTime = ref(0);
-const volume = ref(10);
+const volume = ref(50);
 const music: MusicItemType = reactive({
 	link: '',
 	duration: 0,
@@ -42,6 +43,7 @@ const setting = ref<SettingType>({
 
 export function useAudioPlayer() {
 	const globalStore = useGlobalStore();
+	const playQueueStore = usePlayQueueStore();
 	const route = useRoute();
 
 	const cover = computed(() => {
@@ -70,6 +72,7 @@ export function useAudioPlayer() {
 
 	const updateCurrentTime = throttle((time: number) => {
 		globalStore.global.media.currentTime = time;
+		playQueueStore.updateCurrentTime(time);
 	}, 15 * 1000, false);
 
 	const onTimeUpdate = async () => {
@@ -146,6 +149,18 @@ export function useAudioPlayer() {
 		await updateSettingFun();
 	};
 
+	const playQueueItem = async () => {
+		const item = playQueueStore.currentItem;
+		if (!item?.music) return;
+		setMusicInfo(item.music);
+		globalStore.global.media.musicId = item.musicId;
+		await setMusic(item.music);
+		if (globalStore.global.canPlay) {
+			currentTime.value = 0;
+			await handleEvent('play', null);
+		}
+	};
+
 	const changeCurrentTime = async (e: any) => {
 		seeking = false;
 		const percentage = Number(e);
@@ -167,10 +182,6 @@ export function useAudioPlayer() {
 		}
 	};
 
-	const setMobileVolume = () => {
-		volume.value = 100;
-		handleEvent('changeVolume', 1);
-	};
 
 	if (!watchersInitialized) {
 		watchersInitialized = true;
@@ -199,7 +210,54 @@ export function useAudioPlayer() {
 			} catch { /* music load failure is non-critical */
 			}
 		});
+
+		watch(() => playQueueStore.queue.currentMusicId, async () => {
+			try {
+				await playQueueItem();
+			} catch { /* queue item load failure is non-critical */
+			}
+		});
 	}
+
+	const playNext = async () => {
+		const beforeIndex = playQueueStore.queue.currentIndex;
+		const beforeMusicId = playQueueStore.queue.currentMusicId;
+		const moved = playQueueStore.next();
+		if (!moved) {
+			paused.value = true;
+			globalStore.global.canPlay = false;
+			return;
+		}
+		globalStore.global.canPlay = true;
+		if (beforeIndex === playQueueStore.queue.currentIndex && beforeMusicId === playQueueStore.queue.currentMusicId) {
+			currentTime.value = 0;
+			progressData.percentage = 0;
+			await handleEvent('play', null);
+		}
+	};
+
+	const playPrev = async () => {
+		const beforeIndex = playQueueStore.queue.currentIndex;
+		const beforeMusicId = playQueueStore.queue.currentMusicId;
+		const moved = playQueueStore.prev();
+		if (!moved) return;
+		globalStore.global.canPlay = true;
+		if (beforeIndex === playQueueStore.queue.currentIndex && beforeMusicId === playQueueStore.queue.currentMusicId) {
+			currentTime.value = 0;
+			progressData.percentage = 0;
+			await handleEvent('play', null);
+		}
+	};
+
+	const playModeTitle = computed(() => {
+		const titleMap = {
+			LOOP: '列表循环',
+			SEQUENCE: '顺序播放',
+			RANDOM: '随机播放',
+			SINGLE_LOOP: '单曲循环',
+		};
+		return titleMap[playQueueStore.queue.playMode];
+	});
 
 	const handleSeek = async (forward: number) => {
 		let targetTime = forward === -1 ? currentTime.value - 15 : currentTime.value + 15;
@@ -258,6 +316,7 @@ export function useAudioPlayer() {
 			playerInstance.value.on(Events.PLAYING, () => loading.value = false);
 			playerInstance.value.on(Events.SEEKED, () => loading.value = false);
 			playerInstance.value.on(Events.ERROR, () => loading.value = false);
+			playerInstance.value.on(Events.ENDED, playNext);
 
 			const media = getMediaElement();
 			media?.addEventListener('timeupdate', onTimeUpdate);
@@ -289,11 +348,19 @@ export function useAudioPlayer() {
 			} catch { /* non-critical: backend may be offline */
 			}
 
+			await playQueueStore.restoreQueue();
+			if (playQueueStore.currentItem?.music) {
+				currentTime.value = playQueueStore.queue.currentTime || currentTime.value;
+				globalStore.global.media.currentTime = currentTime.value;
+				await playQueueItem();
+			}
+
 			if (globalStore.global.mobile) {
-				setMobileVolume();
+				volume.value = 50;
+				await handleEvent('changeVolume', 0.5);
 			} else {
 				const localVolume = getData(VOLUME_MUSIC);
-				volume.value = localVolume ? Number.parseInt(localVolume) : 20;
+				volume.value = localVolume ? Number.parseInt(localVolume) : 50;
 				await handleEvent('changeVolume', volume.value / 100);
 			}
 
@@ -330,6 +397,10 @@ export function useAudioPlayer() {
 		setMusic,
 		handleEvent,
 		handleSeek,
+		playNext,
+		playPrev,
+		playModeTitle,
+		cyclePlayMode: playQueueStore.cyclePlayMode,
 		init,
 		destroy,
 	};

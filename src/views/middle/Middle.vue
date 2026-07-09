@@ -113,6 +113,8 @@ const handleTouchEnd = () => {
 <style scoped lang="scss">
 .middle-wrapper {
   position: relative;
+  flex: 1;
+  min-width: 0;
   width: 100%;
   overflow: hidden;
   overflow-y: scroll;
