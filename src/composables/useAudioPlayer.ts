@@ -95,6 +95,7 @@ export function useAudioPlayer() {
 		if (!playerInstance.value) return;
 		setting.value.currentTime = Math.floor(currentTime.value);
 		if (eventName === 'play') {
+			globalStore.global.canPlay = true;
 			paused.value = false;
 			playerInstance.value!.currentTime = currentTime.value;
 			loading.value = true;
@@ -103,10 +104,12 @@ export function useAudioPlayer() {
 				loading.value = false;
 				await updateSettingFun();
 			} catch {
+				globalStore.global.canPlay = false;
 				paused.value = true;
 				loading.value = false;
 			}
 		} else if (eventName === 'pause') {
+			globalStore.global.canPlay = false;
 			paused.value = true;
 			playerInstance.value!.pause();
 			await updateSettingFun();
@@ -217,6 +220,15 @@ export function useAudioPlayer() {
 			} catch { /* queue item load failure is non-critical */
 			}
 		});
+
+		watch(() => globalStore.global.canPlay, async (canPlay) => {
+			if (!playerInstance.value || !music.id || loading.value) return;
+			if (canPlay && paused.value) {
+				await handleEvent('play', null);
+			} else if (!canPlay && !paused.value) {
+				await handleEvent('pause', null);
+			}
+		});
 	}
 
 	const playNext = async () => {
@@ -304,7 +316,10 @@ export function useAudioPlayer() {
 			setMetadataPreload();
 
 			playerInstance.value.on(Events.TIME_UPDATE, onTimeUpdate);
-			playerInstance.value.on(Events.PLAY, () => paused.value = false);
+			playerInstance.value.on(Events.PLAY, () => {
+				globalStore.global.canPlay = true;
+				paused.value = false;
+			});
 			playerInstance.value.on(Events.PAUSE, () => paused.value = true);
 			playerInstance.value.on(Events.LOAD_START, () => loading.value = true);
 			playerInstance.value.on(Events.WAITING, () => loading.value = true);
@@ -405,3 +420,4 @@ export function useAudioPlayer() {
 		destroy,
 	};
 }
+

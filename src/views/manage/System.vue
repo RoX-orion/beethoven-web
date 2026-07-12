@@ -83,7 +83,7 @@ onMounted(() => {
 .system-card {
   border: 1px solid var(--surface-border);
   border-radius: 1.35rem;
-  background: rgba(255, 255, 255, .82);
+  background: var(--surface-color-strong);
   box-shadow: var(--surface-shadow);
   padding: 1.2rem;
 }
@@ -124,7 +124,7 @@ h2 {
 .field-card {
   padding: 1rem;
   border-radius: 1rem;
-  background: rgba(243, 247, 252, .88);
+  background: var(--surface-color-muted);
 }
 
 .label-text {

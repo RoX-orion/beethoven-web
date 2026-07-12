@@ -15,12 +15,27 @@
   --surface-color: rgba(255, 255, 255, .76);
   --surface-color-strong: rgba(255, 255, 255, .94);
   --surface-color-muted: rgba(245, 248, 250, .78);
+  --surface-color-elevated: rgba(255, 255, 255, .97);
   --surface-hover: rgba(255, 255, 255, .86);
   --surface-active: rgba(55, 125, 255, .12);
+  --brand-soft: rgba(55, 125, 255, .1);
+  --brand-border: rgba(55, 125, 255, .22);
   --surface-border: rgba(24, 33, 47, .09);
   --surface-border-strong: rgba(24, 33, 47, .16);
   --surface-shadow: 0 .75rem 2rem rgba(32, 53, 77, .08);
   --surface-shadow-strong: 0 1rem 2.5rem rgba(32, 53, 77, .14);
+  --control-bg: rgba(255, 255, 255, .72);
+  --control-bg-focus: rgba(255, 255, 255, .95);
+  --control-inset-shadow: inset 0 1px 0 rgba(255, 255, 255, .85);
+  --surface-glow: radial-gradient(circle at top right, rgba(106, 168, 255, .18), transparent 32%),
+  linear-gradient(135deg, rgba(255, 255, 255, .92), rgba(242, 248, 255, .84));
+  --soft-card-bg: rgba(255, 255, 255, .58);
+  --empty-state-bg: rgba(255, 255, 255, .36);
+  --overlay-bg: rgba(9, 16, 28, .54);
+  --skeleton-from: rgba(222, 231, 239, .72);
+  --skeleton-mid: rgba(245, 248, 251, .92);
+  --progress-track: rgba(101, 115, 134, .22);
+  --brand-shadow: rgba(55, 125, 255, .22);
   --text-primary: #18212f;
   --text-secondary: #657386;
   --text-tertiary: #8a95a3;
@@ -30,6 +45,7 @@
   --brand-warm: #f5a524;
   --focus-ring: rgba(55, 125, 255, .16);
   --danger: #d94a4a;
+  --danger-gradient: linear-gradient(135deg, #e05a5a, #cf3b3b);
   --radius-control: .5rem;
   --radius-card: .5rem;
   --radius-panel: .75rem;
@@ -39,7 +55,7 @@
   radial-gradient(circle at 86% 12%, rgba(118, 146, 255, .22), transparent 24rem),
   linear-gradient(135deg, #f7fbff 0%, #edf5ff 48%, #f8fbff 100%);
   --light-theme: linear-gradient(0deg, rgba(243, 231, 233, 1) 0%, rgba(227, 238, 255, 1) 99%, rgba(227, 238, 255, 1) 100%);
-  --dark-theme: #212121;
+  --dark-theme: #080d16;
 
   --color-placeholders: #a2acb4;
   --color-scrollbar: rgba(90, 90, 90, 0.3);
@@ -48,4 +64,53 @@
   --sidebar-width-collapsed: 4.5rem;
 
   --default-background-color: rgba(0, 0, 0, .1);
+}
+
+/* ── Dark theme ──────────────────────────────────────────────── */
+.dark {
+  --svg-button-color: rgba(226, 234, 247, .72);
+  --svg-button-shadow: rgba(120, 170, 255, .16);
+
+  --base-shadow: rgba(0, 0, 0, .38);
+  --surface-color: rgba(16, 23, 36, .76);
+  --surface-color-strong: rgba(18, 27, 43, .94);
+  --surface-color-muted: rgba(12, 19, 31, .82);
+  --surface-color-elevated: rgba(24, 35, 54, .98);
+  --surface-hover: rgba(30, 42, 62, .88);
+  --surface-active: rgba(120, 170, 255, .18);
+  --brand-soft: rgba(120, 170, 255, .13);
+  --brand-border: rgba(120, 170, 255, .3);
+  --surface-border: rgba(150, 166, 195, .14);
+  --surface-border-strong: rgba(170, 188, 220, .22);
+  --surface-shadow: 0 .9rem 2.2rem rgba(0, 0, 0, .32);
+  --surface-shadow-strong: 0 1.25rem 3rem rgba(0, 0, 0, .48);
+  --control-bg: rgba(21, 31, 48, .78);
+  --control-bg-focus: rgba(27, 39, 60, .96);
+  --control-inset-shadow: inset 0 1px 0 rgba(255, 255, 255, .055);
+  --surface-glow: radial-gradient(circle at top right, rgba(120, 170, 255, .18), transparent 34%),
+  linear-gradient(135deg, rgba(22, 32, 50, .96), rgba(13, 21, 35, .9));
+  --soft-card-bg: rgba(26, 38, 58, .66);
+  --empty-state-bg: rgba(18, 28, 45, .58);
+  --overlay-bg: rgba(2, 6, 14, .72);
+  --skeleton-from: rgba(35, 48, 70, .72);
+  --skeleton-mid: rgba(57, 73, 102, .88);
+  --progress-track: rgba(166, 180, 202, .2);
+  --brand-shadow: rgba(120, 170, 255, .26);
+  --text-primary: #e7eef9;
+  --text-secondary: #a6b4ca;
+  --text-tertiary: #8493aa;
+  --brand-primary: #78aaff;
+  --brand-primary-hover: #9bc2ff;
+  --brand-accent: #6fd6ff;
+  --brand-warm: #f2c66d;
+  --focus-ring: rgba(120, 170, 255, .28);
+  --danger: #ff7474;
+  --danger-gradient: linear-gradient(135deg, #ff7474, #df4c5f);
+
+  --background-color-light: radial-gradient(circle at 10% 8%, rgba(66, 130, 255, .18), transparent 24rem),
+  radial-gradient(circle at 84% 0%, rgba(61, 194, 255, .12), transparent 26rem),
+  linear-gradient(135deg, #070c14 0%, #0c1422 48%, #101827 100%);
+  --color-placeholders: #69778e;
+  --color-scrollbar: rgba(139, 157, 187, 0.34);
+  --default-background-color: rgba(255, 255, 255, .055);
 }

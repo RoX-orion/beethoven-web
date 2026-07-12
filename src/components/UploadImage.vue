@@ -122,7 +122,7 @@ const fileChange = (event: Event) => {
   min-height: 8.5rem;
   border: 1px dashed rgba(55, 125, 255, .28);
   border-radius: 1rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, .96), rgba(242, 248, 255, .88));
+  background: var(--surface-glow);
   display: flex;
   flex-direction: column;
   align-items: center;

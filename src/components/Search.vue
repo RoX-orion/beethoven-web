@@ -10,7 +10,7 @@
       v-model="search"/>
     <IconButton
       icon-name="close"
-      icon-color="rgba(0, 0, 0, .5)"
+      icon-color="var(--svg-button-color)"
       v-show="search.trim().length > 0"
       @click="resetSearch"/>
   </div>
@@ -47,13 +47,13 @@ const resetSearch = () => {
   padding: 5px .65rem;
   outline: none;
   border: 1px solid var(--surface-border);
-  background: rgba(255, 255, 255, .72);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .85);
+  background: var(--control-bg);
+  box-shadow: var(--control-inset-shadow);
   transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
 
   &:focus-within {
     border-color: rgba(55, 125, 255, .52);
-    background: rgba(255, 255, 255, .95);
+    background: var(--control-bg-focus);
     box-shadow: 0 0 0 .25rem var(--focus-ring);
   }
 }

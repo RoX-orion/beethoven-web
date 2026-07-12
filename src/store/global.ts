@@ -3,6 +3,20 @@ import { reactive, ref } from 'vue';
 import { ComponentType, MusicItemType } from '@/types/global';
 import { getData, setData } from "@/util/localStorage";
 
+const DARK_MODE_KEY = 'beethoven-dark-mode';
+
+function loadDarkMode(): boolean {
+	const stored = getData(DARK_MODE_KEY);
+	if (stored !== null && stored !== undefined) return stored === 'true';
+	return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
+}
+
+function applyDarkClass(dark: boolean) {
+	if (dark) document.documentElement.classList.add('dark');
+	else document.documentElement.classList.remove('dark');
+	document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#080d16' : '#f7fbff');
+}
+
 interface ComponentState {
 	currentRightComponent: ComponentType;
 }
@@ -68,7 +82,11 @@ export const useGlobalStore = defineStore('global', () => {
 		mobile: boolean;
 		canPlay: boolean;
 		showQueue: boolean;
+		darkMode: boolean;
 	}
+
+	const savedDark = loadDarkMode();
+	applyDarkClass(savedDark);
 	const global = reactive<GlobalState>({
 		media: {
 			musicId: undefined,
@@ -92,10 +110,16 @@ export const useGlobalStore = defineStore('global', () => {
 		mobile: false,
 		canPlay: false,
 		showQueue: true,
+		darkMode: savedDark,
 	});
 
 	return {
 		global,
+		toggleDarkMode() {
+			global.darkMode = !global.darkMode;
+			applyDarkClass(global.darkMode);
+			setData(DARK_MODE_KEY, String(global.darkMode));
+		},
 	}
 });
 
@@ -117,3 +141,4 @@ export function getMusicInfoFromLocal(): MusicItemType | undefined {
 	if (!raw) return undefined;
 	return JSON.parse(raw);
 }
+

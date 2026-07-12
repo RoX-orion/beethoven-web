@@ -12,7 +12,7 @@
           </div>
 
           <div class="mini-controls">
-            <button class="mini-icon-btn" type="button" aria-label="上一首">
+            <button class="mini-icon-btn" type="button" aria-label="上一首" @click.stop="playPrev">
               <svg-icon name="prev" size="1.1rem"/>
             </button>
             <button
@@ -25,7 +25,7 @@
               <svg-icon v-if="paused" name="pause" size="1.25rem"/>
               <svg-icon v-else name="play" size="1.25rem"/>
             </button>
-            <button class="mini-icon-btn" type="button" aria-label="下一首">
+            <button class="mini-icon-btn" type="button" aria-label="下一首" @click.stop="playNext">
               <svg-icon name="next" size="1.1rem"/>
             </button>
           </div>
@@ -95,6 +95,8 @@ const {
   changeCurrentTime,
   updateTime,
   changeMute,
+  playPrev,
+  playNext,
 } = useAudioPlayer();
 
 const expanded = ref(false);
@@ -141,7 +143,7 @@ const expanded = ref(false);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #e8f0fe 0%, #d4e4fc 100%);
+  background: linear-gradient(135deg, var(--surface-active), var(--surface-color-muted));
 
   &.spinning {
     animation: disc-spin 8s linear infinite;
@@ -283,11 +285,16 @@ const expanded = ref(false);
   border-radius: 50%;
   color: var(--text-secondary);
   background: transparent;
-  cursor: default;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    color: var(--text-primary);
+    background: var(--surface-active);
+  }
 }
 
 .mini-play-btn {
@@ -314,7 +321,7 @@ const expanded = ref(false);
     position: absolute;
     inset: 0;
     border-radius: 50%;
-    background: conic-gradient(from 0deg, rgba(51, 144, 236, .16), rgba(51, 144, 236, 1), rgba(51, 144, 236, .16));
+    background: conic-gradient(from 0deg, rgba(120, 170, 255, .16), var(--brand-primary), rgba(120, 170, 255, .16));
     animation: play-ring-spin .9s linear infinite;
     mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
     -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));

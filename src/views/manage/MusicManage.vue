@@ -391,7 +391,7 @@ onMounted(() => {
 .upload-card,
 .form-card {
   border: 1px solid var(--surface-border);
-  background: rgba(255, 255, 255, .82);
+  background: var(--surface-color-strong);
   box-shadow: var(--surface-shadow);
 }
 
@@ -401,7 +401,7 @@ onMounted(() => {
   display: grid;
   grid-template-columns: 1.35fr auto;
   gap: 1rem;
-  background: radial-gradient(circle at top right, rgba(106, 168, 255, .18), transparent 30%), linear-gradient(135deg, rgba(255, 255, 255, .92), rgba(242, 248, 255, .84));
+  background: var(--surface-glow);
 }
 
 .hero-panel h2 {
@@ -432,7 +432,7 @@ onMounted(() => {
   min-width: 12rem;
   padding: 1rem;
   border-radius: 1.1rem;
-  background: rgba(255, 255, 255, .75);
+  background: var(--soft-card-bg);
   border: 1px solid rgba(55, 125, 255, .12);
 
   span {
@@ -514,7 +514,7 @@ onMounted(() => {
 }
 
 .btn-danger.button-wrapper {
-  background: linear-gradient(135deg, #e05a5a, #cf3b3b);
+  background: var(--danger-gradient);
   box-shadow: 0 .7rem 1.25rem rgba(217, 74, 74, .16);
 }
 
@@ -623,7 +623,3 @@ onMounted(() => {
   }
 }
 </style>
-
-
-
-

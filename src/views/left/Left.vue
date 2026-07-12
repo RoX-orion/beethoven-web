@@ -7,7 +7,7 @@
       <IconButton
         size="1.5rem"
         icon-name="add"
-        icon-color="rgba(0, 0, 0, .5)"
+        icon-color="var(--svg-button-color)"
         @click="addPlaylistDialogVisible = !addPlaylistDialogVisible"/>
     </div>
     <div v-if="playlistLoading" class="playlist-skeleton-list">
@@ -49,7 +49,7 @@
       <IconButton
         size="1.5rem"
         icon-name="add"
-        icon-color="rgba(0, 0, 0, .5)"
+        icon-color="var(--svg-button-color)"
         @click="addPlaylistDialogVisible = !addPlaylistDialogVisible; open = false"/>
     </div>
     <div v-if="playlistLoading" class="playlist-skeleton-list">
@@ -210,7 +210,7 @@ const onClose = () => {
     margin: -.25rem -.25rem .5rem;
     padding: .25rem;
     border-radius: .75rem;
-    background: rgba(255, 255, 255, .52);
+    background: var(--soft-card-bg);
   }
 }
 
@@ -260,7 +260,7 @@ const onClose = () => {
   color: var(--text-secondary);
   font-size: .9rem;
   text-align: center;
-  background: rgba(255, 255, 255, .36);
+  background: var(--empty-state-bg);
 }
 
 .playlist-dialog {

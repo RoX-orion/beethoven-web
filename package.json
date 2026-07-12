@@ -24,19 +24,19 @@
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.9",
-    "@types/node": "^26.1.0",
+    "@types/node": "^26.1.1",
     "@vitejs/plugin-vue": "^6.0.7",
     "@vue/tsconfig": "^0.9.1",
     "fast-glob": "^3.3.3",
     "npm-run-all2": "^9.0.2",
     "sass": "^1.101.0",
     "sass-loader": "^17.0.0",
-    "typescript": "^6.0.3",
+    "typescript": "^5.9.3",
     "unplugin-vue-components": "^32.1.0",
-    "vite": "^8.1.3",
+    "vite": "^8.1.4",
     "vite-plugin-svg-icons": "^2.0.1",
     "vite-plugin-vue-devtools": "^8.1.5",
-    "vue-tsc": "^3.3.6"
+    "vue-tsc": "^3.3.7"
   },
   "overrides": {
     "vite-plugin-inspect": "^11.4.1",

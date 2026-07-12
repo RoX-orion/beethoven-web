@@ -9,12 +9,15 @@
     <div class="flex-row header-right">
       <div class="button-group flex-row">
         <router-link to="/">
-          <svg-icon class="button pointer" name="message" size="1.5rem" color="rgba(0, 0, 0, .5)"/>
+          <svg-icon class="button pointer" name="message" size="1.5rem" color="var(--svg-button-color)"/>
         </router-link>
         <router-link to="/bug-report">
           <svg-icon class="button pointer" name="bug" size="1.5rem"/>
         </router-link>
       </div>
+      <button class="dark-toggle" type="button" :aria-label="darkLabel" @click="globalStore.toggleDarkMode()">
+        <svg-icon :name="globalStore.global.darkMode ? 'sun' : 'moon'" size="1.15rem"/>
+      </button>
       <Account/>
     </div>
   </header>
@@ -24,7 +27,7 @@
 import Search from "@/components/Search.vue";
 import Account from './Account.vue';
 import SvgIcon from '@/components/SvgIcon.vue';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import mitt from '@/util/eventBus';
 import { useGlobalStore } from '@/store/global';
 import { debounce } from '@/util/schedulers';
@@ -34,6 +37,7 @@ import IconButton from '@/components/IconButton.vue';
 const key = ref('');
 
 const globalStore = useGlobalStore();
+const darkLabel = computed(() => globalStore.global.darkMode ? '切換亮色模式' : '切換暗色模式');
 const goToHome = () => {
   router.push('/');
 }
@@ -114,6 +118,27 @@ const openLeft = () => {
           background: var(--svg-button-shadow);
           transform: translateY(-1px);
         }
+      }
+    }
+
+    .dark-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.45rem;
+      height: 2.45rem;
+      margin-left: .35rem;
+      border: 1px solid var(--surface-border);
+      border-radius: 2rem;
+      color: var(--text-secondary);
+      background: transparent;
+      cursor: pointer;
+      transition: all .2s ease;
+
+      &:hover {
+        color: var(--brand-primary);
+        border-color: var(--brand-primary);
+        background: var(--surface-active);
       }
     }
   }

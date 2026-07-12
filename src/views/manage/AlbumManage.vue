@@ -184,7 +184,7 @@ onMounted(() => {
 .list-panel {
   border: 1px solid var(--surface-border);
   border-radius: 1.2rem;
-  background: rgba(255, 255, 255, .8);
+  background: var(--surface-color);
   box-shadow: var(--surface-shadow);
 }
 
@@ -235,7 +235,7 @@ onMounted(() => {
 
 .btn-danger:deep(.button-wrapper),
 .btn-danger.button-wrapper {
-  background: linear-gradient(135deg, #e05a5a, #cf3b3b);
+  background: var(--danger-gradient);
   box-shadow: 0 .7rem 1.25rem rgba(217, 74, 74, .16);
 }
 
@@ -267,7 +267,7 @@ onMounted(() => {
   .album-card {
     border: 1px solid rgba(55, 125, 255, .1);
     border-radius: 1rem;
-    background: rgba(244, 248, 252, .82);
+    background: var(--surface-color-muted);
     padding: 1rem;
     display: grid;
     gap: 1rem;

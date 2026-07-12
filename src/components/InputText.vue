@@ -11,7 +11,7 @@
       icon-name="close"
       size=".85rem"
       @click="text = ''"
-      icon-color="rgba(0, 0, 0, .5)"/>
+      icon-color="var(--svg-button-color)"/>
   </div>
 </template>
 <script setup lang="ts">
@@ -57,7 +57,7 @@ const updateText = (event: any) => {
     border: 1px solid var(--surface-border);
     border-radius: var(--radius-control);
     color: var(--text-primary);
-    background-color: rgba(255, 255, 255, .7);
+    background-color: var(--control-bg);
     transition: border-color .18s ease, background-color .18s ease, box-shadow .18s ease;
 
     &::placeholder {
@@ -66,7 +66,7 @@ const updateText = (event: any) => {
 
     &:focus {
       border-color: rgba(55, 125, 255, .52);
-      background-color: rgba(255, 255, 255, .95);
+      background-color: var(--control-bg-focus);
       box-shadow: 0 0 0 .25rem var(--focus-ring);
     }
   }

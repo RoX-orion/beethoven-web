@@ -5,6 +5,7 @@ import { ComponentType } from '@/types/global';
 import { componentState } from '@/store/componentState';
 import { useGlobalStore } from '@/store/global';
 import { useAudioPlayer } from '@/composables/useAudioPlayer';
+import { ConfigProvider, theme as antTheme } from 'ant-design-vue';
 
 const Player = defineAsyncComponent(() => import('@/views/player/Player.vue'));
 const MiniPlayer = defineAsyncComponent(() => import('@/views/player/MiniPlayer.vue'));
@@ -23,6 +24,15 @@ watch(() => route?.params?.type, async type => {
 });
 
 const globalStore = useGlobalStore();
+const antdTheme = computed(() => ({
+  algorithm: globalStore.global.darkMode ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
+  token: {
+    colorPrimary: globalStore.global.darkMode ? '#78aaff' : '#377dff',
+    colorInfo: globalStore.global.darkMode ? '#78aaff' : '#377dff',
+    colorError: globalStore.global.darkMode ? '#ff7474' : '#d94a4a',
+    borderRadius: 8,
+  },
+}));
 watch(() => globalStore.global.searchKey, () => {
   const query = route.query;
   if (route?.params?.type === 'music' && query?.hasOwnProperty('search') && globalStore?.global?.searchKey?.length > 0) {
@@ -60,10 +70,12 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div id="audioPlayer" style="display: none"></div>
-  <RouterView />
-  <Player v-if="isHome"/>
-  <MiniPlayer v-else-if="showMiniPlayer"/>
+  <ConfigProvider :theme="antdTheme">
+    <div id="audioPlayer" style="display: none"></div>
+    <RouterView/>
+    <Player v-if="isHome"/>
+    <MiniPlayer v-else-if="showMiniPlayer"/>
+  </ConfigProvider>
 </template>
 
 <style scoped>

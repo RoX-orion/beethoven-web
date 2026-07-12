@@ -140,6 +140,13 @@ const handleAuth = async () => {
   linear-gradient(135deg, #f7fbff 0%, #eef6f0 48%, #fff7ee 100%);
 }
 
+:global(.dark) .auth-page {
+  color: var(--text-primary);
+  background: radial-gradient(circle at 18% 16%, rgba(64, 158, 255, .18), transparent 28rem),
+  radial-gradient(circle at 86% 82%, rgba(106, 168, 255, .1), transparent 24rem),
+  var(--background-color-light);
+}
+
 .auth-shell {
   width: min(68rem, 100%);
   min-height: 39rem;
@@ -151,6 +158,12 @@ const handleAuth = async () => {
   background: rgba(255, 255, 255, .72);
   box-shadow: 0 1.5rem 4rem rgba(32, 53, 77, .18);
   backdrop-filter: blur(1.5rem);
+}
+
+:global(.dark) .auth-shell {
+  border-color: var(--surface-border);
+  background: var(--surface-color);
+  box-shadow: var(--surface-shadow-strong);
 }
 
 .brand-panel {
@@ -309,6 +322,16 @@ const handleAuth = async () => {
   }
 }
 
+:global(.dark) .card-heading {
+  h2 {
+    color: var(--text-primary);
+  }
+
+  span {
+    color: var(--text-secondary);
+  }
+}
+
 .github-button {
   display: flex;
   align-items: center;
@@ -361,6 +384,14 @@ const handleAuth = async () => {
   }
 }
 
+:global(.dark) .divider {
+  color: var(--text-tertiary);
+
+  span {
+    background: var(--surface-border-strong);
+  }
+}
+
 .security-note {
   display: flex;
   align-items: center;
@@ -374,6 +405,12 @@ const handleAuth = async () => {
   p {
     line-height: 1.55;
   }
+}
+
+:global(.dark) .security-note {
+  border-color: var(--brand-border);
+  color: var(--text-secondary);
+  background: var(--brand-soft);
 }
 
 .note-icon {

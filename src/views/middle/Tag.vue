@@ -26,7 +26,7 @@ const TagList = [
     border: 1px solid var(--surface-border);
     border-radius: 999px;
     color: var(--text-secondary);
-    background: rgba(255, 255, 255, .58);
+    background: var(--soft-card-bg);
     position: relative;
     cursor: pointer;
     transition: border-color .18s ease, background-color .18s ease, color .18s ease, transform .18s ease;
@@ -49,3 +49,4 @@ const TagList = [
   }
 }
 </style>
+

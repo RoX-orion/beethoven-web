@@ -154,6 +154,69 @@ img {
   background: rgba(105, 117, 134, .32);
 }
 
+
+.dark {
+  color-scheme: dark;
+}
+
+.dark .ant-modal .ant-modal-content,
+.dark .ant-drawer .ant-drawer-content,
+.dark .ant-popover .ant-popover-inner,
+.dark .ant-dropdown .ant-dropdown-menu,
+.dark .ant-picker-dropdown .ant-picker-panel-container {
+  color: var(--text-primary);
+  background: var(--surface-color-strong);
+  border-color: var(--surface-border);
+  box-shadow: var(--surface-shadow-strong);
+}
+
+.dark .ant-modal .ant-modal-close,
+.dark .ant-drawer .ant-drawer-close,
+.dark .ant-popover,
+.dark .ant-dropdown,
+.dark .ant-select-dropdown,
+.dark .ant-picker-dropdown {
+  color: var(--text-secondary);
+}
+
+.dark .ant-modal .ant-modal-title,
+.dark .ant-drawer .ant-drawer-title,
+.dark .ant-form-item-label > label,
+.dark .ant-empty-description,
+.dark .ant-table,
+.dark .ant-table-wrapper,
+.dark .ant-pagination,
+.dark .ant-select-selection-item,
+.dark .ant-picker-input > input {
+  color: var(--text-primary);
+}
+
+.dark .ant-input,
+.dark .ant-input-affix-wrapper,
+.dark .ant-input-number,
+.dark .ant-select-selector,
+.dark .ant-picker {
+  color: var(--text-primary) !important;
+  background: var(--control-bg) !important;
+  border-color: var(--surface-border) !important;
+  box-shadow: var(--control-inset-shadow);
+}
+
+.dark .ant-input::placeholder,
+.dark .ant-picker-input > input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.dark .ant-table-thead > tr > th,
+.dark .ant-table-tbody > tr > td,
+.dark .ant-table-tbody > tr.ant-table-row:hover > td,
+.dark .ant-list-item,
+.dark .ant-dropdown .ant-dropdown-menu-item:hover,
+.dark .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+  color: var(--text-primary);
+  background: var(--surface-color-muted);
+  border-color: var(--surface-border);
+}
 .ant-modal .ant-modal-content,
 .ant-drawer .ant-drawer-content {
   border: 1px solid var(--surface-border);
@@ -205,9 +268,9 @@ img {
   border-radius: .5rem;
   background: linear-gradient(
           90deg,
-          rgba(222, 231, 239, .72) 25%,
-          rgba(245, 248, 251, .92) 37%,
-          rgba(222, 231, 239, .72) 63%
+          var(--skeleton-from) 25%,
+          var(--skeleton-mid) 37%,
+          var(--skeleton-from) 63%
   );
   background-size: 400% 100%;
   animation: skeleton-shimmer 1.35s ease-in-out infinite;

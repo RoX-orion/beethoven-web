@@ -146,12 +146,12 @@ const handleTouchEnd = () => {
   gap: .45rem;
   height: 2.1rem;
   padding: 0 .85rem;
-  border: 1px solid rgba(105, 117, 134, .18);
+  border: 1px solid var(--surface-border);
   border-radius: 999px;
   color: var(--text-secondary);
   font-size: .82rem;
-  background: rgba(255, 255, 255, .86);
-  box-shadow: 0 .45rem 1rem rgba(32, 53, 77, .12);
+  background: var(--surface-color-elevated);
+  box-shadow: var(--surface-shadow);
   transform: translate(-50%, -120%);
   transition: transform .18s ease, opacity .18s ease;
   opacity: 0;
@@ -166,7 +166,7 @@ const handleTouchEnd = () => {
 .pull-refresh-spinner {
   width: .85rem;
   height: .85rem;
-  border: 2px solid rgba(105, 117, 134, .24);
+  border: 2px solid var(--surface-border-strong);
   border-top-color: var(--brand-primary);
   border-radius: 50%;
 }

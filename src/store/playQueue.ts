@@ -105,8 +105,27 @@ export const usePlayQueueStore = defineStore('playQueue', () => {
 		return playAt(index);
 	}
 
+	function findMusicIndex(musicId?: string) {
+		if (!musicId) return -1;
+		return queue.items.findIndex(item => item.musicId === musicId);
+	}
+
+	function refreshExistingMusic(index: number, music: MusicItemType) {
+		if (index < 0) return;
+		queue.items[index].music = {
+			...queue.items[index].music,
+			...music,
+		};
+		persistQueue();
+	}
+
 	async function addToNext(music: MusicItemType, sourceType?: QueueSourceType | string, sourceId?: string) {
 		if (!music.id) return;
+		const existingIndex = findMusicIndex(music.id);
+		if (existingIndex >= 0) {
+			refreshExistingMusic(existingIndex, music);
+			return;
+		}
 		if (getData(TOKEN)) {
 			const response = await addQueueItemToNext({ musicId: music.id, sourceType, sourceId });
 			applyRemoteQueue(response.data);
@@ -124,6 +143,11 @@ export const usePlayQueueStore = defineStore('playQueue', () => {
 
 	async function addToEnd(music: MusicItemType, sourceType?: QueueSourceType | string, sourceId?: string) {
 		if (!music.id) return;
+		const existingIndex = findMusicIndex(music.id);
+		if (existingIndex >= 0) {
+			refreshExistingMusic(existingIndex, music);
+			return;
+		}
 		if (getData(TOKEN)) {
 			const response = await addQueueItemToEnd({ musicId: music.id, sourceType, sourceId });
 			applyRemoteQueue(response.data);
@@ -335,3 +359,4 @@ export const usePlayQueueStore = defineStore('playQueue', () => {
 		restoreQueue,
 	};
 });
+

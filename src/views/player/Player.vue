@@ -267,7 +267,7 @@ const useFallbackCover = (event: Event) => {
     position: absolute;
     inset: 0;
     border-radius: 50%;
-    background: conic-gradient(from 0deg, rgba(51, 144, 236, .16), rgba(51, 144, 236, 1), rgba(51, 144, 236, .16));
+    background: conic-gradient(from 0deg, rgba(120, 170, 255, .16), var(--brand-primary), rgba(120, 170, 255, .16));
     animation: play-ring-spin .9s linear infinite;
     mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
     -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
@@ -560,3 +560,4 @@ const useFallbackCover = (event: Event) => {
   }
 }
 </style>
+

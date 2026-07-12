@@ -31,7 +31,7 @@
         </div>
         <div class="flex-row">
           <div style="margin: auto 0; line-height: 1rem">{{ durationFormater(music.duration) }}</div>
-          <IconButton v-if="music.id" icon-name="add-circle" size="1.25rem" icon-color="rgba(0, 0, 0, .5)"
+          <IconButton v-if="music.id" icon-name="add-circle" size="1.25rem" icon-color="var(--svg-button-color)"
                       @click.stop="openAddMusicToPlaylistDialog(music.id)"/>
         </div>
       </div>
@@ -180,13 +180,13 @@ const addMusicToPlaylistFun = () => {
   padding: .75rem .85rem;
   border: 1px solid var(--surface-border);
   border-radius: .75rem;
-  background: rgba(255, 255, 255, .52);
+  background: var(--soft-card-bg);
   cursor: pointer;
   transition: border-color .18s ease, background-color .18s ease, transform .18s ease;
 
   &:hover {
-    border-color: rgba(55, 125, 255, .2);
-    background-color: rgba(255, 255, 255, .82);
+    border-color: var(--brand-border);
+    background-color: var(--surface-hover);
     transform: translateY(-1px);
   }
 }
@@ -209,7 +209,7 @@ const addMusicToPlaylistFun = () => {
   color: var(--text-secondary);
   font-size: .9rem;
   text-align: center;
-  background: rgba(255, 255, 255, .36);
+  background: var(--empty-state-bg);
 }
 
 .search-skeleton-list {
@@ -275,7 +275,7 @@ const addMusicToPlaylistFun = () => {
   color: var(--text-secondary);
   font-size: .9rem;
   text-align: center;
-  background: rgba(255, 255, 255, .36);
+  background: var(--empty-state-bg);
 }
 
 @media (max-width: 800px) {

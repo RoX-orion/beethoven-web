@@ -13,7 +13,7 @@ defineProps({
   },
   iconColor: {
     type: String,
-    default: 'rgb(0, 0, 0)'
+    default: 'var(--svg-button-color)',
   },
   size: {
     type: String,

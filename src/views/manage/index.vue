@@ -80,9 +80,9 @@ const currentTitle = computed(() => String(route.meta?.title ?? '后台管理'))
   justify-content: space-between;
   gap: 1rem;
   padding: 1.15rem 1.25rem;
-  background: rgba(247, 251, 255, .72);
+  background: var(--surface-color);
   backdrop-filter: blur(1.25rem);
-  border-bottom: 1px solid rgba(24, 33, 47, .06);
+  border-bottom: 1px solid var(--surface-border);
 }
 
 .header-content {
@@ -100,7 +100,7 @@ const currentTitle = computed(() => String(route.meta?.title ?? '后台管理'))
 .menu-button,
 .home-button {
   border: 1px solid var(--surface-border);
-  background: rgba(255, 255, 255, .72);
+  background: var(--control-bg);
   border-radius: .9rem;
   color: var(--text-primary);
 }

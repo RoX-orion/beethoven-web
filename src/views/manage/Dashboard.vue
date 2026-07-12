@@ -85,7 +85,7 @@ const shortcuts = [
 .panel {
   border: 1px solid var(--surface-border);
   border-radius: 1.4rem;
-  background: rgba(255, 255, 255, .78);
+  background: var(--surface-color);
   box-shadow: var(--surface-shadow);
   backdrop-filter: blur(1.1rem);
 }
@@ -95,7 +95,7 @@ const shortcuts = [
   grid-template-columns: 1.2fr 1fr;
   gap: 1rem;
   padding: 1.4rem;
-  background: radial-gradient(circle at top right, rgba(106, 168, 255, .18), transparent 36%), linear-gradient(135deg, rgba(255, 255, 255, .88), rgba(244, 249, 255, .82));
+  background: var(--surface-glow);
 }
 
 .hero-copy {
@@ -126,7 +126,7 @@ const shortcuts = [
 .shortcut-card {
   border-radius: 1.1rem;
   border: 1px solid rgba(55, 125, 255, .12);
-  background: rgba(255, 255, 255, .72);
+  background: var(--control-bg);
   padding: 1rem;
 }
 

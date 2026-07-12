@@ -175,15 +175,21 @@ const playAll = () => {
   buildPlaylistQueue(musicList.value[0]);
 };
 
-const isPlayingFromHere = computed(() => {
+const isCurrentPlaylistQueue = computed(() => {
   return playQueueStore.queue.sourceType === 'playlist'
     && playQueueStore.queue.sourceId === playlistId
     && playQueueStore.queue.items.length > 0;
 });
 
+const isPlayingFromHere = computed(() => {
+  return isCurrentPlaylistQueue.value && globalStore.global.canPlay;
+});
+
 const togglePlayAll = () => {
   if (isPlayingFromHere.value) {
     globalStore.global.canPlay = false;
+  } else if (isCurrentPlaylistQueue.value) {
+    globalStore.global.canPlay = true;
   } else {
     playAll();
   }
@@ -305,11 +311,10 @@ const removeMusicFun = (musicId: string) => {
   gap: 1.25rem;
   padding: 1.35rem;
   margin: 1rem;
-  border: 1px solid rgba(55, 125, 255, .1);
+  border: 1px solid var(--brand-border);
   border-radius: 1rem;
-  background: linear-gradient(135deg, rgba(55, 125, 255, .16), rgba(106, 168, 255, .1)),
-  rgba(255, 255, 255, .48);
-  box-shadow: 0 .9rem 2rem rgba(49, 92, 166, .08);
+  background: var(--surface-glow);
+  box-shadow: var(--surface-shadow);
 }
 
 .playlist-hero-cover {
@@ -356,14 +361,14 @@ const removeMusicFun = (musicId: string) => {
   border-radius: 50%;
   color: white;
   background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
-  box-shadow: 0 .75rem 1.35rem rgba(55, 125, 255, .24);
+  box-shadow: 0 .75rem 1.35rem var(--brand-shadow);
   cursor: pointer;
   transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
 
   &:hover {
     filter: brightness(1.02);
     transform: translateY(-1px);
-    box-shadow: 0 .9rem 1.6rem rgba(55, 125, 255, .28);
+    box-shadow: 0 .9rem 1.6rem var(--brand-shadow);
   }
 }
 
@@ -377,7 +382,7 @@ const removeMusicFun = (musicId: string) => {
   transition: background-color .18s ease, transform .18s ease;
 
   &:hover {
-    background-color: rgba(255, 255, 255, .62);
+    background-color: var(--soft-card-bg);
     transform: translateX(2px);
   }
 }
@@ -490,7 +495,7 @@ const removeMusicFun = (musicId: string) => {
   color: var(--text-secondary);
   font-size: .9rem;
   text-align: center;
-  background: rgba(255, 255, 255, .36);
+  background: var(--empty-state-bg);
 }
 
 .playlist-dialog {
@@ -550,3 +555,4 @@ const removeMusicFun = (musicId: string) => {
   }
 }
 </style>
+

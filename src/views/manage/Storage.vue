@@ -53,7 +53,7 @@ const insights = [
 .insight-panel {
   border: 1px solid var(--surface-border);
   border-radius: 1.2rem;
-  background: rgba(255, 255, 255, .78);
+  background: var(--surface-color);
   box-shadow: var(--surface-shadow);
   padding: 1.15rem;
 }
@@ -89,7 +89,7 @@ h3,
 
 .insight-item {
   border-radius: 1rem;
-  background: rgba(244, 248, 252, .82);
+  background: var(--surface-color-muted);
   padding: .95rem 1rem;
 }
 

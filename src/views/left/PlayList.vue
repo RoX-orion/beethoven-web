@@ -39,7 +39,7 @@ const playlist = defineProps({
   transition: background-color .18s ease, transform .18s ease, box-shadow .18s ease;
 
   &:hover {
-    background-color: rgba(255, 255, 255, .72);
+    background-color: var(--control-bg);
     box-shadow: 0 .45rem 1.2rem rgba(32, 53, 77, .08);
     transform: translateY(-1px);
   }
@@ -73,3 +73,4 @@ const playlist = defineProps({
   }
 }
 </style>
+

@@ -16,6 +16,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import type { ProgressType } from '@/types/global';
+import { useGlobalStore } from '@/store/global';
+
 const props = defineProps<{
   data: ProgressType;
 }>();
@@ -24,6 +26,7 @@ const seekLineContainer = ref<HTMLDialogElement>();
 const progressCanvas = ref<HTMLCanvasElement>();
 const seekButton = ref<HTMLDivElement>();
 let seeking = false;
+const globalStore = useGlobalStore();
 
 const drawProgressBar = (percentage: number) => {
   const canvas = progressCanvas.value;
@@ -31,9 +34,10 @@ const drawProgressBar = (percentage: number) => {
     const ctx = canvas.getContext('2d');
     if (ctx) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#e0e0e0';
+      const styles = getComputedStyle(canvas);
+      ctx.fillStyle = styles.getPropertyValue('--progress-track').trim() || '#d9e2ec';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(51, 144, 236, 1)';
+      ctx.fillStyle = styles.getPropertyValue('--brand-primary').trim() || '#377dff';
       ctx.fillRect(0, 0, canvas.width * (percentage / 100), canvas.height);
     }
   }
@@ -102,6 +106,9 @@ const computePercentage = computed(() => {
 });
 watch(() => props.data.percentage, (newVal) => {
   drawProgressBar(newVal);
+});
+watch(() => globalStore.global.darkMode, () => {
+  drawProgressBar(props.data.percentage);
 });
 onMounted(() => {
   drawProgressBar(props.data.percentage);

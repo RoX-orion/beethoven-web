@@ -6,7 +6,7 @@
 
         <IconButton
           icon-name="close"
-          icon-color="rgba(0, 0, 0, .5)"
+          icon-color="var(--svg-button-color)"
           size="1.2rem" @click="visible = false"/>
       </div>
       <slot></slot>
@@ -45,7 +45,7 @@ let visible = defineModel({
   transform: translateX(-50%);
   padding: 1rem;
   width: 100%;
-  background: rgba(227, 238, 255, 1);
+  background: var(--surface-color-strong);
   border-radius: .5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, .04), 0 0 6px rgba(0, 0, 0, .04);
 }
