@@ -1,13 +1,37 @@
-import { fileURLToPath, URL } from 'node:url';
-import { defineConfig } from 'vite';
+import {fileURLToPath, URL} from 'node:url';
+import {defineConfig, type Plugin} from 'vite';
 import vue from '@vitejs/plugin-vue';
-import { resolve } from "path";
-import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
+import {resolve} from "path";
+import {createSvgIconsPlugin} from 'vite-plugin-svg-icons';
 import vueDevTools from 'vite-plugin-vue-devtools';
 import Components from 'unplugin-vue-components/vite';
-import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers';
+import {AntDesignVueResolver} from 'unplugin-vue-components/resolvers';
 // import { VitePWA } from 'vite-plugin-pwa';
 // https://vite.dev/config/
+
+function emitRootServiceWorker(): Plugin {
+    return {
+        name: 'emit-root-service-worker',
+        apply: 'build',
+        enforce: 'post',
+        generateBundle(_options, bundle) {
+            const worker = Object.values(bundle).find(
+                output => output.type === 'asset' && /(?:^|\/)sw-[^/]+\.js$/.test(output.fileName),
+            );
+
+            if (!worker || worker.type !== 'asset') {
+                return;
+            }
+
+            this.emitFile({
+                type: 'asset',
+                fileName: 'sw.js',
+                source: worker.source,
+            });
+        },
+    };
+}
+
 export default defineConfig({
     plugins: [
         vue(),
@@ -25,6 +49,7 @@ export default defineConfig({
                 }),
             ],
         }),
+        emitRootServiceWorker(),
         // VitePWA({
         //   registerType: 'autoUpdate',
         //   devOptions: {

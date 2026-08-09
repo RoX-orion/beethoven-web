@@ -1,7 +1,7 @@
-import { computed, reactive } from 'vue';
-import { defineStore } from 'pinia';
-import type { MusicItemType } from '@/types/global';
-import type { PlayMode, PlayQueueItem, PlayQueueResponse, PlayQueueState, QueueSourceType } from '@/types/playQueue';
+import {computed, reactive} from 'vue';
+import {defineStore} from 'pinia';
+import type {MusicItemType} from '@/types/global';
+import type {PlayMode, PlayQueueItem, PlayQueueResponse, PlayQueueState, QueueSourceType} from '@/types/playQueue';
 import {
 	addQueueItemToEnd,
 	addQueueItemToNext,
@@ -11,8 +11,9 @@ import {
 	updateCurrentQueue,
 	updatePlayQueueMode,
 } from '@/api/playQueue';
-import { getData, setData } from '@/util/localStorage';
-import { TOKEN } from '@/config';
+import {getData, setData} from '@/util/localStorage';
+import {TOKEN} from '@/config';
+import {useGlobalStore} from '@/store/global';
 
 const PLAY_QUEUE_STORAGE_KEY = 'BEETHOVEN_PLAY_QUEUE';
 
@@ -25,6 +26,16 @@ function createQueueItem(music: MusicItemType, sourceType?: QueueSourceType | st
 		sourceType,
 		sourceId,
 	};
+}
+
+function sortItemsByPlayOrder(items: PlayQueueItem[]): PlayQueueItem[] {
+	if (!items.every(item => Number.isFinite(item.sortNo))) return [...items];
+	return items
+		.map((item, index) => ({item, index}))
+		.sort((left, right) => {
+			return left.item.sortNo! - right.item.sortNo! || left.index - right.index;
+		})
+		.map(({item}) => item);
 }
 
 export const usePlayQueueStore = defineStore('playQueue', () => {
@@ -49,7 +60,7 @@ export const usePlayQueueStore = defineStore('playQueue', () => {
 
 	function setQueue(items: PlayQueueItem[], startMusicId?: string, sourceType?: QueueSourceType | string, sourceId?: string) {
 		queue.id = undefined;
-		queue.items = items.filter(item => item.musicId);
+		queue.items = sortItemsByPlayOrder(items.filter(item => item.musicId));
 		queue.sourceType = sourceType;
 		queue.sourceId = sourceId;
 		queue.currentIndex = resolveStartIndex(queue.items, startMusicId);
@@ -68,9 +79,16 @@ export const usePlayQueueStore = defineStore('playQueue', () => {
 
 	function applyRemoteQueue(remoteQueue?: PlayQueueResponse) {
 		if (!remoteQueue) return;
+		const remoteItems = remoteQueue.items ?? [];
+		const remoteCurrentItem = remoteItems[remoteQueue.currentIndex ?? -1];
 		queue.id = remoteQueue.id;
-		queue.items = remoteQueue.items ?? [];
-		queue.currentIndex = normalizeIndex(remoteQueue.currentIndex ?? -1, queue.items.length);
+		queue.items = sortItemsByPlayOrder(remoteItems);
+		queue.currentIndex = resolveRemoteCurrentIndex(
+			queue.items,
+			remoteCurrentItem?.queueItemId,
+			remoteQueue.currentMusicId,
+			remoteQueue.currentIndex,
+		);
 		queue.currentMusicId = queue.items[queue.currentIndex]?.musicId ?? remoteQueue.currentMusicId;
 		queue.currentTime = remoteQueue.currentTime ?? 0;
 		queue.playMode = remoteQueue.playMode ?? queue.playMode;
@@ -119,6 +137,40 @@ export const usePlayQueueStore = defineStore('playQueue', () => {
 		persistQueue();
 	}
 
+	function insertLocalItem(music: MusicItemType, insertIndex: number, sourceType?: QueueSourceType | string, sourceId?: string) {
+		const item = createQueueItem(music, sourceType, sourceId);
+		queue.items.splice(insertIndex, 0, item);
+		if (queue.currentIndex < 0) {
+			queue.currentIndex = 0;
+			queue.currentMusicId = music.id;
+		}
+		queue.randomOrder = [];
+		queue.randomCursor = -1;
+		queue.version++;
+		persistQueue();
+		return item;
+	}
+
+	function rollbackLocalItem(queueItemId: string) {
+		const index = queue.items.findIndex(item => item.queueItemId === queueItemId);
+		if (index < 0) return;
+		const globalStore = useGlobalStore();
+		queue.items.splice(index, 1);
+		if (index < queue.currentIndex) queue.currentIndex--;
+		if (queue.items.length === 0) {
+			queue.currentIndex = -1;
+			queue.currentMusicId = undefined;
+			globalStore.global.canPlay = false;
+		} else {
+			queue.currentIndex = normalizeIndex(queue.currentIndex, queue.items.length);
+			queue.currentMusicId = queue.items[queue.currentIndex]?.musicId;
+		}
+		queue.randomOrder = [];
+		queue.randomCursor = -1;
+		queue.version++;
+		persistQueue();
+	}
+
 	async function addToNext(music: MusicItemType, sourceType?: QueueSourceType | string, sourceId?: string) {
 		if (!music.id) return;
 		const existingIndex = findMusicIndex(music.id);
@@ -126,19 +178,17 @@ export const usePlayQueueStore = defineStore('playQueue', () => {
 			refreshExistingMusic(existingIndex, music);
 			return;
 		}
-		if (getData(TOKEN)) {
-			const response = await addQueueItemToNext({ musicId: music.id, sourceType, sourceId });
-			applyRemoteQueue(response.data);
-			return;
-		}
 		const insertIndex = Math.max(queue.currentIndex + 1, 0);
-		queue.items.splice(insertIndex, 0, createQueueItem(music, sourceType, sourceId));
-		if (queue.currentIndex < 0) {
-			queue.currentIndex = 0;
-			queue.currentMusicId = music.id;
+		const optimisticItem = insertLocalItem(music, insertIndex, sourceType, sourceId);
+		if (getData(TOKEN)) {
+			try {
+				const response = await addQueueItemToNext({musicId: music.id, sourceType, sourceId});
+				applyRemoteQueue(response.data);
+			} catch (error) {
+				rollbackLocalItem(optimisticItem.queueItemId);
+				throw error;
+			}
 		}
-		queue.version++;
-		persistQueue();
 	}
 
 	async function addToEnd(music: MusicItemType, sourceType?: QueueSourceType | string, sourceId?: string) {
@@ -148,18 +198,16 @@ export const usePlayQueueStore = defineStore('playQueue', () => {
 			refreshExistingMusic(existingIndex, music);
 			return;
 		}
+		const optimisticItem = insertLocalItem(music, queue.items.length, sourceType, sourceId);
 		if (getData(TOKEN)) {
-			const response = await addQueueItemToEnd({ musicId: music.id, sourceType, sourceId });
-			applyRemoteQueue(response.data);
-			return;
+			try {
+				const response = await addQueueItemToEnd({musicId: music.id, sourceType, sourceId});
+				applyRemoteQueue(response.data);
+			} catch (error) {
+				rollbackLocalItem(optimisticItem.queueItemId);
+				throw error;
+			}
 		}
-		queue.items.push(createQueueItem(music, sourceType, sourceId));
-		if (queue.currentIndex < 0) {
-			queue.currentIndex = 0;
-			queue.currentMusicId = music.id;
-		}
-		queue.version++;
-		persistQueue();
 	}
 
 	async function remove(queueItemId: string) {
@@ -252,8 +300,16 @@ export const usePlayQueueStore = defineStore('playQueue', () => {
 		if (!raw) return;
 		try {
 			const localQueue = JSON.parse(raw) as PlayQueueState;
+			const localItems = localQueue.items ?? [];
+			const localCurrentItem = localItems[localQueue.currentIndex];
 			Object.assign(queue, localQueue);
-			queue.currentIndex = normalizeIndex(queue.currentIndex, queue.items.length);
+			queue.items = sortItemsByPlayOrder(localItems);
+			queue.currentIndex = resolveRemoteCurrentIndex(
+				queue.items,
+				localCurrentItem?.queueItemId,
+				localQueue.currentMusicId,
+				localQueue.currentIndex,
+			);
 			queue.currentMusicId = queue.items[queue.currentIndex]?.musicId;
 		} catch {
 			localStorage.removeItem(PLAY_QUEUE_STORAGE_KEY);
@@ -338,6 +394,23 @@ export const usePlayQueueStore = defineStore('playQueue', () => {
 		if (index < 0) return 0;
 		if (index >= length) return length - 1;
 		return index;
+	}
+
+	function resolveRemoteCurrentIndex(
+		items: PlayQueueItem[],
+		queueItemId?: string,
+		musicId?: string,
+		fallbackIndex = -1,
+	) {
+		if (queueItemId) {
+			const index = items.findIndex(item => item.queueItemId === queueItemId);
+			if (index >= 0) return index;
+		}
+		if (musicId) {
+			const index = items.findIndex(item => item.musicId === musicId);
+			if (index >= 0) return index;
+		}
+		return normalizeIndex(fallbackIndex, items.length);
 	}
 
 	return {

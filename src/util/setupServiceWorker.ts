@@ -3,10 +3,12 @@
 // import { DEBUG, DEBUG_MORE, IS_TEST } from '../config';
 // import { formatShareText } from './deeplink';
 // import { validateFiles } from './files';
-import { notifyClientReady, playNotifySoundDebounced } from './notifications';
-import { IS_SERVICE_WORKER_SUPPORTED } from './windowEnvironment';
-import { DEBUG, DEBUG_MORE } from '@/config';
+import {notifyClientReady, playNotifySoundDebounced} from './notifications';
+import {IS_SERVICE_WORKER_SUPPORTED} from './windowEnvironment';
+import {DEBUG, DEBUG_MORE} from '@/config';
 import ServiceWorkerURL from '../../sw?worker&url';
+
+const serviceWorkerURL = import.meta.env.DEV ? ServiceWorkerURL : '/sw.js';
 
 type WorkerAction = {
 	type: string;
@@ -49,19 +51,17 @@ function subscribeToWorker() {
 if (IS_SERVICE_WORKER_SUPPORTED) {
 	window.addEventListener('load', async () => {
 		try {
-			const controller = navigator.serviceWorker.controller;
-			if (!controller) {
-				const ourRegistrations = await navigator.serviceWorker.getRegistrations();
-				if (ourRegistrations.length) {
-					if (DEBUG) {
-						// eslint-disable-next-line no-console
-						console.log('[SW] Hard reload detected, re-enabling Service Worker');
-					}
-					await Promise.all(ourRegistrations.map((r) => r.unregister()));
-				}
-			}
+			const registrations = await navigator.serviceWorker.getRegistrations();
+			await Promise.all(
+				registrations
+					.filter(registration => registration.scope === `${location.origin}/static/`)
+					.map(registration => registration.unregister()),
+			);
 
-			await navigator.serviceWorker.register(ServiceWorkerURL, { type: 'module', scope: '/' });
+			await navigator.serviceWorker.register(serviceWorkerURL, {
+				type: 'module',
+				scope: '/',
+			});
 
 			if (DEBUG) {
 				// eslint-disable-next-line no-console
@@ -69,25 +69,12 @@ if (IS_SERVICE_WORKER_SUPPORTED) {
 			}
 
 			await navigator.serviceWorker.ready;
+			await navigator.serviceWorker.getRegistration('/');
+			subscribeToWorker();
 
-			// Wait for registration to be available
-			await navigator.serviceWorker.getRegistration();
-
-			if (navigator.serviceWorker.controller) {
-				if (DEBUG) {
-					// eslint-disable-next-line no-console
-					console.log('[SW] ServiceWorker ready');
-				}
-				subscribeToWorker();
-			} else {
-				if (DEBUG) {
-					// eslint-disable-next-line no-console
-					console.error('[SW] ServiceWorker not available');
-				}
-
-				// if (!IS_IOS && !IS_ANDROID && !IS_TEST) {
-				//   getActions().showDialog?.({ data: { message: 'SERVICE_WORKER_DISABLED', hasErrorKey: true } });
-				// }
+			if (!navigator.serviceWorker.controller && DEBUG) {
+				// eslint-disable-next-line no-console
+				console.error('[SW] ServiceWorker not available');
 			}
 		} catch (err) {
 			if (DEBUG) {
@@ -96,8 +83,14 @@ if (IS_SERVICE_WORKER_SUPPORTED) {
 			}
 		}
 	});
+
 	window.addEventListener('focus', async () => {
-		await navigator.serviceWorker.ready;
-		subscribeToWorker();
+		try {
+			if (await navigator.serviceWorker.getRegistration('/')) {
+				subscribeToWorker();
+			}
+		} catch {
+			// Service Worker may be unavailable while the browser is restoring a tab.
+		}
 	});
 }

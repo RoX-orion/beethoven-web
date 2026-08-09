@@ -21,16 +21,16 @@
     </div>
     <div v-else class="queue-list">
       <div
-        v-for="(item, index) in playQueueStore.queue.items"
-        :key="item.queueItemId"
-        :class="['queue-row', { active: index === playQueueStore.queue.currentIndex }]"
-        @click="playItem(index)">
-        <img class="queue-cover" :src="getCover(item.music.cover)" alt="" @error="useFallbackCover"/>
+          v-for="entry in orderedItems"
+          :key="entry.item.queueItemId"
+          :class="['queue-row', { active: entry.index === playQueueStore.queue.currentIndex }]"
+          @click="playItem(entry.index)">
+        <img class="queue-cover" :src="getCover(entry.item.music.cover)" alt="" @error="useFallbackCover"/>
         <div class="queue-info">
-          <p>{{ item.music.name }}</p>
-          <span>{{ item.music.singer }}</span>
+          <p>{{ entry.item.music.name }}</p>
+          <span>{{ entry.item.music.singer }}</span>
         </div>
-        <button class="queue-remove" type="button" @click.stop="playQueueStore.remove(item.queueItemId)">
+        <button class="queue-remove" type="button" @click.stop="playQueueStore.remove(entry.item.queueItemId)">
           移除
         </button>
       </div>
@@ -39,8 +39,9 @@
 </template>
 
 <script setup lang="ts">
-import { useGlobalStore } from '@/store/global';
-import { usePlayQueueStore } from '@/store/playQueue';
+import {useGlobalStore} from '@/store/global';
+import {usePlayQueueStore} from '@/store/playQueue';
+import {computed} from 'vue';
 
 defineProps<{
   showClose?: boolean;
@@ -53,6 +54,24 @@ const emit = defineEmits<{
 const globalStore = useGlobalStore();
 const playQueueStore = usePlayQueueStore();
 const fallbackCover = '/assets/img/playlistCover.png';
+
+/** 将队列按播放顺序排列：当前播放的排在最上面，接着是后续歌曲，最后是已播放的 */
+const orderedItems = computed(() => {
+  const items = playQueueStore.queue.items;
+  const currentIndex = playQueueStore.queue.currentIndex;
+  if (items.length === 0 || currentIndex < 0) {
+    return items.map((item, idx) => ({item, index: idx}));
+  }
+  // 从 currentIndex 开始，先展示当前及后续歌曲，再展示已播放的
+  const result: { item: (typeof items)[0]; index: number }[] = [];
+  for (let i = currentIndex; i < items.length; i++) {
+    result.push({item: items[i], index: i});
+  }
+  for (let i = 0; i < currentIndex; i++) {
+    result.push({item: items[i], index: i});
+  }
+  return result;
+});
 
 const playItem = (index: number) => {
   globalStore.global.canPlay = true;
