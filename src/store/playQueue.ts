@@ -1,7 +1,15 @@
 import {computed, reactive} from 'vue';
 import {defineStore} from 'pinia';
 import type {MusicItemType} from '@/types/global';
-import type {PlayMode, PlayQueueItem, PlayQueueResponse, PlayQueueState, QueueSourceType} from '@/types/playQueue';
+import {
+	type ChangeTrackReason,
+	PLAY_MODE_ORDER,
+	type PlayMode,
+	type PlayQueueItem,
+	type PlayQueueResponse,
+	type PlayQueueState,
+	type QueueSourceType,
+} from '@/types/playQueue';
 import {
 	addQueueItemToEnd,
 	addQueueItemToNext,
@@ -16,6 +24,15 @@ import {TOKEN} from '@/config';
 import {useGlobalStore} from '@/store/global';
 
 const PLAY_QUEUE_STORAGE_KEY = 'BEETHOVEN_PLAY_QUEUE';
+const MAX_RANDOM_HISTORY = 2000;
+
+function isPlayMode(value: unknown): value is PlayMode {
+	return typeof value === 'string' && PLAY_MODE_ORDER.includes(value as PlayMode);
+}
+
+function normalizePlayMode(value: unknown, fallback: PlayMode = 'LOOP'): PlayMode {
+	return isPlayMode(value) ? value : fallback;
+}
 
 function createQueueItem(music: MusicItemType, sourceType?: QueueSourceType | string, sourceId?: string): PlayQueueItem {
 	const musicId = music.id ?? '';
@@ -68,6 +85,9 @@ export const usePlayQueueStore = defineStore('playQueue', () => {
 		queue.currentTime = 0;
 		queue.randomOrder = [];
 		queue.randomCursor = -1;
+		if (queue.playMode === 'RANDOM') {
+			resetRandomOrder();
+		}
 		queue.version++;
 		persistQueue();
 	}
@@ -79,6 +99,9 @@ export const usePlayQueueStore = defineStore('playQueue', () => {
 
 	function applyRemoteQueue(remoteQueue?: PlayQueueResponse) {
 		if (!remoteQueue) return;
+		const previousMode = queue.playMode;
+		const previousRandomOrder = [...queue.randomOrder];
+		const previousRandomCursorId = queue.randomOrder[queue.randomCursor];
 		const remoteItems = remoteQueue.items ?? [];
 		const remoteCurrentItem = remoteItems[remoteQueue.currentIndex ?? -1];
 		queue.id = remoteQueue.id;
@@ -91,36 +114,55 @@ export const usePlayQueueStore = defineStore('playQueue', () => {
 		);
 		queue.currentMusicId = queue.items[queue.currentIndex]?.musicId ?? remoteQueue.currentMusicId;
 		queue.currentTime = remoteQueue.currentTime ?? 0;
-		queue.playMode = remoteQueue.playMode ?? queue.playMode;
+		queue.playMode = normalizePlayMode(remoteQueue.playMode, queue.playMode);
 		queue.sourceType = remoteQueue.sourceType;
 		queue.sourceId = remoteQueue.sourceId;
 		queue.randomOrder = [];
 		queue.randomCursor = -1;
+		if (queue.playMode === 'RANDOM') {
+			const currentQueueItemId = queue.items[queue.currentIndex]?.queueItemId;
+			const validIds = new Set(queue.items.map(item => item.queueItemId));
+			const retainedOrder = previousMode === 'RANDOM'
+				? previousRandomOrder.filter(queueItemId => validIds.has(queueItemId))
+				: [];
+			const retainedIds = new Set(retainedOrder);
+			const newIds = queue.items
+				.map(item => item.queueItemId)
+				.filter(queueItemId => !retainedIds.has(queueItemId));
+			queue.randomOrder = [...retainedOrder, ...newIds];
+			const currentCursor = currentQueueItemId ? queue.randomOrder.lastIndexOf(currentQueueItemId) : -1;
+			if (currentCursor >= 0 && previousMode === 'RANDOM' && previousRandomCursorId === currentQueueItemId) {
+				queue.randomCursor = currentCursor;
+			} else {
+				resetRandomOrder();
+			}
+		}
 		queue.version = remoteQueue.version ?? queue.version + 1;
 		persistQueue();
 	}
 
-	function playAt(index: number) {
+	function playAt(index: number, alignRandom = true) {
 		if (index < 0 || index >= queue.items.length) return false;
 		queue.currentIndex = index;
 		queue.currentMusicId = queue.items[index].musicId;
 		queue.currentTime = 0;
+		if (queue.playMode === 'RANDOM' && alignRandom) alignRandomCursorToCurrent();
 		queue.version++;
 		persistQueue();
 		syncCurrent();
 		return true;
 	}
 
-	function next() {
-		const index = getNextIndex();
+	function next(reason: ChangeTrackReason = 'manual-next') {
+		const index = getNextIndex(reason);
 		if (index === undefined) return false;
-		return playAt(index);
+		return playAt(index, false);
 	}
 
-	function prev() {
-		const index = getPrevIndex();
+	function prev(reason: ChangeTrackReason = 'manual-prev') {
+		const index = getPrevIndex(reason);
 		if (index === undefined) return false;
-		return playAt(index);
+		return playAt(index, false);
 	}
 
 	function findMusicIndex(musicId?: string) {
@@ -144,8 +186,13 @@ export const usePlayQueueStore = defineStore('playQueue', () => {
 			queue.currentIndex = 0;
 			queue.currentMusicId = music.id;
 		}
-		queue.randomOrder = [];
-		queue.randomCursor = -1;
+		if (queue.playMode === 'RANDOM') {
+			if (queue.randomOrder.length > 0) queue.randomOrder.push(item.queueItemId);
+			else resetRandomOrder();
+		} else {
+			queue.randomOrder = [];
+			queue.randomCursor = -1;
+		}
 		queue.version++;
 		persistQueue();
 		return item;
@@ -229,6 +276,9 @@ export const usePlayQueueStore = defineStore('playQueue', () => {
 			queue.currentIndex = -1;
 			queue.currentMusicId = undefined;
 		}
+		queue.randomOrder = [];
+		queue.randomCursor = -1;
+		if (queue.playMode === 'RANDOM') resetRandomOrder();
 		queue.version++;
 		persistQueue();
 		syncCurrent();
@@ -252,24 +302,27 @@ export const usePlayQueueStore = defineStore('playQueue', () => {
 	}
 
 	async function setPlayMode(playMode: PlayMode) {
+		if (!PLAY_MODE_ORDER.includes(playMode)) return;
 		queue.playMode = playMode;
 		queue.randomOrder = [];
 		queue.randomCursor = -1;
+		if (playMode === 'RANDOM') resetRandomOrder();
 		queue.version++;
 		persistQueue();
 		if (getData(TOKEN) && queue.id) {
 			try {
-				const response = await updatePlayQueueMode(playMode);
-				applyRemoteQueue(response.data);
+				// Keep the local random sequence intact. The endpoint is used for
+				// persistence only; applying its full queue response here would
+				// unnecessarily reshuffle the current device.
+				await updatePlayQueueMode(playMode);
 			} catch { /* local mode already updated */
 			}
 		}
 	}
 
 	function cyclePlayMode() {
-		const modes: PlayMode[] = ['LOOP', 'SEQUENCE', 'RANDOM', 'SINGLE_LOOP'];
-		const index = modes.indexOf(queue.playMode);
-		setPlayMode(modes[(index + 1) % modes.length]);
+		const index = PLAY_MODE_ORDER.indexOf(queue.playMode);
+		void setPlayMode(PLAY_MODE_ORDER[(index + 1) % PLAY_MODE_ORDER.length]);
 	}
 
 	function updateCurrentTime(currentTime: number) {
@@ -303,6 +356,7 @@ export const usePlayQueueStore = defineStore('playQueue', () => {
 			const localItems = localQueue.items ?? [];
 			const localCurrentItem = localItems[localQueue.currentIndex];
 			Object.assign(queue, localQueue);
+			queue.playMode = normalizePlayMode(localQueue.playMode);
 			queue.items = sortItemsByPlayOrder(localItems);
 			queue.currentIndex = resolveRemoteCurrentIndex(
 				queue.items,
@@ -311,62 +365,140 @@ export const usePlayQueueStore = defineStore('playQueue', () => {
 				localQueue.currentIndex,
 			);
 			queue.currentMusicId = queue.items[queue.currentIndex]?.musicId;
+			queue.randomOrder = Array.isArray(queue.randomOrder)
+				? queue.randomOrder.filter((queueItemId): queueItemId is string => typeof queueItemId === 'string')
+				: [];
+			queue.randomCursor = Number.isInteger(queue.randomCursor) ? queue.randomCursor : -1;
+			if (queue.playMode === 'RANDOM') ensureRandomOrder();
+			else {
+				queue.randomOrder = [];
+				queue.randomCursor = -1;
+			}
+			persistQueue();
 		} catch {
 			localStorage.removeItem(PLAY_QUEUE_STORAGE_KEY);
 		}
 	}
 
-	function getNextIndex(): number | undefined {
+	function getNextIndex(reason: ChangeTrackReason): number | undefined {
 		if (queue.items.length === 0 || queue.currentIndex < 0) return undefined;
-		if (queue.playMode === 'SINGLE_LOOP') return queue.currentIndex;
 		if (queue.playMode === 'RANDOM') return getNextRandomIndex();
+		if (queue.playMode === 'SINGLE_LOOP' && reason === 'ended') return queue.currentIndex;
 
 		const nextIndex = queue.currentIndex + 1;
 		if (nextIndex < queue.items.length) return nextIndex;
-		if (queue.playMode === 'LOOP') return 0;
+		if (queue.playMode === 'LOOP' || queue.playMode === 'SINGLE_LOOP') return 0;
 		return undefined;
 	}
 
-	function getPrevIndex(): number | undefined {
+	function getPrevIndex(_reason: ChangeTrackReason): number | undefined {
 		if (queue.items.length === 0 || queue.currentIndex < 0) return undefined;
 		if (queue.playMode === 'RANDOM') return getPrevRandomIndex();
 
 		const prevIndex = queue.currentIndex - 1;
 		if (prevIndex >= 0) return prevIndex;
-		if (queue.playMode === 'LOOP') return queue.items.length - 1;
+		if (queue.playMode === 'LOOP' || queue.playMode === 'SINGLE_LOOP') return queue.items.length - 1;
 		return undefined;
 	}
 
 	function getNextRandomIndex(): number | undefined {
-		if (queue.randomOrder.length !== queue.items.length) {
-			resetRandomOrder();
+		ensureRandomOrder();
+		if (queue.randomCursor < queue.randomOrder.length - 1) {
+			queue.randomCursor++;
+			return findQueueIndexByItemId(queue.randomOrder[queue.randomCursor]);
 		}
+
+		const previousLength = queue.randomOrder.length;
+		appendRandomCycle();
+		if (queue.randomOrder.length === previousLength) return undefined;
 		queue.randomCursor++;
-		if (queue.randomCursor >= queue.randomOrder.length) {
-			resetRandomOrder();
-			queue.randomCursor = 0;
-		}
-		return queue.randomOrder[queue.randomCursor];
+		return findQueueIndexByItemId(queue.randomOrder[queue.randomCursor]);
 	}
 
 	function getPrevRandomIndex(): number | undefined {
-		if (queue.randomOrder.length !== queue.items.length) {
-			resetRandomOrder();
-		}
+		ensureRandomOrder();
+		if (queue.randomCursor <= 0) return undefined;
 		queue.randomCursor--;
-		if (queue.randomCursor < 0) {
-			queue.randomCursor = queue.randomOrder.length - 1;
-		}
-		return queue.randomOrder[queue.randomCursor];
+		return findQueueIndexByItemId(queue.randomOrder[queue.randomCursor]);
 	}
 
 	function resetRandomOrder() {
-		queue.randomOrder = queue.items.map((_, index) => index);
-		for (let i = queue.randomOrder.length - 1; i > 0; i--) {
-			const j = Math.floor(Math.random() * (i + 1));
-			[queue.randomOrder[i], queue.randomOrder[j]] = [queue.randomOrder[j], queue.randomOrder[i]];
+		const currentQueueItemId = queue.items[queue.currentIndex]?.queueItemId;
+		const otherIds = queue.items
+			.map(item => item.queueItemId)
+			.filter(queueItemId => queueItemId !== currentQueueItemId);
+		shuffle(otherIds);
+		queue.randomOrder = currentQueueItemId ? [currentQueueItemId, ...otherIds] : otherIds;
+		queue.randomCursor = currentQueueItemId ? 0 : -1;
+	}
+
+	function appendRandomCycle() {
+		const currentQueueItemId = queue.items[queue.currentIndex]?.queueItemId;
+		if (!currentQueueItemId) return;
+		const ids = queue.items
+			.map(item => item.queueItemId)
+			.filter(queueItemId => queue.items.length === 1 || queueItemId !== currentQueueItemId);
+		shuffle(ids);
+		queue.randomOrder.push(...ids);
+		trimRandomHistory();
+	}
+
+	function ensureRandomOrder() {
+		const validIds = new Set(queue.items.map(item => item.queueItemId));
+		queue.randomOrder = queue.randomOrder.filter(queueItemId => validIds.has(queueItemId));
+		const currentQueueItemId = queue.items[queue.currentIndex]?.queueItemId;
+		if (!currentQueueItemId) {
+			queue.randomOrder = [];
+			queue.randomCursor = -1;
+			return;
 		}
-		queue.randomCursor = queue.randomOrder.indexOf(queue.currentIndex);
+		if (!queue.randomOrder.length || !queue.randomOrder.includes(currentQueueItemId)) {
+			resetRandomOrder();
+			return;
+		}
+		const cursorId = queue.randomOrder[queue.randomCursor];
+		if (cursorId !== currentQueueItemId) alignRandomCursorToCurrent();
+	}
+
+	function alignRandomCursorToCurrent() {
+		const currentQueueItemId = queue.items[queue.currentIndex]?.queueItemId;
+		if (!currentQueueItemId) return;
+		ensureRandomOrderWithoutAlignment();
+		const cursor = queue.randomOrder.lastIndexOf(currentQueueItemId);
+		if (cursor >= 0) {
+			queue.randomCursor = cursor;
+			return;
+		}
+		queue.randomOrder.push(currentQueueItemId);
+		queue.randomCursor = queue.randomOrder.length - 1;
+		trimRandomHistory();
+	}
+
+	function ensureRandomOrderWithoutAlignment() {
+		const validIds = new Set(queue.items.map(item => item.queueItemId));
+		queue.randomOrder = queue.randomOrder.filter(queueItemId => validIds.has(queueItemId));
+		const currentQueueItemId = queue.items[queue.currentIndex]?.queueItemId;
+		if (!currentQueueItemId || !queue.randomOrder.length) resetRandomOrder();
+	}
+
+	function trimRandomHistory() {
+		if (queue.randomCursor <= MAX_RANDOM_HISTORY) return;
+		const removeCount = queue.randomCursor - MAX_RANDOM_HISTORY;
+		queue.randomOrder.splice(0, removeCount);
+		queue.randomCursor -= removeCount;
+	}
+
+	function findQueueIndexByItemId(queueItemId?: string): number | undefined {
+		if (!queueItemId) return undefined;
+		const index = queue.items.findIndex(item => item.queueItemId === queueItemId);
+		return index >= 0 ? index : undefined;
+	}
+
+	function shuffle<T>(items: T[]) {
+		for (let index = items.length - 1; index > 0; index--) {
+			const swapIndex = Math.floor(Math.random() * (index + 1));
+			[items[index], items[swapIndex]] = [items[swapIndex], items[index]];
+		}
 	}
 
 	function syncCurrent() {
@@ -432,4 +564,3 @@ export const usePlayQueueStore = defineStore('playQueue', () => {
 		restoreQueue,
 	};
 });
-

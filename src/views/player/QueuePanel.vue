@@ -55,13 +55,34 @@ const globalStore = useGlobalStore();
 const playQueueStore = usePlayQueueStore();
 const fallbackCover = '/assets/img/playlistCover.png';
 
-/** 将队列按播放顺序排列：当前播放的排在最上面，接着是后续歌曲，最后是已播放的 */
+/** 按当前模式展示播放顺序：随机模式优先展示当前随机序列的后续歌曲。 */
 const orderedItems = computed(() => {
   const items = playQueueStore.queue.items;
   const currentIndex = playQueueStore.queue.currentIndex;
   if (items.length === 0 || currentIndex < 0) {
     return items.map((item, idx) => ({item, index: idx}));
   }
+
+  if (playQueueStore.queue.playMode === 'RANDOM' && playQueueStore.queue.randomOrder.length > 0) {
+    const itemIndexById = new Map(items.map((item, index) => [item.queueItemId, index]));
+    const randomOrder = playQueueStore.queue.randomOrder;
+    const cursor = Math.max(0, Math.min(playQueueStore.queue.randomCursor, randomOrder.length - 1));
+    const ids = [...randomOrder.slice(cursor), ...randomOrder.slice(0, cursor)];
+    const seen = new Set<string>();
+    const result: { item: (typeof items)[0]; index: number }[] = [];
+    for (const queueItemId of ids) {
+      if (seen.has(queueItemId)) continue;
+      const index = itemIndexById.get(queueItemId);
+      if (index === undefined) continue;
+      seen.add(queueItemId);
+      result.push({item: items[index], index});
+    }
+    items.forEach((item, index) => {
+      if (!seen.has(item.queueItemId)) result.push({item, index});
+    });
+    return result;
+  }
+
   // 从 currentIndex 开始，先展示当前及后续歌曲，再展示已播放的
   const result: { item: (typeof items)[0]; index: number }[] = [];
   for (let i = currentIndex; i < items.length; i++) {

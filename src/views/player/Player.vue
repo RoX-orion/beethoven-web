@@ -21,7 +21,8 @@
 
         <div class="">
           <div class="flex-row mobile-button-group content-space-between">
-            <svg-icon class="pointer" name="loop" :title="playModeTitle" @click.stop="cyclePlayMode"/>
+            <svg-icon class="pointer play-mode-button" :name="playModeIcon" :title="playModeTitle"
+                      :aria-label="playModeTitle" @click.stop="cyclePlayMode"/>
             <svg-icon class="pointer" name="prev" @click.stop="playPrev"/>
             <button
               :class="['play-button', { 'is-loading': loading }]"
@@ -105,7 +106,8 @@
       <div class="flex-row panel-wrapper">
         <div class="flex-row">
           <svg-icon class="button pointer" name="video" @click.stop="openVideoPlayer"/>
-          <svg-icon class="button pointer" name="loop" size="1.5rem" :title="playModeTitle"
+          <svg-icon class="button pointer play-mode-button" :name="playModeIcon" size="1.5rem"
+                    :title="playModeTitle" :aria-label="playModeTitle"
                     @click.stop="cyclePlayMode"/>
           <svg-icon class="button pointer" name="queue" size="1.5rem" @click.stop="toggleQueuePanel"/>
         </div>
@@ -143,15 +145,15 @@
 
 <script setup lang="ts">
 
-import { computed, onMounted, onUnmounted, ref } from 'vue';
-import { ComponentType } from '@/types/global';
-import { useGlobalStore } from '@/store/global';
-import { durationFormater } from '@/util/time';
+import {computed, onMounted, onUnmounted, ref} from 'vue';
+import {ComponentType} from '@/types/global';
+import {useGlobalStore} from '@/store/global';
+import {durationFormater} from '@/util/time';
 import IconButton from '@/components/IconButton.vue';
 import Progress from '@/components/Progress.vue';
 import SvgIcon from '@/components/SvgIcon.vue';
-import { componentState } from '@/store/componentState';
-import { useAudioPlayer } from '@/composables/useAudioPlayer';
+import {componentState} from '@/store/componentState';
+import {useAudioPlayer} from '@/composables/useAudioPlayer';
 import QueuePanel from '@/views/player/QueuePanel.vue';
 
 const {
@@ -170,6 +172,7 @@ const {
   playNext,
   playPrev,
   playModeTitle,
+  playModeIcon,
   cyclePlayMode,
   init,
 } = useAudioPlayer();

@@ -1,14 +1,14 @@
-import { computed, reactive, ref, shallowRef, watch } from 'vue';
-import type { MusicItemType, ProgressType, SettingType } from '@/types/global';
-import { getMusicInfoFromLocal, setMusicInfo, useGlobalStore } from '@/store/global';
-import { PLAYER_SETTING, TOKEN, VOLUME_MUSIC } from '@/config';
-import { getData, setData } from '@/util/localStorage';
-import { throttle } from '@/util/schedulers';
-import { getSetting, updateSetting } from '@/api/setting';
-import Player, { Events } from 'xgplayer';
-import { getMusicInfo } from '@/api/music';
-import { useRoute } from 'vue-router';
-import { usePlayQueueStore } from '@/store/playQueue';
+import {computed, reactive, ref, shallowRef, watch} from 'vue';
+import type {MusicItemType, ProgressType, SettingType} from '@/types/global';
+import {getMusicInfoFromLocal, setMusicInfo, useGlobalStore} from '@/store/global';
+import {PLAYER_SETTING, TOKEN, VOLUME_MUSIC} from '@/config';
+import {getData, setData} from '@/util/localStorage';
+import {throttle} from '@/util/schedulers';
+import {getSetting, updateSetting} from '@/api/setting';
+import Player, {Events} from 'xgplayer';
+import {getMusicInfo} from '@/api/music';
+import {useRoute} from 'vue-router';
+import {usePlayQueueStore} from '@/store/playQueue';
 
 const playerInstance = shallowRef<any>(null);
 let initPromise: Promise<void> | null = null;
@@ -130,6 +130,10 @@ export function useAudioPlayer() {
 		if (!playerInstance.value || !music.id || loading.value) return;
 		updateCurrentTime(playerInstance.value!.currentTime);
 		if (paused.value) {
+			if (music.duration && currentTime.value >= music.duration) {
+				currentTime.value = 0;
+				progressData.percentage = 0;
+			}
 			handleEvent('play', undefined);
 		} else {
 			handleEvent('pause', undefined);
@@ -231,10 +235,10 @@ export function useAudioPlayer() {
 		});
 	}
 
-	const playNext = async () => {
+	const advanceToNext = async (reason: 'ended' | 'manual-next') => {
 		const beforeIndex = playQueueStore.queue.currentIndex;
 		const beforeMusicId = playQueueStore.queue.currentMusicId;
-		const moved = playQueueStore.next();
+		const moved = playQueueStore.next(reason);
 		if (!moved) {
 			paused.value = true;
 			globalStore.global.canPlay = false;
@@ -244,32 +248,42 @@ export function useAudioPlayer() {
 		if (beforeIndex === playQueueStore.queue.currentIndex && beforeMusicId === playQueueStore.queue.currentMusicId) {
 			currentTime.value = 0;
 			progressData.percentage = 0;
+			if (playerInstance.value) playerInstance.value.currentTime = 0;
 			await handleEvent('play', null);
 		}
+	};
+
+	const playNext = () => advanceToNext('manual-next');
+
+	const handleEnded = async () => {
+		await advanceToNext('ended');
 	};
 
 	const playPrev = async () => {
 		const beforeIndex = playQueueStore.queue.currentIndex;
 		const beforeMusicId = playQueueStore.queue.currentMusicId;
-		const moved = playQueueStore.prev();
+		const moved = playQueueStore.prev('manual-prev');
 		if (!moved) return;
 		globalStore.global.canPlay = true;
 		if (beforeIndex === playQueueStore.queue.currentIndex && beforeMusicId === playQueueStore.queue.currentMusicId) {
 			currentTime.value = 0;
 			progressData.percentage = 0;
+			if (playerInstance.value) playerInstance.value.currentTime = 0;
 			await handleEvent('play', null);
 		}
 	};
 
-	const playModeTitle = computed(() => {
-		const titleMap = {
-			LOOP: '列表循环',
-			SEQUENCE: '顺序播放',
-			RANDOM: '随机播放',
-			SINGLE_LOOP: '单曲循环',
-		};
-		return titleMap[playQueueStore.queue.playMode];
+	const playModeMeta = computed(() => {
+		const metaMap = {
+			LOOP: {icon: 'loop', title: '列表循环'},
+			SEQUENCE: {icon: 'sequence', title: '顺序播放'},
+			RANDOM: {icon: 'random', title: '随机播放'},
+			SINGLE_LOOP: {icon: 'single-loop', title: '单曲循环'},
+		} as const;
+		return metaMap[playQueueStore.queue.playMode] ?? metaMap.LOOP;
 	});
+	const playModeTitle = computed(() => playModeMeta.value.title);
+	const playModeIcon = computed(() => playModeMeta.value.icon);
 
 	const handleSeek = async (forward: number) => {
 		let targetTime = forward === -1 ? currentTime.value - 15 : currentTime.value + 15;
@@ -331,7 +345,7 @@ export function useAudioPlayer() {
 			playerInstance.value.on(Events.PLAYING, () => loading.value = false);
 			playerInstance.value.on(Events.SEEKED, () => loading.value = false);
 			playerInstance.value.on(Events.ERROR, () => loading.value = false);
-			playerInstance.value.on(Events.ENDED, playNext);
+			playerInstance.value.on(Events.ENDED, handleEnded);
 
 			const media = getMediaElement();
 			media?.addEventListener('timeupdate', onTimeUpdate);
@@ -341,6 +355,7 @@ export function useAudioPlayer() {
 			media?.addEventListener('error', () => loading.value = false);
 
 			const { id, type } = route.params;
+			const routeMusicId = type === 'music' && id ? String(id) : undefined;
 
 			try {
 				const response = await getSetting();
@@ -349,8 +364,8 @@ export function useAudioPlayer() {
 					const savedMusic = getData('music');
 					setData(PLAYER_SETTING, JSON.stringify(response.data));
 					globalStore.global.player = response.data;
-					if (type === 'music' && id) {
-						globalStore.global.media.musicId = response.data.musicId;
+					if (routeMusicId) {
+						globalStore.global.media.musicId = routeMusicId;
 					} else if (response.data.musicId) {
 						currentTime.value = response.data.currentTime;
 						globalStore.global.media.musicId = response.data.musicId;
@@ -364,6 +379,35 @@ export function useAudioPlayer() {
 			}
 
 			await playQueueStore.restoreQueue();
+			if (routeMusicId) {
+				const routeIndex = playQueueStore.queue.items.findIndex(item => item.musicId === routeMusicId);
+				if (routeIndex >= 0) {
+					playQueueStore.playAt(routeIndex);
+				} else {
+					try {
+						const response = await getMusicInfo(routeMusicId);
+						if (response.data) {
+							playQueueStore.setQueueFromMusicList([response.data], routeMusicId, 'single', routeMusicId);
+							globalStore.global.media.musicId = routeMusicId;
+						}
+					} catch { /* keep route playback available through the existing music watcher */
+					}
+				}
+			}
+			if (!playQueueStore.currentItem?.music && globalStore.global.media.musicId) {
+				try {
+					const response = await getMusicInfo(globalStore.global.media.musicId);
+					if (response.data) {
+						playQueueStore.setQueueFromMusicList(
+							[response.data],
+							globalStore.global.media.musicId,
+							'single',
+							globalStore.global.media.musicId,
+						);
+					}
+				} catch { /* queue restoration is non-critical */
+				}
+			}
 			if (playQueueStore.currentItem?.music) {
 				currentTime.value = playQueueStore.queue.currentTime || currentTime.value;
 				globalStore.global.media.currentTime = currentTime.value;
@@ -415,6 +459,7 @@ export function useAudioPlayer() {
 		playNext,
 		playPrev,
 		playModeTitle,
+		playModeIcon,
 		cyclePlayMode: playQueueStore.cyclePlayMode,
 		init,
 		destroy,

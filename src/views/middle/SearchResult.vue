@@ -60,18 +60,22 @@
 
 <script setup lang="ts">
 import eventBus from '@/util/eventBus';
-import { onMounted, ref, watch } from 'vue';
-import type { CheckboxOptionType } from 'ant-design-vue';
-import { durationFormater } from '@/util/time';
+import {onMounted, ref, watch} from 'vue';
+import type {CheckboxOptionType} from 'ant-design-vue';
+import {durationFormater} from '@/util/time';
 import router from '@/router';
 import IconButton from '@/components/IconButton.vue';
-import { addMusicToPlaylist, getPlaylist } from '@/api/playlist';
-import type { AddMusicFormType, PlaylistType } from '@/types/playlist';
-import type { MusicItemType } from '@/types/global';
+import {addMusicToPlaylist, getPlaylist} from '@/api/playlist';
+import type {AddMusicFormType, PlaylistType} from '@/types/playlist';
+import type {MusicItemType} from '@/types/global';
 import Button from '@/components/Button.vue';
 import Tag from "@/views/middle/Tag.vue";
-import { searchMusic } from "@/api/music";
-import { setMusicInfo, useGlobalStore } from "@/store/global";
+import {searchMusic} from "@/api/music";
+import {setMusicInfo, useGlobalStore} from "@/store/global";
+import {getData} from '@/util/localStorage';
+import {TOKEN} from '@/config';
+import {buildQueueFromMusicList} from '@/api/playQueue';
+import {usePlayQueueStore} from '@/store/playQueue';
 
 const musicList = ref<Array<MusicItemType>>([]);
 const searchLoading = ref(false);
@@ -79,14 +83,37 @@ const hasSearched = ref(false);
 const defaultCover = '/assets/img/playlistCover.png';
 
 const globalStore = useGlobalStore();
-const playMusicFun = (music: MusicItemType) => {
+const playQueueStore = usePlayQueueStore();
+const playMusicFun = async (music: MusicItemType) => {
   if (!music.id) {
     return;
   }
   router.push({ path: '/music/' + music.id });
-  globalStore.global.media.musicId = music.id;
   globalStore.global.canPlay = true;
-  setMusicInfo(music);
+
+  const queueMusic = musicList.value.filter(item => item.id);
+  const musicIds = queueMusic.map(item => item.id as string);
+  if (musicIds.length > 0 && getData(TOKEN)) {
+    try {
+      const response = await buildQueueFromMusicList({
+        musicIds,
+        startMusicId: music.id,
+        playMode: playQueueStore.queue.playMode,
+        sourceType: 'search',
+        sourceId: globalStore.global.searchKey.trim() || undefined,
+      });
+      if (!response.data?.items?.length) throw new Error('播放队列为空');
+      playQueueStore.applyRemoteQueue(response.data);
+    } catch {
+      playQueueStore.setQueueFromMusicList(queueMusic, music.id, 'search', globalStore.global.searchKey.trim());
+    }
+  } else {
+    playQueueStore.setQueueFromMusicList(queueMusic.length > 0 ? queueMusic : [music], music.id, 'search', globalStore.global.searchKey.trim());
+  }
+
+  const currentMusic = playQueueStore.currentItem?.music ?? music;
+  globalStore.global.media.musicId = currentMusic.id;
+  setMusicInfo(currentMusic);
 }
 
 const searchMediaFun = (key: string) => {

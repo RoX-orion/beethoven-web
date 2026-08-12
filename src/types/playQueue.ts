@@ -1,6 +1,10 @@
-import type { MusicItemType } from '@/types/global';
+import type {MusicItemType} from '@/types/global';
 
 export type PlayMode = 'SEQUENCE' | 'LOOP' | 'RANDOM' | 'SINGLE_LOOP';
+
+export type ChangeTrackReason = 'ended' | 'manual-next' | 'manual-prev';
+
+export const PLAY_MODE_ORDER: PlayMode[] = ['LOOP', 'SEQUENCE', 'RANDOM', 'SINGLE_LOOP'];
 
 export type QueueSourceType = 'playlist' | 'search' | 'album' | 'manual' | 'single';
 
@@ -20,7 +24,8 @@ export interface PlayQueueState {
 	currentMusicId?: string;
 	currentTime: number;
 	playMode: PlayMode;
-	randomOrder: number[];
+	/** Random playback history/order, stored by stable queue item id rather than array index. */
+	randomOrder: string[];
 	randomCursor: number;
 	sourceType?: QueueSourceType | string;
 	sourceId?: string;
